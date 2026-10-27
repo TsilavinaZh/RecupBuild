@@ -80,14 +80,16 @@ final class Request
         return $definition;
     }
 
-    /** The language the app sent in Accept-Language (the locale files choose fr, en or mg). */
+    /**
+     * The language of the pages and of what the model writes (project names, steps):
+     * the one the visitor picked (?lang=, remembered in a cookie by Core\View), otherwise
+     * English, whatever the browser says.
+     */
     public static function locale(): string
     {
-        $header = (string) ($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '');
-        $first = strtolower(trim(explode(',', $header)[0]));
-        $tag = trim(explode('-', $first)[0]);
+        $picked = $_COOKIE['recupbuild_lang'] ?? null;
 
-        return in_array($tag, ['fr', 'en', 'mg'], true) ? $tag : 'fr';
+        return is_string($picked) && in_array($picked, ['fr', 'en', 'mg'], true) ? $picked : 'en';
     }
 
     private static function dimension(mixed $value): ?float

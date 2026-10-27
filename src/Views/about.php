@@ -1,9 +1,17 @@
 <?php
 /**
- * GET /about: the story, the Meta hackathon, how it works, what happens to the data.
+ * GET /about: the story of the project (built at the Meta Global AI Developer
+ * Hackathon), who made it, how it works and what happens to the data.
  *
  * @var callable $t
  */
+$skills = ['PHP', 'Laravel', 'JavaScript', 'TypeScript', 'Python', 'React', 'Node.js', 'SQLite', 'MySQL', 'IA / ML', 'Docker', 'Figma'];
+$links = [
+    ['https://tendry.mg/', 'tendry.mg'],
+    ['https://github.com/TsilavinaZh/TsilavinaZH', 'GitHub'],
+    ['https://www.linkedin.com/in/tendry-tsilavina-razanamalala-9a6aa82ab/', 'LinkedIn'],
+    ['mailto:contact@tendry.mg', 'contact@tendry.mg'],
+];
 ?>
 <section class="wrap hero" aria-labelledby="about-title">
   <p class="stamp"><?= $t('about.stamp') ?></p>
@@ -12,14 +20,37 @@
 </section>
 
 <div class="wrap about">
-  <!-- The Meta hackathon, first: where the project comes from. -->
+  <!-- The hackathon, first: where the project comes from. -->
   <section class="card hackathon-card" aria-labelledby="hackathon-title">
-    <span class="meta-badge" aria-hidden="true">
-      <svg viewBox="0 0 48 48"><path d="M8 30c0-9 4.5-16 9.5-16 3.7 0 6.4 3.6 9.7 9.4l2.4 4.2C33 33.4 35 35 37.3 35c2.3 0 3.7-2.2 3.7-6 0-7.2-3.2-13-7-13-2.6 0-4.6 2.3-6.8 5.8" fill="none" stroke="#0866ff" stroke-width="4" stroke-linecap="round"/><path d="M8 30c0 3.8 1.5 5.9 4 5.9 2.6 0 4.4-1.8 7.5-7.5l3.4-6.3" fill="none" stroke="#0866ff" stroke-width="4" stroke-linecap="round"/></svg>
-    </span>
+    <ul class="hosts">
+      <li><img src="/images/meta.svg" alt="" width="48" height="48"><span>Meta</span></li>
+      <li><img src="/images/cerebral-valley.svg" alt="" width="48" height="48"><span>Cerebral Valley</span></li>
+    </ul>
     <div>
+      <p class="eyebrow"><?= $t('about.hackathon.eyebrow') ?></p>
       <h2 id="hackathon-title"><?= $t('about.hackathon.title') ?></h2>
-      <p><?= $t('about.hackathon.text') ?></p>
+      <p class="muted small"><?= $t('about.hackathon.meta') ?></p>
+      <p class="hackathon-text"><?= $t('about.hackathon.text') ?></p>
+      <p class="hackathon-text"><?= $t('about.hackathon.models') ?></p>
+    </div>
+  </section>
+
+  <!-- Who made it. -->
+  <section class="card author" aria-labelledby="author-title">
+    <img class="author-photo" src="/images/tendry.webp" alt="<?= $t('about.author.photoAlt') ?>" width="128" height="128">
+    <div>
+      <p class="eyebrow"><?= $t('about.author.eyebrow') ?></p>
+      <h2 id="author-title">Tendry Tsilavina RAZANAMALALA</h2>
+      <p class="muted"><?= $t('about.author.role') ?></p>
+      <p class="author-bio"><?= $t('about.author.bio') ?></p>
+      <ul class="chips" aria-label="<?= $t('about.author.skills') ?>">
+        <?php foreach ($skills as $skill): ?><li><?= htmlspecialchars($skill) ?></li><?php endforeach ?>
+      </ul>
+      <ul class="author-links">
+        <?php foreach ($links as [$href, $label]): ?>
+          <li><a href="<?= htmlspecialchars($href) ?>" <?= str_starts_with($href, 'http') ? 'target="_blank" rel="noopener"' : '' ?>><?= htmlspecialchars($label) ?></a></li>
+        <?php endforeach ?>
+      </ul>
     </div>
   </section>
 
@@ -31,7 +62,7 @@
 
   <section class="card" aria-labelledby="how-title">
     <h2 id="how-title"><?= $t('about.how.title') ?></h2>
-    <ol class="numbered">
+    <ol class="about-steps">
       <li><?= $t('about.how.scan') ?></li>
       <li><?= $t('about.how.engine') ?></li>
       <li><?= $t('about.how.server') ?></li>
@@ -40,7 +71,7 @@
 
   <section class="card" aria-labelledby="data-title">
     <h2 id="data-title"><?= $t('about.data.title') ?></h2>
-    <ul class="checks">
+    <ul class="about-data">
       <li><?= $t('about.data.photo') ?></li>
       <li><?= $t('about.data.google') ?></li>
       <li><?= $t('about.data.demo') ?></li>

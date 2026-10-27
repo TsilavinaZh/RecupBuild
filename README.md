@@ -109,8 +109,8 @@ Supprimer un plan et se déconnecter passent par une **fenêtre de confirmation*
 **Mode démo** : sur `/scan`, l'exemple « Tas de planches et tôle » suit tout le parcours avec
 les quatre projets de base calculés par le moteur seul, **sans appel à l'IA ni crédit utilisé**.
 
-Les pages parlent **français** et **anglais** (`?lang=fr|en|mg`, mémorisé dans un cookie, sinon la
-langue du navigateur) ; le malagasy reprend le français pour les textes pas encore traduits.
+Les pages parlent **français** et **anglais** (`?lang=fr|en`, mémorisé dans un cookie ; **anglais par défaut**).
+L’onglet malagasy est masqué (en commentaire dans `src/Views/layout.php`) en attendant ses traductions.
 
 ---
 

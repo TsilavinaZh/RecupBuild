@@ -56,7 +56,7 @@ return static function (Router $router): void {
     $router->post('/profile/logout', [ProfileController::class, 'logout']);
 
     // Sign in with Google, done by the server.
-    $router->get('/auth/google', [AuthController::class, 'redirect']);
+    $router->get('/auth/google', [AuthController::class, 'start']);
     $router->get('/auth/google/callback', [AuthController::class, 'callback']);
     $router->post('/auth/logout', [AuthController::class, 'logout']);
 
