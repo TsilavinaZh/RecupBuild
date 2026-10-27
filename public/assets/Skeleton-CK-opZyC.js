@@ -1,0 +1,1 @@
+import{Lt as e,O as t,P as n,W as r,n as i,vt as a}from"./button-40xgc_U7.js";var o=n({__name:`Skeleton`,props:{class:{type:[Boolean,null,String,Object,Array]}},setup(n){let o=n;return(n,s)=>(r(),t(`div`,{"data-slot":`skeleton`,"aria-hidden":`true`,class:e(a(i)(`animate-pulse rounded-md bg-sand`,o.class))},null,2))}});export{o as t};

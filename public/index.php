@@ -9,6 +9,7 @@ declare(strict_types=1);
  *   POST /api/scan   photo (multipart field "file") -> A4 sheet and measured pieces
  *   POST /api/plan   sizes, cutting plan and fabrication steps of one project
  *   POST /api/projects  the project cards: projects the model invents for these pieces
+ *   POST /api/reverse   photo of a finished object (field "file") -> parts, tools, steps to build it
  *
  *   GET  /auth/google           sign in with Google (redirects to Google)
  *   GET  /auth/google/callback  where Google sends the user back
@@ -33,6 +34,7 @@ use RecupBuild\Image;
 use RecupBuild\Planner;
 use RecupBuild\Plans;
 use RecupBuild\Request;
+use RecupBuild\Reverse;
 use RecupBuild\Scan;
 use RecupBuild\Session;
 use RecupBuild\Users;
@@ -208,7 +210,8 @@ if (preg_match('#^/api/history/(\d+)$#', $path, $match) === 1 && in_array($metho
     Http::json(200, $plan);
 }
 
-if ($path === '/api/scan' && $method === 'POST') {
+// The two photo routes share the upload checks: a heap to scan, or a finished object to rebuild.
+if (($path === '/api/scan' || $path === '/api/reverse') && $method === 'POST') {
     $requireUser();
     $file = $_FILES['file'] ?? null;
     if (!is_array($file)) {
@@ -236,6 +239,9 @@ if ($path === '/api/scan' && $method === 'POST') {
 
     try {
         [$jpeg, $width, $height] = Image::prepare($data, $config);
+        if ($path === '/api/reverse') {
+            Http::json(200, Reverse::analyse($jpeg, Request::locale(), $config));
+        }
         $model = Vision::analyse($jpeg, $config);
         Http::json(200, Scan::buildResponse($model, $width, $height));
     } catch (ScanError $error) {

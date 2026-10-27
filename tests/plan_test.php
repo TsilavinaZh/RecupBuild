@@ -177,3 +177,43 @@ $result = Solver::solve($definition, [stockPiece(1, 1800, 40, 40, 'batten'), sto
 check('plans an invented project with the same engine', $result['status'] === 'feasible' && $result['plan']['project'] === 'ai-1' && count($result['plan']['placements']) === 7);
 $result = Solver::solve($definition, [stockPiece(1, 1500, 40, 40, 'batten'), stockPiece(2, 1000, 95, 20)]);
 check('shrinks an invented project when its parts are too long', $result['status'] === 'feasible' && $result['plan']['params']['height'] < 450);
+
+echo "reverse build\n";
+
+$answer = [
+    'buildable' => true,
+    'name' => 'Table basse',
+    'description' => str_repeat('x', 900),
+    'dimensions' => ['width_mm' => 900, 'depth_mm' => 500, 'height_mm' => 450],
+    'difficulty' => 'easy',
+    'hours' => 6,
+    'parts' => [
+        ['label' => 'Pied', 'material' => 'wood', 'quantity' => 4, 'length_mm' => 430, 'width_mm' => 45, 'thickness_mm' => 45, 'layout' => [
+            ['x' => 0, 'y' => 0, 'z' => 0, 'length_axis' => 'y', 'width_axis' => 'x'],
+            ['x' => 855, 'y' => 0, 'z' => 0, 'length_axis' => 'y', 'width_axis' => 'x'],
+            ['x' => 0, 'y' => 0, 'z' => 455, 'length_axis' => 'y', 'width_axis' => 'x'],
+            ['x' => 855, 'y' => 0, 'z' => 455, 'length_axis' => 'y', 'width_axis' => 'x'],
+        ]],
+        ['label' => 'Plateau', 'material' => 'wood', 'quantity' => 1, 'length_mm' => 500, 'width_mm' => 900, 'thickness_mm' => 20, 'layout' => [
+            ['x' => 0, 'y' => 430, 'z' => 0, 'length_axis' => 'x', 'width_axis' => 'x'],
+        ]],
+    ],
+    'hardware' => [['name' => 'Vis 4×40', 'quantity' => '16']],
+    'tools' => [['name' => 'Scie', 'why' => 'Couper'], ['name' => '', 'why' => 'ignoré']],
+    'steps' => ['Coupez.', 'Assemblez.', ''],
+    'tips' => [],
+];
+$built = RecupBuild\Reverse::build($answer);
+check('one numbered cut per copy, longest side first', count($built['placements']) === 5
+    && $built['placements'][4]['number'] === 5 && $built['placements'][4]['length_mm'] === 900.0 && $built['placements'][4]['width_mm'] === 500.0);
+check('keeps the 3D spots that make sense, drops a part with the same axis twice', count($built['assembly']) === 4);
+check('cuts long texts, drops empty tools and steps', mb_strlen($built['description']) === 300 && count($built['tools']) === 1 && $built['steps'] === ['Coupez.', 'Assemblez.']);
+check('refuses a photo with nothing to build', (static function (): bool {
+    try {
+        RecupBuild\Reverse::build(['buildable' => false, 'parts' => []]);
+    } catch (RecupBuild\ScanError $error) {
+        return $error->errorCode === 'empty_segmentation';
+    }
+
+    return false;
+})());

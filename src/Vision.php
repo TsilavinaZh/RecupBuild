@@ -79,6 +79,29 @@ final class Vision
     }
 
     /**
+     * One photo and a question, answered in a JSON schema (the reverse build reads a
+     * finished object this way).
+     *
+     * @param array<string, mixed> $schema
+     *
+     * @throws VisionError timeout / server / invalid_json
+     */
+    public static function look(string $jpeg, string $text, array $schema, string $name, Config $config): array
+    {
+        $messages = [
+            [
+                'role' => 'user',
+                'content' => [
+                    ['type' => 'text', 'text' => $text],
+                    ['type' => 'image_url', 'image_url' => ['url' => 'data:image/jpeg;base64,' . base64_encode($jpeg)]],
+                ],
+            ],
+        ];
+
+        return self::ask($messages, $name, $schema, $config);
+    }
+
+    /**
      * One text turn with a JSON schema answer: the plan, the project sizes, the steps.
      *
      * @param array<string, mixed> $schema
