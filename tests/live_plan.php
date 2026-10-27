@@ -10,8 +10,8 @@ declare(strict_types=1);
  * invents and sizes the projects and writes the fabrication steps, the engine checks everything.
  */
 
-use RecupBuild\Config;
-use RecupBuild\Planner;
+use RecupBuild\Core\Config;
+use RecupBuild\Services\Planner;
 
 require_once __DIR__ . '/../src/bootstrap.php';
 

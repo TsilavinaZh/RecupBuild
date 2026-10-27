@@ -7,8 +7,8 @@ declare(strict_types=1);
  * the PHP port of frontend/src/domain/solver.test.ts.
  */
 
-use RecupBuild\Projects;
-use RecupBuild\Solver;
+use RecupBuild\Models\Projects;
+use RecupBuild\Services\Solver;
 
 require_once __DIR__ . '/support.php';
 require_once __DIR__ . '/../src/bootstrap.php';
@@ -203,17 +203,41 @@ $answer = [
     'steps' => ['Coupez.', 'Assemblez.', ''],
     'tips' => [],
 ];
-$built = RecupBuild\Reverse::build($answer);
+$built = RecupBuild\Services\Reverse::build($answer);
 check('one numbered cut per copy, longest side first', count($built['placements']) === 5
     && $built['placements'][4]['number'] === 5 && $built['placements'][4]['length_mm'] === 900.0 && $built['placements'][4]['width_mm'] === 500.0);
 check('keeps the 3D spots that make sense, drops a part with the same axis twice', count($built['assembly']) === 4);
 check('cuts long texts, drops empty tools and steps', mb_strlen($built['description']) === 300 && count($built['tools']) === 1 && $built['steps'] === ['Coupez.', 'Assemblez.']);
 check('refuses a photo with nothing to build', (static function (): bool {
     try {
-        RecupBuild\Reverse::build(['buildable' => false, 'parts' => []]);
-    } catch (RecupBuild\ScanError $error) {
+        RecupBuild\Services\Reverse::build(['buildable' => false, 'parts' => []]);
+    } catch (RecupBuild\Errors\ScanError $error) {
         return $error->errorCode === 'empty_segmentation';
     }
 
     return false;
 })());
+
+echo "drawings and workspace\n";
+
+$matrix = RecupBuild\Services\Drawing::photoMatrix([[100, 50], [300, 50], [300, 90], [100, 90]], 1000, 200);
+check('lays an upright outline onto the piece rectangle', $matrix === 'matrix(5 0 0 5 -500 -250)');
+check('gives up on an outline that is not four corners', RecupBuild\Services\Drawing::photoMatrix([[0, 0], [1, 1]], 100, 50) === null);
+$shelf = RecupBuild\Services\Solver::solve('shelf', demoPieces());
+$layout = RecupBuild\Services\Assembly::of($shelf['plan'], null);
+check('the built-in shelf has a place for each of its parts', $layout !== null && count($layout) === count($shelf['plan']['placements']));
+$sizes = [];
+foreach ($shelf['plan']['placements'] as $placement) {
+    $sizes[$placement['number']] = $placement;
+}
+$iso = RecupBuild\Services\Drawing::isometric($layout, $sizes, 'Étagère <b>');
+check('draws the assembled object, its label escaped', str_starts_with($iso, '<svg class="iso"') && substr_count($iso, '<polygon') === 3 * count($layout) && str_contains($iso, 'Étagère &lt;b&gt;'));
+check('an invented project without layout has no picture', RecupBuild\Services\Assembly::of(['project' => 'ai-1', 'params' => [], 'placements' => []], null) === null);
+
+$scanned = [['id' => 1, 'kind' => 'plank', 'length_mm' => 1200.0, 'width_mm' => 140.0, 'thickness_mm' => 22.0, 'outline' => [[0, 0], [1, 0], [1, 1], [0, 1]]],
+    ['id' => 2, 'kind' => 'plank', 'length_mm' => 800.0, 'width_mm' => 95.0, 'thickness_mm' => null, 'outline' => []]];
+check('flags a missing thickness', RecupBuild\Models\Workspace::issues($scanned) === [2 => ['thickness_mm' => 'missing']]);
+$edited = RecupBuild\Models\Workspace::fromForm($scanned, [1 => ['kind' => 'batten', 'length_mm' => '1 150', 'width_mm' => '40,5', 'thickness_mm' => '40'], 2 => ['remove' => '1']]);
+check('reads the corrected table, keeps the outline, drops a removed piece', count($edited) === 1 && $edited[0]['kind'] === 'batten'
+    && $edited[0]['width_mm'] === 40.5 && $edited[0]['length_mm'] === null && $edited[0]['outline'] === [[0, 0], [1, 0], [1, 1], [0, 1]]);
+check('refuses an unknown kind of material', RecupBuild\Models\Workspace::fromForm($scanned, [1 => ['kind' => '<script>']])[0]['kind'] === 'plank');

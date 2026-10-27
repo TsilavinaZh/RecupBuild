@@ -7,9 +7,9 @@ declare(strict_types=1);
  * The PHP port of backend/tests/test_scan.py.
  */
 
-use RecupBuild\Config;
-use RecupBuild\Image;
-use RecupBuild\Scan;
+use RecupBuild\Core\Config;
+use RecupBuild\Services\Image;
+use RecupBuild\Services\Scan;
 
 require_once __DIR__ . '/support.php';
 require_once __DIR__ . '/../src/bootstrap.php';

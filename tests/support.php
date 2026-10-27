@@ -49,7 +49,7 @@ function throwsScan(callable $run, string $code, string $name): void
     try {
         $run();
         check($name, false, "no ScanError thrown, expected '{$code}'");
-    } catch (\RecupBuild\ScanError $error) {
+    } catch (\RecupBuild\Errors\ScanError $error) {
         check($name, $error->errorCode === $code, "got '{$error->errorCode}', expected '{$code}'");
     }
 }

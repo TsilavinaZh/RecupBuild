@@ -2,7 +2,7 @@
 # Requires AllowOverride All for this folder and mod_rewrite enabled.
 
 Options -Indexes
-DirectoryIndex index.html index.php
+DirectoryIndex index.php
 
 <IfModule mod_rewrite.c>
     RewriteEngine On

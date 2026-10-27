@@ -1,108 +1,266 @@
-# RecupBuild — backend en PHP (VPS)
+<div align="center">
 
-Ce dossier est **la traduction en PHP 8 du backend FastAPI du projet** (`backend/app/`),
-préparée pour un VPS LAMP ou nginx + PHP-FPM. Aucun framework, aucune dépendance Composer :
-le code n'utilise que les extensions `curl`, `gd`, `exif`, `fileinfo` et `json`
-(toutes présentes sur un Debian/Ubuntu standard avec `apt install php-gd php-curl php-exif php-xml`).
+<img src="public/favicon.svg" alt="" width="72" height="72">
 
-> Le frontend reste Vue (il ne se traduit pas en PHP) : on construit ses fichiers statiques
-> et on les copie dans `public/`. PHP sert alors l'API **et** le site, sur une seule origine.
+# RecupBuild
 
-## Les endpoints
+**Photographiez vos matériaux de récupération. Recevez un plan de construction.**
+
+Une feuille A4 posée à côté du tas sert d'échelle : l'IA mesure chaque planche,
+invente quatre projets à la mesure de votre bois, un moteur place chaque coupe,
+et vous repartez avec le plan de coupe, le rendu 3D et les étapes de montage.
+
+![PHP 8.3](https://img.shields.io/badge/PHP-8.3-2f6b4f?style=flat-square&logo=php&logoColor=white)
+![MVC sans framework](https://img.shields.io/badge/MVC-sans%20framework-c4622d?style=flat-square)
+![SQLite](https://img.shields.io/badge/SQLite-3-1f2a24?style=flat-square&logo=sqlite&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-80%20vérifications-2f6b4f?style=flat-square)
+![Meta Hackathon](https://img.shields.io/badge/né%20au-hackathon%20Meta-0866ff?style=flat-square&logo=meta&logoColor=white)
+
+</div>
+
+![La page d'accueil : un tas de planches sur un tapis de découpe, mesuré puis rangé en plan de coupe](docs/images/landing.png)
+
+---
+
+## Sommaire
+
+- [Ce que fait RecupBuild](#ce-que-fait-recupbuild)
+- [Les pages](#les-pages)
+- [L'offre gratuite](#loffre-gratuite)
+- [Démarrer en local](#démarrer-en-local)
+- [Organisation du code (MVC)](#organisation-du-code-mvc)
+- [Les routes](#les-routes)
+- [Configuration](#configuration-env)
+- [Déploiement sur un VPS](#déploiement-sur-un-vps)
+- [Tests](#tests)
+- [Notes techniques](#notes-techniques)
+
+---
+
+## Ce que fait RecupBuild
+
+### Du tas au plan
+
+![Les quatre moments : le tas, mesuré, le plan de coupe numéroté, l'étagère montée](docs/images/pile-to-plan.png)
+
+| Étape | Ce qui se passe |
+| --- | --- |
+| **1. Scan** | Une photo du tas avec une feuille A4 : le modèle de vision repère chaque pièce et la mesure en millimètres, l'épaisseur est estimée. |
+| **2. Inventaire** | Vous relisez le tableau des pièces et corrigez une cote si besoin. |
+| **3. Projets** | L'IA **invente 4 projets** utiles pour *ce* bois-là (étagère, jardinière, tabouret…) ; le moteur vérifie que chaque pièce est vraiment découpable. |
+| **4. Calcul** | Le moteur de découpe place chaque pièce sur vos planches, trait de scie compté, et réduit les dimensions si ça ne passe pas. |
+| **5. Résultat** | Rendu 3D avec la texture de **votre** bois, plan de coupe numéroté, liste des pièces, étapes de montage et PDF. |
+
+<p align="center">
+  <img src="docs/images/inventory.png" alt="L'inventaire : la photo avec les pièces numérotées, et le tableau des cotes à corriger" width="49%">
+  <img src="docs/images/projects.png" alt="Les projets : chaque objet dessiné en perspective, avec sa taille et son statut" width="49%">
+</p>
+
+<p align="center">
+  <img src="docs/images/plan.png" alt="Le résultat : rendu 3D, dimensions finales et plan de coupe sur le bois de la photo" width="80%">
+</p>
+
+> **L'IA propose, le moteur décide.** Aucun chiffre affiché n'est une estimation libre :
+> chaque plan a été vérifié pièce par pièce par `Services/Solver.php`.
+
+### Le build inversé
+
+Photographiez un objet fini (une table, un tabouret, une bibliothèque) : RecupBuild vous dit
+quelles pièces couper, avec quels outils et dans quel ordre, et le reconstruit en 3D.
+
+<p align="center">
+  <img src="docs/images/reverse-build.png" alt="Build inversé d'une table : nom, difficulté, durée, dimensions estimées" width="49%">
+  <img src="docs/images/result-3d.png" alt="La table reconstruite en 3D, pièce par pièce" width="49%">
+</p>
+
+---
+
+## Les pages
+
+Tout le site est rendu par **PHP** (`src/Views`), avec la même identité visuelle partout :
+papier millimétré, vert forêt, cuivre. Un petit fichier JavaScript sans bibliothèque
+(`public/js/pages.js`) ajoute ce qui demande un script : l'animation de l'accueil, l'écran
+d'attente pendant que l'IA travaille, les fenêtres de confirmation, l'aperçu de la photo.
+La 3D du résultat utilise three.js, embarqué dans `public/vendor/three`. Chaque page reste
+utilisable sans JavaScript.
+
+| Page | Adresse | Contenu |
+| --- | --- | --- |
+| Accueil | `/` | le tas qui devient plan (4 moments animés), les étapes, les projets, le build inversé |
+| Construire | `/scan` → `/inventory` → `/projects` → `/plans/{id}` | photo, inventaire à corriger, 4 projets, résultat |
+| Reproduire un objet | `/rebuild` → `/rebuilds/{id}` | build inversé d'un objet photographié |
+| Historique | `/history` | plans et objets reproduits, à rouvrir ou supprimer |
+| Tarifs | `/pricing` | Gratuit (disponible), Pro et Personnalisé (bientôt) |
+| Mon profil | `/profile` | compte, crédits restants, plans, déconnexion |
+| À propos | `/about` | l'histoire du projet, né au **hackathon Meta** |
+
+<p align="center">
+  <img src="docs/images/pricing.png" alt="La page Tarifs : Gratuit disponible, Pro et Personnalisé bientôt disponibles" width="49%">
+  <img src="docs/images/profile.png" alt="La page Profil : compte, crédits restants en mètre ruban, plans enregistrés" width="49%">
+</p>
+
+Supprimer un plan et se déconnecter passent par une **fenêtre de confirmation**
+(`<dialog>` natif : clavier, Échap, focus rendu au bouton).
+
+<p align="center">
+  <img src="docs/images/confirm-dialog.png" alt="Fenêtre de confirmation avant de supprimer un plan" width="420">
+</p>
+
+**Mode démo** : sur `/scan`, l'exemple « Tas de planches et tôle » suit tout le parcours avec
+les quatre projets de base calculés par le moteur seul, **sans appel à l'IA ni crédit utilisé**.
+
+Les pages parlent **français** et **anglais** (`?lang=fr|en|mg`, mémorisé dans un cookie, sinon la
+langue du navigateur) ; le malagasy reprend le français pour les textes pas encore traduits.
+
+---
+
+## L'offre gratuite
+
+| Offre | Prix | Contenu | Statut |
+| --- | --- | --- | --- |
+| **Gratuit** | 0 $ | 5 builds + 5 rebuilds, historique, rendu 3D, PDF | **Disponible**, activée automatiquement à la première connexion |
+| **Pro** | 10 $ / mois | builds et rebuilds en volume, analyse prioritaire | Bientôt disponible |
+| **Personnalisé** | sur devis | associations, écoles, ressourceries | Bientôt disponible |
+
+- un **build** = un plan de coupe réussi (`POST /api/plan`) ;
+- un **rebuild** = un build inversé réussi (`POST /api/reverse`) ;
+- le scan et les cartes de projets ne sont **pas** comptés ;
+- un crédit n'est consommé **qu'en cas de succès**, et à zéro le serveur refuse **avant** d'appeler
+  le modèle (`402 {"detail":{"code":"quota_exhausted"}}`).
+
+Les compteurs vivent dans la table `users` (`build_credits`, `rebuild_credits`) ; un seul
+`UPDATE … WHERE credits > 0` les décrémente, deux requêtes simultanées ne dépensent donc jamais
+le même crédit.
+
+---
+
+## Démarrer en local
+
+```sh
+cp .env.example .env               # y mettre MODEL_API_KEY et les identifiants Google
+php -S localhost:8080 router.php
+```
+
+Puis ouvrir **http://localhost:8080** (et non `127.0.0.1`, sinon le retour de Google ne correspond pas).
+
+| Adresse | Page |
+| --- | --- |
+| `http://localhost:8080` | l'accueil |
+| `http://localhost:8080/scan` | l'application (connexion Google demandée) |
+| `http://localhost:8080/pricing` | les tarifs |
+| `http://localhost:8080/profile` | le profil (connexion Google demandée) |
+| `http://localhost:8080/api/health` | l'état du serveur |
+
+La base SQLite (`storage/recupbuild.sqlite`) se crée et se met à jour seule au premier accès.
+
+---
+
+## Organisation du code (MVC)
+
+Aucun framework, aucune dépendance Composer : seulement les extensions `curl`, `gd`, `exif`,
+`fileinfo`, `pdo_sqlite`, `mbstring` et `json`.
+
+```
+public/
+  index.php          contrôleur frontal : chargement, CORS, puis le routeur
+  css/ js/ fonts/    le style, le script et les polices des pages
+  vendor/three/      three.js (licence MIT), pour la 3D du résultat
+  demo/ examples/    la photo de démonstration et les exemples à essayer
+src/
+  routes.php         toutes les routes : méthode + chemin -> contrôleur@action
+  Core/              Router, Controller, View, Config, DotEnv, Http, Request, Session, Database, Upload, Cors
+  Controllers/       Home, Workspace (scan -> projets), PlanPage, Rebuild, Profile, Pricing, Auth,
+                     et l'API : Health, Scan, Plan, History
+  Models/            Users (comptes, crédits), Plans, Rebuilds, Photos, Workspace (le parcours en session),
+                     Projects (définitions de projets)
+  Services/          Vision (le modèle), Planner, Solver (moteur de découpe), Scan, Reverse, Image,
+                     GoogleAuth, Assembly (montage 3D), Drawing (dessins SVG), Demo
+  Errors/            ScanError, VisionError, AuthError
+  Views/             layout et une vue par page, leurs textes dans lang/fr.php et lang/en.php
+storage/             la base SQLite et les photos (hors de public/, jamais servies directement)
+tests/               php tests/run.php
+```
+
+- **Modèles** : les données (SQLite via PDO, photos dans `storage/photos`) et leurs règles.
+- **Vues** : les pages (`Core\View` + `src/Views`) et les réponses JSON de l'API (`Core\Http`).
+- **Contrôleurs** : une classe par domaine ; `member()` exige une session (sinon Google),
+  `checkForm()` vérifie le jeton CSRF, `user()` protège l'API.
+- **Services** : le travail, sans HTTP ni base (le modèle, le moteur, les images, les dessins).
+
+Ajouter une page, c'est une ligne dans `src/routes.php`, une méthode de contrôleur et une vue ;
+un paramètre `{id}` arrive en `int` dans l'action.
+
+---
+
+## Les routes
+
+**Pages**
+
+| Méthode | Route | Rôle | Session |
+| --- | --- | --- | --- |
+| `GET` | `/` · `/about` · `/pricing` | accueil, à propos, tarifs | |
+| `GET` / `POST` | `/scan` | photo du tas (envoi, exemple IA ou démo) | ✓ |
+| `GET` / `POST` | `/inventory` | inventaire à corriger | ✓ |
+| `GET` | `/projects` · `POST /projects/choose` | 4 projets, puis le plan du projet choisi (1 crédit build) | ✓ |
+| `GET` | `/plans/{id}` · `/plans/{id}/photo` | le résultat et la photo d'origine | ✓ |
+| `GET` / `POST` | `/rebuild` · `GET /rebuilds/{id}` | build inversé (1 crédit rebuild) | ✓ |
+| `GET` | `/history` · `/profile` | historique, profil | ✓ |
+| `POST` | `/profile/plans/{id}/delete` · `/profile/rebuilds/{id}/delete` · `/profile/logout` | formulaires confirmés (jeton CSRF) | ✓ |
+| `GET` | `/auth/google` · `/auth/google/callback` | connexion Google par le serveur | |
+
+**API JSON** (même moteur, pour d'autres clients)
 
 | Méthode | Route | Rôle |
 | --- | --- | --- |
-| `GET` | `/api/health` | état de la clé API et du modèle |
-| `POST` | `/api/scan` | photo (*multipart*, champ `file`) → feuille A4 et pièces mesurées |
-| `POST` | `/api/plan` | tailles du projet choisi → journal de calcul, plan de découpe, étapes de fabrication |
-| `POST` | `/api/projects` | un seul appel IA : 4 projets imaginés pour les pièces de l'utilisateur, vérifiés par le moteur |
-| `GET` | `/auth/google` | connexion Google par le serveur (redirige vers Google, `?return=/chemin` pour revenir) |
-| `GET` | `/auth/google/callback` | retour de Google : échange du code avec le secret, ouverture de la session |
+| `GET` | `/api/health` | état de la clé et du modèle (public) |
 | `GET` | `/api/me` | l'utilisateur connecté, ou 401 |
-| `POST` | `/auth/logout` | déconnexion |
-| — | tout le reste | `public/index.html` (l'app Vue construite) si elle existe |
+| `POST` | `/api/scan` · `/api/reverse` | photo (`file`) → pièces mesurées · objet à reproduire |
+| `POST` | `/api/projects` · `/api/plan` | projets inventés · plan de coupe |
+| `GET` / `DELETE` | `/api/history` · `/api/history/{id}` | historique des plans |
 
-Le corps d'erreur est exactement celui de FastAPI, lu par le frontend :
-`{ "detail": { "code": "a4_not_detected" } }` avec le bon statut HTTP
-(413 trop lourd, 415 format, 422 analyse, 502 modèle, 504 délai dépassé).
+Les erreurs de l'API ont la forme `{ "detail": { "code": "a4_not_detected" } }` avec le bon statut
+(401 non connecté, 402 crédits épuisés, 413 trop lourd, 415 format, 422 analyse, 502 modèle,
+504 délai dépassé). Toute autre adresse affiche la page « introuvable ».
 
-### Le planificateur IA
-
-Le modèle **propose** et le moteur **décide** : sur l'écran Projet, `Planner.php`
-lui demande **une taille par projet** (la plus grande qui passe encore), vérifiée
-pièce par pièce par `Solver` — un chiffre affiché est toujours coupable. Sur
-l'écran Calcul, si les tailles choisies ne passent plus, il propose jusqu'à 4
-options plus petites (la plus grande d'abord) puis les étapes de fabrication.
-Le moteur prend la main quand les options ne suffisent plus.
-
-Latence observée sur l'exemple du dépôt : appels texte triviaux ~3-4 s, jeu de
-tagères ~7 s, tailles et cartes **60 à 110 s** (le modèle raisonne). Les
-réglages serveur ci-dessous (300 s) et un *fallback* local côté frontend
-(`VITE_PLAN_API=false`) existent pour cela.
-
-## Équivalence avec le code Python
-
-| Python (`backend/app/`) | PHP (`backend-php/src/`) |
-| --- | --- |
-| `config.py` | `Config.php`, `DotEnv.php` |
-| `scan.py` (`prepare_image`) | `Image.php` (librairie **GD** au lieu de Pillow) |
-| `scan.py` (`build_response`) | `Scan.php` |
-| `providers/vision.py` | `Vision.php` (**cURL** au lieu de httpx) |
-| `domain/solver.ts` | `Solver.php` |
-| (aucun équivalent) | `Planner.php`, `Projects.php`, `Request.php` |
-| `main.py` | `public/index.php` |
-| `tests/test_scan.py` | `tests/run.php` |
-
-Les mêmes constantes sont reprises : A4 210 x 297 mm, plus grande arête à 1600 px,
-JPEG qualité 85, upload 12 MB max, modèle `muse-spark-1.3`, délai 120 s,
-arrondi des cotes au 5 mm, `thickness_mm` toujours `null`.
-
-## Lancer en local
-
-```sh
-cp .env.example .env         # y coller MODEL_API_KEY
-php -S localhost:8080 router.php
-curl http://localhost:8080/api/health
-```
-
-`router.php` sert les fichiers statiques de `public/` et le route `/api` vers
-`public/index.php` (équivalent de `public/.htaccess` sous Apache).
-
-### Tests
-
-```sh
-php tests/run.php            # 34 vérifications (scan + modulo de la solveuse)
-php tests/live_plan.php      # appel réel au modèle: cartes + plan + étapes
-```
+---
 
 ## Configuration (`.env`)
 
 | Variable | Défaut | Rôle |
 | --- | --- | --- |
-| `MODEL_API_KEY` (ou `MUSE_IMAGE_API_KEY`) | vide | clé Meta, obligatoire pour `/api/scan` |
-| `META_API_BASE` | `https://api.meta.ai/v1` | point d'entrée du modèle vision |
+| `MODEL_API_KEY` (ou `MUSE_IMAGE_API_KEY`) | vide | clé du modèle Meta, obligatoire pour l'IA |
+| `META_API_BASE` | `https://api.meta.ai/v1` | point d'entrée du modèle |
 | `VISION_MODEL` | `muse-spark-1.3` | modèle interrogé |
-| `ALLOWED_ORIGINS` | `http://localhost:5173,...` | CORS, inutile si frontend et API sont sur le même origine |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | vide | connexion Google (Google Cloud Console → Clients, « Application Web ») |
+| `GOOGLE_REDIRECT_URI` | `http(s)://<hôte>/auth/google/callback` | à déclarer tel quel dans « URI de redirection autorisés » |
+| `DATABASE_PATH` | `storage/recupbuild.sqlite` | fichier SQLite, à garder hors de `public/` |
+| `ALLOWED_ORIGINS` | `http://localhost:5173,...` | CORS, inutile quand le site et l'API partagent l'origine |
 
-Le fichier `.env` ne quitte jamais le serveur (déjà ignoré par git, interdit par
-`public/.htaccess` et par `deploy/nginx.conf.example`).
+`.env` contient la clé du modèle et le secret Google : il est ignoré par git, interdit par
+`public/.htaccess` et par `deploy/nginx.conf.example`, et ne doit jamais être publié.
+
+---
 
 ## Déploiement sur un VPS
 
-### 1. Envoyer le code
+<details>
+<summary><b>1. Envoyer le code</b></summary>
 
 ```sh
-rsync -av --exclude .env backend-php/ user@vps:/var/www/recupbuild/backend-php/
+rsync -av --exclude .env --exclude storage/ backend-php/ user@vps:/var/www/recupbuild/backend-php/
 ssh user@vps 'cd /var/www/recupbuild/backend-php && nano .env'
 ```
 
-### 2. Installer PHP + les extensions
+</details>
+
+<details>
+<summary><b>2. Installer PHP et ses extensions</b></summary>
 
 ```sh
-sudo apt install php-fpm php-gd php-curl php-xml php-mbstring
+sudo apt install php-fpm php-gd php-curl php-xml php-mbstring php-sqlite3
 ```
 
-Réglages dans `/etc/php/8.3/fpm/php.ini` (et `cli/php.ini`) :
+Dans `/etc/php/8.3/fpm/php.ini` (et `cli/php.ini`) :
 
 ```ini
 upload_max_filesize = 12M
@@ -111,81 +269,71 @@ max_execution_time = 300
 memory_limit = 256M
 ```
 
-puis dans `/etc/php/8.3/fpm/pool.d/www.conf` :
+Dans `/etc/php/8.3/fpm/pool.d/www.conf` : `request_terminate_timeout = 300s`, puis
+`sudo systemctl restart php8.3-fpm`. Sans cela, la requête est coupée à 30 s alors que
+l'invention des projets prend de 45 à 110 s.
 
-```ini
-request_terminate_timeout = 300s
-```
+Le dossier `storage/` doit être accessible en écriture par PHP-FPM :
+`sudo chown -R www-data: storage`.
 
-```sh
-sudo systemctl restart php8.3-fpm
-```
+</details>
 
-Sans cela, la requête est coupée à 30 s avant que le modèle vision ait répondu.
-Les en-têtes nginx/Apache du dépôt sont à 300 s : le planificateur enchaîne
-jusqu'à deux appels de modèle (tailles, puis étapes) et carte les 4 projets
-d'un seul coup — un de ces appels a déjà pris 110 s de bout en bout.
+<details>
+<summary><b>3. Servir le site (nginx ou Apache)</b></summary>
 
-### 3. Servir le site
+**nginx** : recopier `deploy/nginx.conf.example` dans `/etc/nginx/sites-available/`
+(domaine et version de PHP), puis `sudo nginx -t && sudo systemctl reload nginx`.
 
-**nginx** : recopier `deploy/nginx.conf.example` dans
-`/etc/nginx/sites-available/` (y mettre votre domaine et votre version de PHP),
-puis `sudo nginx -t && sudo systemctl reload nginx`.
+**Apache** : recopier `deploy/apache-vhost.conf.example` ; `DocumentRoot` pointe sur
+`public/`, avec `AllowOverride All` pour le `.htaccess`.
 
-**Apache (LAMP / hébergeur classique)** : recopier `deploy/apache-vhost.conf.example` —
-`DocumentRoot` doit pointer sur `public/`, avec `AllowOverride All` pour que le
-`.htaccess` fasse les réécritures.
+</details>
 
-### 4. Publier le frontend
+<details>
+<summary><b>4. HTTPS</b></summary>
 
 ```sh
-cd frontend
-npm install && npm run build        # sans VITE_API_BASE_URL: l'API est sur la même origine
-rsync -av --delete dist/ user@vps:/var/www/recupbuild/backend-php/public/
-```
-
-`frontend/dist/index.html` devient `backend-php/public/index.html` : les fichiers réels
-(y compris `assets/`) sont servis par nginx/Apache, tout le reste retombe sur `index.php`.
-L'app utilise le routage par ancre (`#/`), donc aucune règle supplémentaire n'est nécessaire.
-
-### 5. HTTPS
-
-```sh
-sudo apt install certbot python3-certbot-nginx   # ou --apache
+sudo apt install certbot python3-certbot-nginx
 sudo certbot --nginx -d recupbuild.example.com
 ```
 
-Avec HTTPS, pensez à mettre l'origine du domaine dans `ALLOWED_ORIGINS` **seulement si**
-le frontend est servi depuis un autre domaine (développement, CDN).
+Puis déclarer `https://recupbuild.example.com` dans les origines JavaScript et
+`https://recupbuild.example.com/auth/google/callback` dans les URI de redirection Google.
 
-## Vérifier après déploiement
+</details>
+
+---
+
+## Tests
 
 ```sh
-curl https://recupbuild.example.com/api/health
-curl -F "file=@photo.jpg" https://recupbuild.example.com/api/scan
-curl -H 'Content-Type: application/json' -H 'Accept-Language: fr' \
-  -d '{"project":"shelf","params":{"width":500,"depth":90,"height":600},"pieces":[{"id":1,"kind":"plank","length_mm":1200,"width_mm":140,"thickness_mm":22},{"id":4,"kind":"batten","length_mm":900,"width_mm":40,"thickness_mm":40},{"id":7,"kind":"plank","length_mm":600,"width_mm":180,"thickness_mm":20}]}' \
-  https://recupbuild.example.com/api/plan
+php tests/run.php            # 80 vérifications : scan, moteur de découpe, projets inventés, build inversé,
+                             # connexion Google, SQLite, historique, crédits, dessins, inventaire, textes des pages
+php tests/live_plan.php      # appel réel au modèle : cartes, plan et étapes
 ```
 
-Avec les tailles de la carte projet, `/api/plan` revient en ~7 s (le modèle n'écrit
-que les étapes) ; sans elles, il propose d'abord ses propres tailles (~60 s).
-`/api/projects` met 60 à 110 s : l'écran Projet affiche l'estimation locale pendant ce
-temps et la remplace quand la réponse arrive.
+---
 
-- sans clé : `502 {"detail":{"code":"server"}}`
-- photo sans feuille A4 : `422 {"detail":{"code":"a4_not_detected"}}`
-- fichier non image : `415 {"detail":{"code":"unsupported_type"}}`
-- plus de 12 MB : `413 {"detail":{"code":"file_too_large"}}`
+## Notes techniques
 
-## Notes de conversion
+- **L'IA, en sécurité** : tout ce que le modèle renvoie (projets, pièces, layouts 3D) est borné et
+  revalidé par `Models/Projects::sanitize` ou `Services/Reverse::build` avant d'atteindre le navigateur.
+- **Connexion Google** : flux *authorization code* côté serveur, avec `state` et `nonce` ; le secret
+  ne quitte jamais le serveur, la session est un cookie `HttpOnly` / `SameSite=Lax`.
+- **Pages** : chaque texte est échappé, les formulaires portent un jeton CSRF, et une
+  *Content-Security-Policy* n'autorise que les scripts et styles du site.
+- **Images** : décodage GD (JPEG, PNG, WebP), rotation EXIF, plus grande arête à 1600 px, JPEG 85.
+- **Latence** : une requête occupe un *worker* PHP pendant l'appel au modèle ; prévoir
+  `pm.max_children` ≥ 5 si plusieurs personnes l'utilisent en même temps.
 
-- **Pillow → GD** : décodage photo (JPEG/PNG/WebP), rotation EXIF (orientations 2 à 8),
-  redimensionnement à 1600 px sur la plus grande arête, ré-encodage JPEG qualité 85.
-- **httpx → cURL** : appel `POST {META_API_BASE}/chat/completions` avec
-  `response_format: json_schema`, image en `data:image/jpeg;base64`, délai 120 s
-  (`CURLE_OPERATION_TIMEDOUT` → code `timeout`, HTTP 504).
-- **round() Python = round() PHP** sur les cotes : l'arrondi au double zéro n'est pas
-  atteint par une mesure de photo, les résultats sont identiques à 5 mm près.
-- Latence : la requête occupe un *worker* PHP pendant l'appel au modèle, pensez à
-  `pm.max_children` de PHP-FPM (≥ 5) si plusieurs scans simultanés.
+---
+
+<div align="center">
+
+<img src="public/favicon.svg" alt="" width="28" height="28">
+
+**RecupBuild** est né pendant le **hackathon Meta** : construire avec ce qu'on a déjà sous la main.
+
+*Plan indicatif : vérifiez chaque cote sur vos pièces avant de couper.*
+
+</div>
