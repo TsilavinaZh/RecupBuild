@@ -1,0 +1,37 @@
+# RecupBuild — API PHP, VirtualHost Apache (LAMP, hébergement classique / cPanel)
+#
+# Equivalent de backend/app/main.py. Adapter DocumentRoot et les chemins PHP-FPM.
+# Mod_rewrite doit être activé (a2enmod rewrite) et AllowOverride All doit autoriser
+# le .htaccess de public/.
+
+<VirtualHost *:80>
+    ServerName recupbuild.example.com
+    DocumentRoot /var/www/recupbuild/backend-php/public
+
+    <Directory /var/www/recupbuild/backend-php/public>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    # Les secrets du dossier ne sont pas servis.
+    <DirectoryMatch "/var/www/recupbuild/backend-php/(?!public)">
+        Require all denied
+    </DirectoryMatch>
+
+    # Mod_php: le .htaccess de public/ règle déjà l'upload.
+    # <IfModule mod_php.c>
+    #     php_value upload_max_filesize 12M
+    #     php_value post_max_size 14M
+    #     php_value max_execution_time 300
+    #     php_value memory_limit 256M
+    # </IfModule>
+
+    # PHP-FPM: ces réglages vivent dans le virtualhost, le .htaccess ne peut pas les porter.
+    # <FilesMatch \.php$>
+    #     SetHandler "proxy:unix:/run/php/php8.3-fpm.sock|fcgi://localhost"
+    # </FilesMatch>
+
+    ErrorLog ${APACHE_LOG_DIR}/recupbuild-error.log
+    CustomLog ${APACHE_LOG_DIR}/recupbuild-access.log combined
+</VirtualHost>

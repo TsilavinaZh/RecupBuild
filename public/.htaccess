@@ -1,0 +1,25 @@
+# Apache: the API and the built frontend live in the same directory (public/).
+# Requires AllowOverride All for this folder and mod_rewrite enabled.
+
+Options -Indexes
+DirectoryIndex index.html index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Never run .env, .ini or any other PHP file found by mistake.
+    RewriteRule \.(env|ini|log)$ - [F,L]
+
+    # Real files and directories (the built Vue app) are served directly.
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# The scan accepts photos up to 12 MB: PHP reads this in .htaccess (PHP_INI_PERDIR).
+<IfModule mod_php.c>
+    php_value upload_max_filesize 12M
+    php_value post_max_size 14M
+    php_value max_execution_time 130
+    php_value memory_limit 256M
+</IfModule>

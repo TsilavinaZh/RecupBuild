@@ -1,0 +1,7 @@
+# Secrets: the API key and the Google client secret live in .env, never in git.
+.env
+.env.*
+!.env.example
+
+# The SQLite database (also covered by storage/.gitignore).
+storage/*.sqlite*

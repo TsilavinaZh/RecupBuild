@@ -1,0 +1,3 @@
+# The SQLite database and its journal files: never committed, never served.
+*
+!.gitignore

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="240" viewBox="0 0 320 240" fill="none"><style>
+.fl{animation:fl 7s ease-in-out infinite}
+.fl2{animation:fl 9s ease-in-out -3s infinite}
+.fl3{animation:fl 8s ease-in-out -5.5s infinite}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.sway{transform-box:fill-box;transform-origin:50% 100%;animation:sway 6s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+.pulse{animation:pulse 3.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
+.beat{transform-box:fill-box;transform-origin:center;animation:beat 3.4s ease-in-out infinite}
+@keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.march{animation:march 2.2s linear infinite}
+@keyframes march{to{stroke-dashoffset:-11}}
+.scan{animation:scan 5s ease-in-out infinite}
+@keyframes scan{0%{transform:translateY(0);opacity:0}8%{opacity:1}92%{opacity:1}100%{transform:translateY(var(--h,300px));opacity:0}}
+.pop{transform-box:fill-box;transform-origin:center;animation:pop 7s ease-out infinite both;animation-delay:var(--d,0s)}
+@keyframes pop{0%,6%{transform:scale(0);opacity:0}14%{transform:scale(1.18);opacity:1}20%,90%{transform:scale(1);opacity:1}100%{transform:scale(1);opacity:0}}
+.slot{transform-box:fill-box;transform-origin:center;animation:slot 9s cubic-bezier(.25,.75,.3,1) infinite both;animation-delay:var(--d,0s)}
+@keyframes slot{0%{transform:translate(var(--dx,-300px),var(--dy,0px)) rotate(var(--r,0deg));opacity:0}6%{opacity:1}24%,84%{transform:translate(0,0) rotate(0deg);opacity:1}96%,100%{transform:translate(0,0);opacity:0}}
+.rise{animation:rise 7s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes rise{0%,100%{transform:translateY(0)}50%{transform:translateY(var(--up,-14px))}}
+.draw{animation:draw 5s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes draw{0%,10%{stroke-dasharray:var(--len,60);stroke-dashoffset:var(--len,60)}40%,85%{stroke-dasharray:var(--len,60);stroke-dashoffset:0}100%{stroke-dasharray:var(--len,60);stroke-dashoffset:var(--len,60)}}
+.spin{transform-box:fill-box;transform-origin:center;animation:spin 24s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ripple{transform-box:fill-box;transform-origin:center;animation:ripple 3.6s ease-out infinite;animation-delay:var(--d,0s)}
+@keyframes ripple{0%{transform:scale(.6);opacity:.7}100%{transform:scale(1.5);opacity:0}}
+.search{animation:search 6s ease-in-out infinite}
+@keyframes search{0%,100%{transform:translate(0,0)}50%{transform:translate(-28px,10px)}}
+.travel{animation:travel 7s ease-in-out infinite}
+@keyframes travel{0%{transform:translateX(0)}45%,60%{transform:translateX(var(--w,480px))}100%{transform:translateX(0)}}
+.wobble{transform-box:fill-box;transform-origin:center;animation:wobble 6s ease-in-out infinite}
+@keyframes wobble{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.25)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style><defs><pattern id="g8" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M8 0H0V8" fill="none" stroke="#1F2A24" stroke-opacity="0.045" stroke-width="1"/></pattern><pattern id="g40" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#2F6B4F" stroke-opacity="0.09" stroke-width="1"/></pattern></defs><rect width="320" height="240" fill="url(#g8)"/><rect width="320" height="240" fill="url(#g40)"/><circle cx="160" cy="128" r="92" fill="#e7ebe4"/><ellipse cx="160" cy="208" rx="92" ry="10" fill="#1F2A24" opacity="0.09"/><g class="spin"><path d="M283 46L291 46M277.4 59.4L283.1 65.1M264 65L264 73M250.6 59.4L244.9 65.1M245 46L237 46M250.6 32.6L244.9 26.9M264 27L264 19M277.4 32.6L283.1 26.9" stroke="#C4622D" stroke-width="3.5" stroke-linecap="round"/></g><circle cx="264" cy="46" r="13" fill="#d38e66" stroke="#1F2A24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><g class="fl"><polygon points="89.1,162.6 171.2,210 171.2,154.9 89.1,107.5" fill="#d3b8a5" stroke="#1F2A24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polygon points="230.9,175.5 171.2,210 171.2,154.9 230.9,89.4" fill="#bfa896" stroke="#1F2A24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polygon points="148.8,42 230.9,89.4 171.2,154.9 89.1,107.5" fill="#baccbf" stroke="#1F2A24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M176.4 57.9L116.7 123.4" stroke="#1F2A24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M203.3 73.4L143.6 138.9" stroke="#1F2A24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M135.4 72.2L199.5 109.2" stroke="#1F2A24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M119 90.2L183.1 127.3" stroke="#1F2A24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polygon points="135.4,182.4 163.7,198.8 163.7,160.9 135.4,144.5" fill="#dfc2ad" stroke="#1F2A24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M99.6 154.9L121.9 167.8" stroke="#1F2A24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M99.6 146.2L121.9 159.2" stroke="#1F2A24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M99.6 137.6L121.9 150.6" stroke="#1F2A24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
