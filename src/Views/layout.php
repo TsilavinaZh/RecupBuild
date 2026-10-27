@@ -45,7 +45,11 @@ $isError = $flash !== null && str_starts_with($flash, 'error.');
       </nav>
       <div class="top-tools">
         <div class="langs" role="group" aria-label="<?= $t('nav.language') ?>">
-          <?php foreach (['fr' => 'FR', 'en' => 'EN', 'mg' => 'MG'] as $code => $label): ?>
+          <?php
+            // Malagasy is hidden until its texts are written (src/Views/lang/mg.php); put it back here then:
+            // 'mg' => 'MG',
+          ?>
+          <?php foreach (['fr' => 'FR', 'en' => 'EN'] as $code => $label): ?>
             <a href="?lang=<?= $code ?>" hreflang="<?= $code ?>" <?= $locale === $code ? 'aria-current="true"' : '' ?>><?= $label ?></a>
           <?php endforeach ?>
         </div>

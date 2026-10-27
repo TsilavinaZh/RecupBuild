@@ -1553,26 +1553,341 @@ body.wide .wrap {
 }
 
 /* -------------------------------------------------------- rebuild teaser */
-.rebuild-teaser {
+/* ---------------------------------------------------------- reverse build */
+.reverse {
+  margin-top: 5rem;
+  border-block: 1px solid var(--line);
+  padding: 4.5rem 0;
+  background: linear-gradient(180deg, var(--sand), color-mix(in srgb, var(--sand) 40%, var(--paper)));
+}
+
+.reverse-intro {
+  max-width: 44rem;
+}
+
+.reverse-grid {
   display: grid;
-  gap: 2rem;
-  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+  align-items: start;
 }
 
-.rebuild-teaser .button {
-  margin-top: 1.5rem;
+.reverse-photo {
+  margin: 0;
 }
 
-.rebuild-teaser img {
-  width: 100%;
-  height: auto;
-  border-radius: 14px;
+.scan-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--sheet);
   box-shadow: var(--lift);
 }
 
+.scan-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* The AI reading the photo: a green line sweeping down, over and over. */
+.scan-line {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--forest);
+  box-shadow: 0 0 18px 6px color-mix(in srgb, var(--forest) 45%, transparent);
+  animation: scan-sweep 3.6s ease-in-out infinite;
+}
+
+@keyframes scan-sweep {
+  0%, 100% { top: 0; opacity: 0; }
+  10%, 90% { opacity: 1; }
+  50% { top: calc(100% - 3px); }
+}
+
+.pin,
+.pin-key {
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  background: var(--copper);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--copper) 60%, transparent);
+  animation: pin-pulse 2.4s ease-out infinite;
+}
+
+.pin-a { left: 52%; top: 34%; }
+.pin-b { left: 16%; top: 64%; animation-delay: 0.6s; }
+.pin-c { left: 40%; top: 46%; animation-delay: 1.2s; }
+.pin-d { left: 77%; top: 38%; animation-delay: 1.8s; }
+
+@keyframes pin-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--copper) 60%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 14px transparent; }
+}
+
+.reverse-photo figcaption {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--forest-strong);
+}
+
+.live-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--forest);
+  animation: pin-pulse 1.6s ease-out infinite;
+}
+
+/* The sheet the AI gives back: parts, tools, assembly. */
+.reverse-sheet {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--sheet);
+  box-shadow: var(--lift);
+  padding: 1.5rem;
+}
+
+.reverse-sheet h3 {
+  margin-top: 1.4rem;
+  font-size: 1rem;
+}
+
+.reverse-sheet .button {
+  margin-top: 1.5rem;
+}
+
+.sheet-head {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 -0.4rem;
+  border-bottom: 1px dashed var(--line);
+  padding-bottom: 0.6rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.parts {
+  width: 100%;
+  margin-top: 0.6rem;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.parts th {
+  border-bottom: 1px solid var(--line);
+  padding: 0 0.4rem 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-align: left;
+  color: var(--ink-muted);
+}
+
+.parts td {
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
+  padding: 0.45rem 0.4rem;
+}
+
+.parts .pin-key {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.7rem;
+}
+
+.reverse-sheet .chips {
+  margin-top: 0.6rem;
+}
+
+@media (min-width: 900px) {
+  .reverse-grid {
+    grid-template-columns: 7fr 5fr;
+  }
+}
+
+/* ------------------------------------------------------------- two modes */
+.hackathon-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  border: 1px solid color-mix(in srgb, #0866ff 35%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, #0866ff 7%, var(--sheet));
+  max-width: 100%;
+  padding: 0.3rem 0.85rem 0.3rem 0.5rem;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  font-weight: 600;
+  color: #0b3d91;
+}
+
+.hackathon-pill + .stamp {
+  display: table;
+}
+
+.hackathon-pill img {
+  flex: none;
+}
+
+.hero-text,
+.reverse-grid > * {
+  min-width: 0;
+}
+
+.hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.hero-rebuild {
+  justify-self: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--copper-strong);
+}
+
+.mode-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+
+.mode {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--sheet);
+  box-shadow: var(--shadow);
+  padding: 1.25rem 1.25rem 1.5rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.mode:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--lift);
+}
+
+.mode-rebuild {
+  border-color: transparent;
+  background: radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--copper) 35%, transparent), transparent 55%), var(--ink);
+  color: color-mix(in srgb, var(--paper) 82%, transparent);
+}
+
+.mode-rebuild h3 {
+  color: var(--paper);
+}
+
+.mode-art {
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.mode-art img {
+  display: block;
+  width: 100%;
+  height: 13rem;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.mode:hover .mode-art img {
+  transform: scale(1.04);
+}
+
+.mode-tag {
+  margin: 1.25rem 0 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  color: var(--copper);
+}
+
+.mode h3 {
+  margin-top: 0.3rem;
+  font-size: 1.5rem;
+}
+
+.mode > p:not(.mode-tag) {
+  margin-top: 0.5rem;
+}
+
+.mode .button {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+.mode-flow {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0 1.5rem;
+  padding: 0;
+  list-style: none;
+  counter-reset: flow;
+}
+
+.mode-flow li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  counter-increment: flow;
+}
+
+.mode-flow li::before {
+  content: counter(flow);
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+.button.light {
+  border-color: var(--paper);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.button.light:hover:not(:disabled) {
+  background: #fff;
+}
+
 @media (min-width: 860px) {
-  .rebuild-teaser {
+  .mode-grid {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scan-line,
+  .pin,
+  .live-dot {
+    animation: none;
   }
 }
 
@@ -1704,23 +2019,161 @@ body.wide .wrap {
   background: color-mix(in srgb, #0866ff 6%, var(--sheet));
 }
 
-.meta-badge {
-  display: grid;
-  place-items: center;
+.hosts {
+  display: flex;
   flex: none;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hosts li {
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  width: 6.5rem;
+  border-radius: 12px;
   background: var(--sheet);
+  box-shadow: var(--shadow);
+  padding: 0.9rem 0.5rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.hosts img {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.author {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.author-photo {
+  flex: none;
+  width: 7.5rem;
+  height: 7.5rem;
+  border: 3px solid var(--sheet);
+  border-radius: 50%;
+  object-fit: cover;
   box-shadow: var(--shadow);
 }
 
-.meta-badge svg {
-  width: 2.6rem;
+.author h2 {
+  margin-top: 0.2rem;
+}
+
+.author-bio {
+  margin-top: 0.75rem;
+}
+
+.author-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-weight: 600;
 }
 
 .hackathon-card p {
   margin-top: 0.4rem;
+}
+
+/* "Under the hood": three numbered tiles joined by a cut line. */
+.about-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: about-step;
+}
+
+.about-steps li {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  padding: 3.25rem 1rem 1rem;
+  font-size: 0.95rem;
+  counter-increment: about-step;
+}
+
+.about-steps li::before {
+  content: '0' counter(about-step);
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  background: var(--copper);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.about-steps li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 2.05rem;
+  left: 3.6rem;
+  right: -1rem;
+  border-top: 2px dashed var(--copper);
+  opacity: 0.45;
+}
+
+/* "Your data": one line per promise, each with its green seal. */
+.about-data {
+  display: grid;
+  gap: 0.6rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-data li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  border-left: 3px solid var(--forest);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: color-mix(in srgb, var(--forest) 7%, var(--sheet));
+  padding: 0.8rem 1rem;
+}
+
+.about-data li::before {
+  content: '✓';
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--forest);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .about-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .about-steps li:not(:last-child)::after {
+    display: none;
+  }
 }
 
 .about-art {
@@ -1735,7 +2188,8 @@ body.wide .wrap {
 }
 
 @media (max-width: 560px) {
-  .hackathon-card {
+  .hackathon-card,
+  .author {
     flex-direction: column;
     align-items: flex-start;
   }

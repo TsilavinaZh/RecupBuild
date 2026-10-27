@@ -91,14 +91,32 @@ window.addEventListener('pageshow', () => {
 for (const zone of document.querySelectorAll('[data-drop]')) {
   const input = zone.querySelector('input[type=file]')
   const preview = document.getElementById(input?.dataset.preview ?? '')
+  const title = zone.querySelector('.drop-title')
+  const blank = title?.textContent ?? ''
   const show = () => {
     const file = input.files?.[0]
-    if (!file || !preview) return
+    if (!preview) return
+    if (preview.src.startsWith('blob:')) URL.revokeObjectURL(preview.src)
+    preview.hidden = true
+    preview.removeAttribute('src')
+    zone.classList.remove('has-photo')
+    if (title) title.textContent = file ? file.name : blank
+    if (!file) return
     preview.src = URL.createObjectURL(file)
+  }
+  // Shown only once the browser has really drawn it: a file it cannot display keeps
+  // the zone as it was, with the file name, instead of a broken image.
+  preview?.addEventListener('load', () => {
     preview.hidden = false
     zone.classList.add('has-photo')
-  }
+  })
+  preview?.addEventListener('error', () => {
+    preview.hidden = true
+    preview.removeAttribute('src')
+  })
   input?.addEventListener('change', show)
+  // Coming back to the page (back button) can keep the chosen file: show it again.
+  window.addEventListener('pageshow', show)
   zone.addEventListener('dragover', (event) => {
     event.preventDefault()
     zone.classList.add('over')

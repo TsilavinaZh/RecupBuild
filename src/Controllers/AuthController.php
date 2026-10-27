@@ -22,7 +22,7 @@ use RecupBuild\Services\GoogleAuth;
  */
 final class AuthController extends Controller
 {
-    public function redirect(): never
+    public function start(): never
     {
         if ($this->config->googleClientId === '' || $this->config->googleClientSecret === '') {
             Http::fail('auth_not_configured', 503);

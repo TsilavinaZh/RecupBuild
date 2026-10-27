@@ -51,11 +51,14 @@ $tags = [
     ['crate', 2.8, '<path d="M10 18 H70 V50 H10 Z M10 29 H70 M10 40 H70 M18 18 V50 M62 18 V50"/>'],
     ['coop', 1.2, '<path d="M8 26 L40 6 L72 26 M14 22 V52 H66 V22 M34 52 V36 H46 V52"/>'],
 ];
+// The example table of the reverse build: [letter, cut dimensions in mm, quantity].
+$parts = [['A', '1200 × 700 × 20', 1], ['B', '700 × 45 × 45', 4], ['C', '1050 × 80 × 20', 2], ['D', '560 × 80 × 20', 2]];
 $batten = Drawing::plank(1196, 18, 88, 0.6);
 ?>
 <!-- Hero: the cutting mat. -->
 <section class="wrap hero-home" aria-labelledby="home-title">
   <div class="hero-text">
+    <p class="hackathon-pill"><img src="/images/meta.svg" alt="" width="20" height="20"><?= $t('home.badge') ?></p>
     <p class="stamp"><?= $t('home.stamp') ?></p>
     <h1 id="home-title">
       <span class="rise"><?= $t('home.line1') ?></span>
@@ -64,12 +67,16 @@ $batten = Drawing::plank(1196, 18, 88, 0.6);
     <p class="lead left"><?= $t('home.lead') ?></p>
     <div class="hero-actions">
       <?php if ($user !== null): ?>
-        <a class="button big" href="/scan"><?= $t('home.start') ?> <span aria-hidden="true">→</span></a>
+        <div class="hero-buttons">
+          <a class="button big" href="/scan"><?= $t('home.start') ?> <span aria-hidden="true">→</span></a>
+          <a class="button ghost big" href="/rebuild"><?= $t('home.rebuild.cta') ?></a>
+        </div>
       <?php else: ?>
         <a class="button google big" href="<?= $e($start) ?>">
           <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
           <?= $t('home.continue') ?>
         </a>
+        <a class="hero-rebuild" href="#rebuild-title"><?= $t('home.orRebuild') ?> <span aria-hidden="true">↓</span></a>
         <p class="muted small"><?= $t('home.free', ['free' => Users::FREE_CREDITS]) ?></p>
         <p class="muted small"><?= $t('home.privacy') ?></p>
       <?php endif ?>
@@ -134,6 +141,26 @@ $batten = Drawing::plank(1196, 18, 88, 0.6);
   </div>
 </section>
 
+<!-- Two ways in: from a heap of pieces, or from an object seen somewhere. -->
+<section class="wrap section modes" aria-labelledby="modes-title">
+  <p class="eyebrow"><?= $t('home.modes.eyebrow') ?></p>
+  <h2 id="modes-title" class="section-title"><?= $t('home.modes.title') ?></h2>
+  <div class="mode-grid">
+    <?php foreach (['build' => ['/demo/sample-pile.svg', '/scan'], 'rebuild' => ['/examples/table.svg', '/rebuild']] as $mode => [$picture, $href]): ?>
+      <article class="mode mode-<?= $mode ?>" data-reveal>
+        <div class="mode-art"><img src="<?= $picture ?>" alt="" width="1000" height="760" loading="lazy"></div>
+        <p class="mode-tag figure"><?= $mode === 'build' ? '01' : '02' ?> · <?= $mode === 'build' ? 'BUILD' : 'REBUILD' ?></p>
+        <h3><?= $t("home.modes.{$mode}.title") ?></h3>
+        <p><?= $t("home.modes.{$mode}.text") ?></p>
+        <ol class="mode-flow">
+          <?php foreach ([1, 2, 3] as $step): ?><li><?= $t("home.modes.{$mode}.step{$step}") ?></li><?php endforeach ?>
+        </ol>
+        <a class="button <?= $mode === 'rebuild' ? 'light' : '' ?>" href="<?= $mode === 'build' ? $e($start) : $href ?>"><?= $t("home.modes.{$mode}.cta") ?> <span aria-hidden="true">→</span></a>
+      </article>
+    <?php endforeach ?>
+  </div>
+</section>
+
 <!-- How it works: along the tape. -->
 <section class="band" aria-labelledby="how-title">
   <div class="wrap">
@@ -175,15 +202,45 @@ $batten = Drawing::plank(1196, 18, 88, 0.6);
   </div>
 </section>
 
-<!-- The reverse build. -->
-<section class="wrap section rebuild-teaser" aria-labelledby="rebuild-title">
-  <div>
-    <p class="eyebrow"><?= $t('home.rebuild.eyebrow') ?></p>
-    <h2 id="rebuild-title" class="section-title"><?= $t('home.rebuild.title') ?></h2>
-    <p class="lead left"><?= $t('home.rebuild.text') ?></p>
-    <a class="button" href="/rebuild"><?= $t('home.rebuild.cta') ?> <span aria-hidden="true">→</span></a>
+<!-- The reverse build, shown as it works: the photo read by the AI, and the sheet it gives back. -->
+<section class="reverse" aria-labelledby="rebuild-title">
+  <div class="wrap">
+    <div class="reverse-intro">
+      <p class="eyebrow"><?= $t('home.rebuild.eyebrow') ?></p>
+      <h2 id="rebuild-title" class="section-title"><?= $t('home.rebuild.title') ?></h2>
+      <p class="lead left"><?= $t('home.rebuild.text') ?></p>
+    </div>
+    <div class="reverse-grid">
+      <figure class="reverse-photo" data-reveal>
+        <div class="scan-frame">
+          <img src="/examples/table.svg" alt="<?= $t('home.rebuild.photoAlt') ?>" width="1000" height="760" loading="lazy">
+          <span class="scan-line" aria-hidden="true"></span>
+          <?php foreach ($parts as [$letter]): ?><span class="pin pin-<?= strtolower($letter) ?> figure" aria-hidden="true"><?= $letter ?></span><?php endforeach ?>
+        </div>
+        <figcaption><span class="live-dot" aria-hidden="true"></span><?= $t('home.rebuild.scanning') ?></figcaption>
+      </figure>
+
+      <div class="reverse-sheet" data-reveal>
+        <p class="sheet-head figure"><span><?= $t('home.rebuild.sheet') ?></span><span>RB-R01</span></p>
+        <h3><?= $t('home.rebuild.parts') ?></h3>
+        <table class="parts">
+          <thead><tr><th scope="col"></th><th scope="col"><?= $t('home.rebuild.part') ?></th><th scope="col" class="figure"><?= $t('home.rebuild.dims') ?></th><th scope="col"><?= $t('home.rebuild.qty') ?></th></tr></thead>
+          <tbody>
+            <?php foreach ($parts as [$letter, $dims, $qty]): ?>
+              <tr><td><span class="pin-key figure"><?= $letter ?></span></td><td><?= $t("home.rebuild.part{$letter}") ?></td><td class="figure"><?= $dims ?></td><td class="figure">× <?= $qty ?></td></tr>
+            <?php endforeach ?>
+          </tbody>
+        </table>
+        <h3><?= $t('home.rebuild.tools') ?></h3>
+        <ul class="chips"><?php foreach ([1, 2, 3, 4, 5] as $tool): ?><li><?= $t("home.rebuild.tool{$tool}") ?></li><?php endforeach ?></ul>
+        <h3><?= $t('home.rebuild.steps') ?></h3>
+        <ol class="mode-flow">
+          <?php foreach ([1, 2, 3] as $step): ?><li><?= $t("home.rebuild.step{$step}") ?></li><?php endforeach ?>
+        </ol>
+        <a class="button" href="/rebuild"><?= $t('home.rebuild.cta') ?> <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
   </div>
-  <img src="/examples/table.svg" alt="" width="500" height="380" loading="lazy">
 </section>
 
 <!-- Why: the dimensions that matter, on the dark side of the bench. -->

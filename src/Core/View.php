@@ -9,7 +9,7 @@ namespace RecupBuild\Core;
  * visitor's language. Templates get `$e` to escape, `$t` to translate and the data
  * of the page; everything printed goes through `$e` or `$t`, never raw.
  *
- * The language: ?lang=fr|en|mg (remembered in a cookie), else the browser's.
+ * The language: ?lang=fr|en|mg (remembered in a cookie), else English.
  * Malagasy falls back to French for the texts not written yet.
  */
 final class View
@@ -54,7 +54,7 @@ final class View
         exit;
     }
 
-    /** The language of the page: asked in the URL, remembered, or the browser's. */
+    /** The language of the page: asked in the URL, remembered, or English. */
     public static function locale(): string
     {
         $asked = $_GET['lang'] ?? null;
