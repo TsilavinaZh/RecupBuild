@@ -38,7 +38,7 @@
             <input type="hidden" name="csrf" value="<?= $e($csrf) ?>">
             <input type="hidden" name="example" value="<?= $e($example) ?>">
             <button class="example" type="submit" aria-label="<?= $t('rebuild.useExample', ['name' => html_entity_decode($t('rebuild.example.' . $example), ENT_QUOTES, 'UTF-8')]) ?>">
-              <span class="example-picture"><img src="/examples/<?= $e($example) ?>.svg" alt="" loading="lazy"></span>
+              <span class="example-picture"><img src="/examples/<?= $e($example) ?>.jpg" alt="" loading="lazy"></span>
               <span class="example-name"><?= $t('rebuild.example.' . $example) ?></span>
             </button>
           </form>

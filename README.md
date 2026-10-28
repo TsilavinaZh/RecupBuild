@@ -138,8 +138,18 @@ le même crédit.
 
 ```sh
 cp .env.example .env               # y mettre MODEL_API_KEY et les identifiants Google
-php -S localhost:8080 router.php
+php -S localhost:8080 index.php
 ```
+
+Ou, sans nommer de script, depuis le dossier `public/` :
+
+```sh
+php -S localhost:8080 -t public
+```
+
+> ⚠️ Ne lancez pas `php -S localhost:8080` seul à la racine du projet : sans script d'entrée, le
+> serveur de PHP sert tous les fichiers du dossier tels quels, y compris `.env` (clés API) et la
+> base SQLite. `index.php` et `-t public` ne servent que `public/`.
 
 Puis ouvrir **http://localhost:8080** (et non `127.0.0.1`, sinon le retour de Google ne correspond pas).
 

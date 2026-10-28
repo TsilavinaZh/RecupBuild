@@ -3,5 +3,26 @@
 .env.*
 !.env.example
 
-# The SQLite database (also covered by storage/.gitignore).
+# The SQLite database and the uploaded photos (also covered by storage/.gitignore).
 storage/*.sqlite*
+storage/photos/
+
+# Pitch material kept next to the project: voice recordings, narration audio and texts,
+# source photos (the ones the app uses are copied into public/).
+/*.m4a
+/*.wav
+/*.mp3
+/*.jpeg
+/*.jpg
+/narration*.txt
+
+# The pitch video is large and re-rendered often: share it by link, not through git.
+docs/video/*.mp4
+
+# Logs, OS and editor files.
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
