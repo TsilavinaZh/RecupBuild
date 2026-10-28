@@ -1,7 +1,8 @@
 <?php
+defined('RECUPBUILD') || (http_response_code(404) && exit);
 /**
  * GET /profile: the account, what is left of the free offer, the saved plans. Deleting
- * a plan and signing out are confirmed in a dialog first (public/js/pages.js).
+ * a plan and signing out are confirmed in a dialog first (js/pages.js).
  *
  * @var callable $t @var callable $e @var string $locale @var array $account
  * @var array{build: int, rebuild: int} $credits @var int $free @var list<array> $plans @var string $csrf

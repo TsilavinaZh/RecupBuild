@@ -1,4 +1,5 @@
 <?php
+defined('RECUPBUILD') || (http_response_code(404) && exit);
 /**
  * GET /inventory: the analysed photo with each piece outlined and numbered, and the
  * table to correct. "Continue" asks the AI for the projects (slow: the waiting screen

@@ -1,14 +1,14 @@
-# Secrets: the API key and the Google client secret live in .env, never in git.
+# Secrets: the API key and the Google client secret live in .env.php, never in git.
 .env
 .env.*
 !.env.example
 
-# The SQLite database and the uploaded photos (also covered by storage/.gitignore).
-storage/*.sqlite*
-storage/photos/
+# The database and the photos live outside the project (../recupbuild-storage); just in case:
+storage/
+*.sqlite*
 
 # Pitch material kept next to the project: voice recordings, narration audio and texts,
-# source photos (the ones the app uses are copied into public/).
+# source photos (the ones the app uses are copied into demo/ and examples/).
 /*.m4a
 /*.wav
 /*.mp3

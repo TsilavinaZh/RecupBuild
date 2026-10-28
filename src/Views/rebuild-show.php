@@ -1,4 +1,5 @@
 <?php
+defined('RECUPBUILD') || (http_response_code(404) && exit);
 /**
  * GET /rebuilds/{id}: how to make the photographed object: its 3D reconstruction,
  * the parts to cut, the tools, the hardware and the steps.

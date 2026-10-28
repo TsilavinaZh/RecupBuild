@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+// Run from the command line only: PHP's built-in server would otherwise run it as a page.
+if (PHP_SAPI !== 'cli') {
+    http_response_code(404);
+    exit;
+}
+
 /**
  * The cutting engine of /api/plan and /api/projects, without calling the model:
  * the PHP port of frontend/src/domain/solver.test.ts.

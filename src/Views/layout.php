@@ -1,4 +1,5 @@
 <?php
+defined('RECUPBUILD') || (http_response_code(404) && exit);
 /**
  * The frame of every page: header, the steps of the app, flash message, page, footer,
  * and the waiting screen the slow forms show while the AI works.

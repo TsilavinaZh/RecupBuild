@@ -1,4 +1,5 @@
 <?php
+defined('RECUPBUILD') || (http_response_code(404) && exit);
 /**
  * Any page that does not exist, or a plan that is not (or no longer) the user's.
  *

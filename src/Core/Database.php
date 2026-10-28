@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace RecupBuild\Core;
 
 /**
- * The SQLite database (PDO, no ORM): one file in backend-php/storage/, outside
- * public/, so the web server never serves it.
+ * The SQLite database (PDO, no ORM): one file in the storage folder (Config::storageDir),
+ * outside the site, so the web server never serves it.
  *
  * The schema is created and upgraded on first use: each entry of MIGRATIONS runs
  * once, in order, and SQLite's user_version remembers how many already ran.

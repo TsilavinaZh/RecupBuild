@@ -1,4 +1,5 @@
 <?php
+defined('RECUPBUILD') || (http_response_code(404) && exit);
 /**
  * GET /scan: the photo of the heap. A file to upload (dropped or chosen), the example
  * heap analysed by the AI, or the instant demo (no AI). Analysing is slow: the form

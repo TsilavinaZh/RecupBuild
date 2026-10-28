@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/favicon.svg" alt="" width="72" height="72">
+<img src="favicon.svg" alt="" width="72" height="72">
 
 # RecupBuild
 
@@ -16,6 +16,10 @@ and you leave with the cutting plan, the 3D render and the assembly steps.
 ![Tests](https://img.shields.io/badge/tests-80%20checks-2f6b4f?style=flat-square)
 ![Meta Hackathon](https://img.shields.io/badge/born%20at-Meta%20hackathon-0866ff?style=flat-square&logo=meta&logoColor=white)
 
+### ▶ Watch the 3-minute pitch
+
+[![RecupBuild — 3-minute pitch on YouTube](https://img.youtube.com/vi/sO_UkvMmugU/maxresdefault.jpg)](https://youtu.be/sO_UkvMmugU)
+
 </div>
 
 ![The home page: a pile of planks on a cutting mat, measured then laid out as a cutting plan](docs/images/landing.png)
@@ -24,6 +28,7 @@ and you leave with the cutting plan, the 3D render and the assembly steps.
 
 ## Contents
 
+- [Pitch video (YouTube)](https://youtu.be/sO_UkvMmugU)
 - [What RecupBuild does](#what-recupbuild-does)
 - [The pages](#the-pages)
 - [The free plan](#the-free-plan)
@@ -79,9 +84,9 @@ parts to cut, with which tools and in what order, and rebuilds it in 3D.
 
 The whole site is rendered by **PHP** (`src/Views`), with the same look everywhere:
 graph paper, forest green, copper. A small library-free JavaScript file
-(`public/js/pages.js`) adds what needs a script: the home page animation, the waiting
+(`js/pages.js`) adds what needs a script: the home page animation, the waiting
 screen while the AI works, the confirmation dialogs, the photo preview.
-The 3D result uses three.js, bundled in `public/vendor/three`. Every page still works
+The 3D result uses three.js, bundled in `vendor/three`. Every page still works
 without JavaScript.
 
 | Page | Address | Content |
@@ -140,19 +145,19 @@ the same credit.
 ## Run it locally
 
 ```sh
-cp .env.example .env               # put MODEL_API_KEY and the Google credentials in it
-php -S localhost:8080 index.php
+cp .env.example .env.php           # put MODEL_API_KEY and the Google credentials in it
+php -S localhost:8080
 ```
 
-Or, without naming a script, serve the `public/` folder:
+That's all: run it from the project folder. `php -S localhost:8080 index.php` works too, and is
+the stricter of the two (it serves only the site's own files).
 
-```sh
-php -S localhost:8080 -t public
-```
+Nothing private can leak, even though PHP's built-in server serves the whole folder:
 
-> ⚠️ Don't run a bare `php -S localhost:8080` at the project root: without an entry script,
-> PHP's built-in server serves every file of the folder as is, including `.env` (API keys) and
-> the SQLite database. `index.php` and `-t public` only serve `public/`.
+- the secrets are in **`.env.php`**, whose first line is `<?php exit; ?>`: requested, it prints nothing;
+- the database and the photos live **outside the project**, in `../recupbuild-storage/`
+  (or wherever `STORAGE_PATH` points);
+- the views and the tests answer 404 when they are requested directly.
 
 Then open **http://localhost:8080** (not `127.0.0.1`, or the Google redirect won't match).
 
@@ -164,7 +169,7 @@ Then open **http://localhost:8080** (not `127.0.0.1`, or the Google redirect won
 | `http://localhost:8080/profile` | the profile (Google sign-in required) |
 | `http://localhost:8080/api/health` | server status |
 
-The SQLite database (`storage/recupbuild.sqlite`) creates and migrates itself on first access.
+The SQLite database (`../recupbuild-storage/recupbuild.sqlite`) creates and migrates itself on first access.
 
 ---
 
@@ -174,12 +179,13 @@ No framework, no Composer dependency: only the `curl`, `gd`, `exif`, `fileinfo`,
 `pdo_sqlite`, `mbstring` and `json` extensions.
 
 ```
-index.php            entry point for PHP's built-in server (serves public/, then the app)
-public/
-  index.php          front controller: bootstrap, CORS, then the router
-  css/ js/ fonts/    the pages' style, script and fonts
-  vendor/three/      three.js (MIT licence), for the 3D result
-  demo/ examples/    the demo photo and the examples to try
+index.php            front controller: bootstrap, CORS, then the router
+.env.php             the secrets (not in git; starts with <?php exit; ?>)
+.htaccess            Apache: serves the site's files, everything else to index.php
+css/ js/ fonts/      the pages' style, script and fonts
+images/              logos and the author's photo
+vendor/three/        three.js (MIT licence), for the 3D result
+demo/ examples/      the demo photo and the examples to try (real photos)
 src/
   routes.php         every route: method + path -> controller@action
   Core/              Router, Controller, View, Config, DotEnv, Http, Request, Session, Database, Upload, Cors
@@ -191,11 +197,13 @@ src/
                      GoogleAuth, Assembly (3D layout), Drawing (SVG drawings), Demo
   Errors/            ScanError, VisionError, AuthError
   Views/             the layout and one view per page, their texts in lang/en.php and lang/fr.php
-storage/             the SQLite database and the photos (outside public/, never served directly)
 tests/               php tests/run.php
+deploy/              nginx and Apache examples
+
+../recupbuild-storage/   the SQLite database and the photos, outside the project (STORAGE_PATH)
 ```
 
-- **Models**: the data (SQLite through PDO, photos in `storage/photos`) and their rules.
+- **Models**: the data (SQLite through PDO, photos in the storage folder) and their rules.
 - **Views**: the pages (`Core\View` + `src/Views`) and the API's JSON answers (`Core\Http`).
 - **Controllers**: one class per area; `member()` requires a session (otherwise Google),
   `checkForm()` checks the CSRF token, `user()` guards the API.
@@ -238,7 +246,7 @@ API errors look like `{ "detail": { "code": "a4_not_detected" } }` with the righ
 
 ---
 
-## Configuration (`.env`)
+## Configuration (`.env.php`)
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
@@ -247,11 +255,13 @@ API errors look like `{ "detail": { "code": "a4_not_detected" } }` with the righ
 | `VISION_MODEL` | `muse-spark-1.3` | model used |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | empty | Google sign-in (Google Cloud Console → Clients, "Web application") |
 | `GOOGLE_REDIRECT_URI` | `http(s)://<host>/auth/google/callback` | declare it exactly under "Authorized redirect URIs" |
-| `DATABASE_PATH` | `storage/recupbuild.sqlite` | SQLite file, keep it outside `public/` |
+| `STORAGE_PATH` | `../recupbuild-storage` | folder of the database and the photos, outside the project |
+| `DATABASE_PATH` | `<STORAGE_PATH>/recupbuild.sqlite` | SQLite file, if it must live elsewhere |
 | `ALLOWED_ORIGINS` | `http://localhost:5173,...` | CORS, not needed when the site and the API share an origin |
 
-`.env` holds the model key and the Google secret: it is ignored by git, blocked by
-`public/.htaccess` and by `deploy/nginx.conf.example`, and must never be published.
+`.env.php` holds the model key and the Google secret: it is ignored by git, prints nothing if
+it is ever requested, is refused by `.htaccess` and `deploy/nginx.conf.example`, and must never be
+published. (A plain `.env` is still read, for servers already set up to refuse it.)
 
 ---
 
@@ -261,8 +271,8 @@ API errors look like `{ "detail": { "code": "a4_not_detected" } }` with the righ
 <summary><b>1. Upload the code</b></summary>
 
 ```sh
-rsync -av --exclude .env --exclude storage/ backend-php/ user@vps:/var/www/recupbuild/backend-php/
-ssh user@vps 'cd /var/www/recupbuild/backend-php && nano .env'
+rsync -av --exclude .env.php --exclude .git/ backend-php/ user@vps:/var/www/recupbuild/backend-php/
+ssh user@vps 'cd /var/www/recupbuild/backend-php && cp .env.example .env.php && nano .env.php'
 ```
 
 </details>
@@ -287,8 +297,8 @@ In `/etc/php/8.3/fpm/pool.d/www.conf`: `request_terminate_timeout = 300s`, then
 `sudo systemctl restart php8.3-fpm`. Without this, the request is cut off at 30 s while
 inventing the projects takes 45 to 110 s.
 
-The `storage/` folder must be writable by PHP-FPM:
-`sudo chown -R www-data: storage`.
+The storage folder, next to the project, must be writable by PHP-FPM:
+`sudo mkdir -p /var/www/recupbuild/recupbuild-storage && sudo chown -R www-data: /var/www/recupbuild/recupbuild-storage`.
 
 </details>
 
@@ -298,8 +308,8 @@ The `storage/` folder must be writable by PHP-FPM:
 **nginx**: copy `deploy/nginx.conf.example` into `/etc/nginx/sites-available/`
 (domain and PHP version), then `sudo nginx -t && sudo systemctl reload nginx`.
 
-**Apache**: copy `deploy/apache-vhost.conf.example`; `DocumentRoot` points to
-`public/`, with `AllowOverride All` for the `.htaccess`.
+**Apache**: copy `deploy/apache-vhost.conf.example`; `DocumentRoot` points to the
+project folder, with `AllowOverride All` for its `.htaccess`.
 
 </details>
 
@@ -344,7 +354,7 @@ php tests/live_plan.php      # real call to the model: cards, plan and steps
 
 <div align="center">
 
-<img src="public/favicon.svg" alt="" width="28" height="28">
+<img src="favicon.svg" alt="" width="28" height="28">
 
 **RecupBuild** was born at the **Meta Global AI Developer Hackathon**: building with what you already have.
 

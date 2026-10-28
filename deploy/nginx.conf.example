@@ -1,9 +1,10 @@
-# RecupBuild — API PHP (VPS)
+# RecupBuild on a VPS (nginx + PHP-FPM).
 #
-# Equivalent de backend/app/main.py: le frontend Vue (`public/index.html` construit)
-# et l'API partagent le même origine, la clé API est lue dans backend-php/.env.
+# The site's files sit at the project root next to index.php; the secrets are in
+# backend-php/.env.php, the database and the photos in /var/www/recupbuild/recupbuild-storage
+# (outside the project, writable by www-data).
 #
-# Changer `root`, puis : sudo nginx -t && sudo systemctl reload nginx
+# Change `root`, then: sudo nginx -t && sudo systemctl reload nginx
 
 server {
     listen 80;
@@ -20,33 +21,29 @@ server {
     # ssl_certificate     /etc/letsencrypt/live/recupbuild.example.com/fullchain.pem;
     # ssl_certificate_key /etc/letsencrypt/live/recupbuild.example.com/privkey.pem;
 
-    root /var/www/recupbuild/backend-php/public;
-    index index.html index.php;
+    root /var/www/recupbuild/backend-php;
+    index index.php;
     charset utf-8;
 
-    # Une photo pèse jusqu'à 12 Mo, l'analyse demande jusqu'à ~120 s.
+    # A photo weighs up to 12 MB, the analysis takes up to ~120 s.
     client_max_body_size 12m;
     fastcgi_read_timeout 300s;
     send_timeout 300s;
 
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location ~ \.php$ {
+    # The site's own files, served as they are.
+    location ~ ^/(css|js|fonts|images|vendor|demo|examples)/ {
         try_files $uri =404;
-        include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
-        fastcgi_read_timeout 300s;
-    }
-
-    # Les secrets ne sortent jamais du serveur.
-    location ~ /\.(env|ini|log) { deny all; }
-    location ~ /\.ht { deny all; }
-
-    location ~* \.(js|css|png|jpg|jpeg|webp|svg|woff2?)$ {
         expires 7d;
         access_log off;
+    }
+    location = /favicon.svg { try_files $uri =404; }
+
+    # Everything else is a page of the app: the code, the tests, the docs and the
+    # secrets are never served, whatever the address.
+    location / {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        fastcgi_read_timeout 300s;
     }
 }

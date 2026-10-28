@@ -1,4 +1,5 @@
 <?php
+defined('RECUPBUILD') || (http_response_code(404) && exit);
 /**
  * GET /projects: four projects for this wood, each with a picture of the assembled
  * object (drawn by Services\Drawing from its layout), its size and whether it fits.

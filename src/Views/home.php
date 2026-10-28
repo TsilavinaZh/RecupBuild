@@ -1,8 +1,9 @@
 <?php
+defined('RECUPBUILD') || (http_response_code(404) && exit);
 /**
  * GET /: the home page as a workshop drawing. The hero is a cutting mat where a heap
  * of reclaimed wood is measured, laid out as a cutting plan and assembled into a shelf
- * (public/js/pages.js plays the four moments; without JavaScript the plan shows).
+ * (js/pages.js plays the four moments; without JavaScript the plan shows).
  * Every picture is drawn here, in SVG: no image file.
  *
  * @var callable $t @var callable $e @var ?array $user
@@ -51,7 +52,7 @@ $tags = [
     ['crate', 2.8, '<path d="M10 18 H70 V50 H10 Z M10 29 H70 M10 40 H70 M18 18 V50 M62 18 V50"/>'],
     ['coop', 1.2, '<path d="M8 26 L40 6 L72 26 M14 22 V52 H66 V22 M34 52 V36 H46 V52"/>'],
 ];
-// The table of the reverse build, as the model read public/examples/table.jpg:
+// The table of the reverse build, as the model read examples/table.jpg:
 // [letter, cut dimensions in mm, quantity].
 $parts = [['A', '1800 × 900 × 40', 1], ['B', '680 × 70 × 60', 4], ['C', '580 × 60 × 80', 2], ['D', '700 × 70 × 40', 2]];
 $batten = Drawing::plank(1196, 18, 88, 0.6);

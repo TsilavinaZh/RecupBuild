@@ -1,33 +1,29 @@
-# RecupBuild — API PHP, VirtualHost Apache (LAMP, hébergement classique / cPanel)
+# RecupBuild, Apache VirtualHost (LAMP, classic hosting / cPanel).
 #
-# Equivalent de backend/app/main.py. Adapter DocumentRoot et les chemins PHP-FPM.
-# Mod_rewrite doit être activé (a2enmod rewrite) et AllowOverride All doit autoriser
-# le .htaccess de public/.
+# Adjust DocumentRoot and the PHP-FPM paths. mod_rewrite must be on (a2enmod rewrite) and
+# AllowOverride All must allow the project's .htaccess, which serves the site's files and
+# sends everything else to index.php. The database and the photos live in
+# /var/www/recupbuild/recupbuild-storage, outside the project (writable by www-data).
 
 <VirtualHost *:80>
     ServerName recupbuild.example.com
-    DocumentRoot /var/www/recupbuild/backend-php/public
+    DocumentRoot /var/www/recupbuild/backend-php
 
-    <Directory /var/www/recupbuild/backend-php/public>
+    <Directory /var/www/recupbuild/backend-php>
         Options -Indexes +FollowSymLinks
         AllowOverride All
         Require all granted
     </Directory>
 
-    # Les secrets du dossier ne sont pas servis.
-    <DirectoryMatch "/var/www/recupbuild/backend-php/(?!public)">
+    # The code, the tests, the docs and the secrets are never served.
+    <DirectoryMatch "/var/www/recupbuild/backend-php/(src|tests|docs|deploy|\.git)">
         Require all denied
     </DirectoryMatch>
+    <FilesMatch "^\.env">
+        Require all denied
+    </FilesMatch>
 
-    # Mod_php: le .htaccess de public/ règle déjà l'upload.
-    # <IfModule mod_php.c>
-    #     php_value upload_max_filesize 12M
-    #     php_value post_max_size 14M
-    #     php_value max_execution_time 300
-    #     php_value memory_limit 256M
-    # </IfModule>
-
-    # PHP-FPM: ces réglages vivent dans le virtualhost, le .htaccess ne peut pas les porter.
+    # PHP-FPM: these settings live in the virtual host, the .htaccess cannot carry them.
     # <FilesMatch \.php$>
     #     SetHandler "proxy:unix:/run/php/php8.3-fpm.sock|fcgi://localhost"
     # </FilesMatch>

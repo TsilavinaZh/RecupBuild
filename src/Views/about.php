@@ -1,4 +1,5 @@
 <?php
+defined('RECUPBUILD') || (http_response_code(404) && exit);
 /**
  * GET /about: the story of the project (built at the Meta Global AI Developer
  * Hackathon), who made it, how it works and what happens to the data.
