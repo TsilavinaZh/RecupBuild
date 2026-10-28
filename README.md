@@ -13,8 +13,10 @@ and you leave with the cutting plan, the 3D render and the assembly steps.
 ![PHP 8.3](https://img.shields.io/badge/PHP-8.3-2f6b4f?style=flat-square&logo=php&logoColor=white)
 ![MVC, no framework](https://img.shields.io/badge/MVC-no%20framework-c4622d?style=flat-square)
 ![SQLite](https://img.shields.io/badge/SQLite-3-1f2a24?style=flat-square&logo=sqlite&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-80%20checks-2f6b4f?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-82%20checks-2f6b4f?style=flat-square)
 ![Meta Hackathon](https://img.shields.io/badge/born%20at-Meta%20hackathon-0866ff?style=flat-square&logo=meta&logoColor=white)
+
+### 🌐 Try it live: **[recupbuild.tendry.mg](https://recupbuild.tendry.mg)**
 
 ### ▶ Watch the 3-minute pitch
 
@@ -28,6 +30,7 @@ and you leave with the cutting plan, the 3D render and the assembly steps.
 
 ## Contents
 
+- [Live app](https://recupbuild.tendry.mg)
 - [Pitch video (YouTube)](https://youtu.be/sO_UkvMmugU)
 - [What RecupBuild does](#what-recupbuild-does)
 - [The pages](#the-pages)
@@ -331,7 +334,7 @@ Then declare `https://recupbuild.example.com` under the JavaScript origins and
 ## Tests
 
 ```sh
-php tests/run.php            # 80 checks: scan, cutting engine, invented projects, reverse build,
+php tests/run.php            # 82 checks: scan, cutting engine, invented projects, reverse build,
                              # Google sign-in, SQLite, history, credits, drawings, inventory, page texts
 php tests/live_plan.php      # real call to the model: cards, plan and steps
 ```
