@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace RecupBuild\Core;
 
 /**
- * Settings read from the environment and from backend-php/.env (never committed):
- * the port of backend/app/config.py.
+ * Settings read from the environment and from backend-php/.env.php (never committed).
+ * That file starts with "<?php exit; ?>": if a web server ever runs it, it prints nothing.
  */
 final class Config
 {
@@ -25,15 +25,20 @@ final class Config
     /** Must be listed as is under "Authorized redirect URIs"; empty: derived from the request. */
     public string $googleRedirectUri = '';
 
-    /** The SQLite file: outside public/, so the web server never serves it. */
+    /** The SQLite file: in the storage folder, outside the site, so it is never served. */
     public string $databasePath = '';
 
     /** @var list<string> origins allowed by CORS (or "*" for any) */
     public array $allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173'];
 
+    /**
+     * $envFile is backend-php/.env.php; a plain .env next to it is still read, for servers
+     * already set up to refuse it (deploy/), but .env.php is the one to use.
+     */
     public static function load(string $envFile): self
     {
         DotEnv::load($envFile);
+        DotEnv::load(preg_replace('/\.php$/', '', $envFile) ?? $envFile);
 
         $config = new self();
         // One key serves every Meta model. MODEL_API_KEY is the name Meta's documentation
@@ -45,12 +50,21 @@ final class Config
         $config->googleClientId = self::read('GOOGLE_CLIENT_ID');
         $config->googleClientSecret = self::read('GOOGLE_CLIENT_SECRET');
         $config->googleRedirectUri = self::read('GOOGLE_REDIRECT_URI');
-        $config->databasePath = self::read('DATABASE_PATH') ?: dirname(__DIR__, 2) . '/storage/recupbuild.sqlite';
+        $config->databasePath = self::read('DATABASE_PATH') ?: self::storageDir() . '/recupbuild.sqlite';
 
         $origins = self::read('ALLOWED_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173');
         $config->allowedOrigins = array_values(array_filter(array_map('trim', explode(',', $origins)), static fn (string $o): bool => $o !== ''));
 
         return $config;
+    }
+
+    /**
+     * Where the database and the photos live: STORAGE_PATH, or recupbuild-storage/ next to
+     * the project folder. Never inside it: PHP's built-in server serves every file there.
+     */
+    public static function storageDir(): string
+    {
+        return rtrim(self::read('STORAGE_PATH') ?: dirname(__DIR__, 3) . '/recupbuild-storage', '/\\');
     }
 
     private static function read(string $key, string $default = ''): string

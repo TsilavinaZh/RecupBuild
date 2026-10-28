@@ -1,6 +1,7 @@
 <?php
+defined('RECUPBUILD') || (http_response_code(404) && exit);
 /**
- * GET /plans/{id}: the result. The object in 3D (public/js/assembly3d.js, with a still
+ * GET /plans/{id}: the result. The object in 3D (js/assembly3d.js, with a still
  * picture until it loads), the final sizes, the cutting plan drawn on the real wood of
  * the photo, the cut parts, the list, the steps and how the engine got there.
  *
@@ -41,7 +42,7 @@ if ($steps === null) {
     $steps = array_map(static fn (int $i): string => $words("assembly.{$prefix}.{$i}", ''), [1, 2, 3, 4]);
 }
 
-// What the 3D view needs, as JSON for public/js/assembly3d.js.
+// What the 3D view needs, as JSON for js/assembly3d.js.
 $sizes = [];
 foreach ($cut['placements'] as $placement) {
     $sizes[$placement['number']] = $placement + ['metal' => ($stock[$placement['piece_id']]['kind'] ?? '') === 'sheet_metal'];

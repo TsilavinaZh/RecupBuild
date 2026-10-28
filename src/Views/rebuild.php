@@ -1,4 +1,5 @@
 <?php
+defined('RECUPBUILD') || (http_response_code(404) && exit);
 /**
  * GET /rebuild: the photo of a finished object (uploaded, or one of the drawn examples).
  *

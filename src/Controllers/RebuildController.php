@@ -29,7 +29,7 @@ use RecupBuild\Services\Reverse;
  */
 final class RebuildController extends Controller
 {
-    /** The example objects in public/examples, drawn for those who have no photo at hand. */
+    /** The example objects in examples/, real photos for those who have none at hand. */
     public const EXAMPLES = ['table'];
 
     public function form(): never
@@ -54,7 +54,7 @@ final class RebuildController extends Controller
 
         $example = $_POST['example'] ?? null;
         if (is_string($example) && in_array($example, self::EXAMPLES, true)) {
-            $data = (string) file_get_contents(dirname(__DIR__, 2) . '/public/examples/' . $example . '.jpg');
+            $data = (string) file_get_contents(dirname(__DIR__, 2) . '/examples/' . $example . '.jpg');
         } else {
             [$data, $error] = Upload::read('photo');
             if ($data === null) {

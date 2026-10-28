@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+// Run from the command line only: PHP's built-in server would otherwise run it as a page.
+if (PHP_SAPI !== 'cli') {
+    http_response_code(404);
+    exit;
+}
+
 /**
  * Geometry and validation of the scan, without calling the model.
  * The PHP port of backend/tests/test_scan.py.
@@ -95,7 +101,7 @@ check('clamps coordinates outside the grid', same(1000.0, max(array_column($resu
 
 echo "image preparation\n";
 
-$config = Config::load(dirname(__DIR__) . '/.env');
+$config = Config::load(dirname(__DIR__) . '/.env.php');
 
 $source = imagecreatetruecolor(4000, 3000);
 imagefill($source, 0, 0, imagecolorallocate($source, 255, 255, 255));

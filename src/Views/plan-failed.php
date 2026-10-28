@@ -1,4 +1,5 @@
 <?php
+defined('RECUPBUILD') || (http_response_code(404) && exit);
 /**
  * POST /projects/choose when even the smaller sizes leave parts without wood.
  *

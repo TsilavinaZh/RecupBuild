@@ -1,4 +1,5 @@
 <?php
+defined('RECUPBUILD') || (http_response_code(404) && exit);
 /**
  * GET /pricing. Free is open (and turned on at the first sign-in); Pro and Custom
  * are announced, their buttons disabled, a strip of masking tape across them.

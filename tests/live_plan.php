@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+// Run from the command line only: PHP's built-in server would otherwise run it as a page.
+if (PHP_SAPI !== 'cli') {
+    http_response_code(404);
+    exit;
+}
+
 /**
  * A real run against the model: `php tests/live_plan.php`
  *
@@ -15,7 +21,7 @@ use RecupBuild\Services\Planner;
 
 require_once __DIR__ . '/../src/bootstrap.php';
 
-$config = Config::load(dirname(__DIR__) . '/.env');
+$config = Config::load(dirname(__DIR__) . '/.env.php');
 if ($config->metaApiKey === '') {
     echo "no key in backend-php/.env (MODEL_API_KEY), nothing to ask\n";
     exit(1);

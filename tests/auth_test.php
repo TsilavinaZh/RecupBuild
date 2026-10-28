@@ -96,9 +96,15 @@ check('another user cannot delete it either', !RecupBuild\Models\Plans::delete($
 
 echo "layout\n";
 
-$config = RecupBuild\Core\Config::load(dirname(__DIR__) . '/.env');
-check('the database stays in backend-php/storage, whatever folder Config lives in',
-    getenv('DATABASE_PATH') !== false || realpath(dirname($config->databasePath)) === realpath(dirname(__DIR__) . '/storage'));
+$config = RecupBuild\Core\Config::load(dirname(__DIR__) . '/.env.php');
+$project = realpath(dirname(__DIR__));
+check('the database and the photos live outside the project folder, which PHP may serve',
+    !str_starts_with(RecupBuild\Core\Config::storageDir(), $project)
+    && (getenv('DATABASE_PATH') !== false || dirname($config->databasePath) === RecupBuild\Core\Config::storageDir()));
+check('the site files sit next to index.php', is_file(dirname(__DIR__) . '/index.php') && is_file(dirname(__DIR__) . '/css/pages.css')
+    && is_file(dirname(__DIR__) . '/js/pages.js') && !is_dir(dirname(__DIR__) . '/public'));
+check('every test refuses to run from a web request', array_filter(glob(__DIR__ . '/*.php') ?: [],
+    static fn (string $file): bool => !str_contains((string) file_get_contents($file), "PHP_SAPI !== 'cli'")) === []);
 $views = ['layout', 'home', 'about', 'notfound', 'pricing', 'profile', 'scan', 'inventory', 'projects', 'plan', 'plan-failed', 'history', 'rebuild', 'rebuild-show'];
 check('every page has its view', array_filter($views, static fn (string $view): bool => !is_file(dirname(__DIR__) . '/src/Views/' . $view . '.php')) === []);
 $fr = require dirname(__DIR__) . '/src/Views/lang/fr.php';

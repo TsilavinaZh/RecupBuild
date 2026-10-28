@@ -3,42 +3,48 @@
 declare(strict_types=1);
 
 /**
- * Entry point for PHP's built-in server (development only), from the project folder:
+ * RecupBuild, front controller: every request of the site comes in here.
  *
- *   php -S localhost:8080 index.php
+ * MVC without a framework: the routes are in src/routes.php, the controllers in
+ * src/Controllers, the data in src/Models (SQLite) and the work in src/Services
+ * (the model, the cutting engine), the pages in src/Views.
  *
- * Files under public/ are served by this script itself (the document root stays the
- * project folder), everything else goes to the app in public/index.php. Nothing outside
- * public/ is ever served: .env, src/ and storage/ stay private.
+ * Locally, from this folder:  php -S localhost:8080   (or: php -S localhost:8080 index.php)
+ * The site's own files (css/, js/, fonts/, images/, vendor/, demo/, examples/) sit next to
+ * this one. The secrets are in .env.php, which prints nothing if requested, and the
+ * database and the photos live outside this folder (Config::storageDir), so nothing
+ * private can be served.
  */
+
+use RecupBuild\Core\Config;
+use RecupBuild\Core\Cors;
+use RecupBuild\Core\Router;
 
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $path = is_string($path) ? $path : '/';
-$public = realpath(__DIR__ . '/public');
-$file = realpath($public . $path);
 
-if ($path !== '/' && $file !== false && str_starts_with($file, $public) && is_file($file)) {
-    $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-    if (in_array($extension, ['php', 'env', 'ini', 'log'], true)) {
-        http_response_code(404);
-        exit;
+// PHP's built-in server with this file as its router: the site's own files are served
+// by the server; any other file of the folder is left to the app, which answers 404.
+$asset = rawurldecode($path);
+if (PHP_SAPI === 'cli-server' && preg_match('#^/(css|js|fonts|images|vendor|demo|examples)/[^\0]+$|^/favicon\.svg$#', $asset) === 1) {
+    $file = realpath(__DIR__ . $asset);
+    if ($file !== false && is_file($file) && str_starts_with($file, __DIR__ . DIRECTORY_SEPARATOR)) {
+        return false;
     }
-
-    $types = [
-        'avif' => 'image/avif', 'css' => 'text/css; charset=utf-8', 'gif' => 'image/gif',
-        'html' => 'text/html; charset=utf-8', 'ico' => 'image/x-icon', 'jpeg' => 'image/jpeg',
-        'jpg' => 'image/jpeg', 'js' => 'text/javascript; charset=utf-8', 'json' => 'application/json',
-        'map' => 'application/json', 'png' => 'image/png', 'svg' => 'image/svg+xml',
-        'txt' => 'text/plain; charset=utf-8', 'webmanifest' => 'application/manifest+json',
-        'webp' => 'image/webp', 'woff' => 'font/woff', 'woff2' => 'font/woff2',
-    ];
-    header('Content-Type: ' . ($types[$extension] ?? 'application/octet-stream'));
-    header('Content-Length: ' . filesize($file));
-    if ($extension !== 'html' && preg_match('/-[A-Za-z0-9_]{8}\.\w+$/', $path) === 1) {
-        header('Cache-Control: public, max-age=31536000, immutable'); // Vite hashes its file names
-    }
-    readfile($file);
-    exit;
 }
 
-require __DIR__ . '/public/index.php';
+require __DIR__ . '/src/bootstrap.php';
+
+// Two model calls follow each other (sizes, then steps): give them the time,
+// however strict the php.ini of the host is.
+@set_time_limit(300);
+
+$config = Config::load(__DIR__ . '/.env.php');
+
+$method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+
+Cors::apply($config, $method);
+
+$router = new Router($config);
+(require __DIR__ . '/src/routes.php')($router);
+$router->dispatch($method, $path);

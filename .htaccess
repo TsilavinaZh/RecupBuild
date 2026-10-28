@@ -1,0 +1,26 @@
+# Apache: the site's files (css/, js/, fonts/, images/, vendor/, demo/, examples/) are served
+# as they are, everything else goes to index.php. Requires AllowOverride All for this folder
+# and mod_rewrite enabled.
+
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # The code, the tests, the docs and the secrets are never served.
+    RewriteRule ^(src|tests|docs|deploy|\.git)(/|$) - [R=404,L]
+    RewriteRule (^|/)\.(env|git|ht) - [R=404,L]
+    RewriteRule \.(md|ini|log|example|json|srt)$ - [R=404,L]
+
+    # The site's own files are served directly; any other address is a page of the app.
+    RewriteRule ^(?!(css|js|fonts|images|vendor|demo|examples)/|favicon\.svg$|index\.php$) index.php [L]
+</IfModule>
+
+# The scan accepts photos up to 12 MB: PHP reads this in .htaccess (PHP_INI_PERDIR).
+<IfModule mod_php.c>
+    php_value upload_max_filesize 12M
+    php_value post_max_size 14M
+    php_value max_execution_time 300
+    php_value memory_limit 256M
+</IfModule>

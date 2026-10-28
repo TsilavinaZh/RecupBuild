@@ -65,7 +65,7 @@ final class WorkspaceController extends Controller
         }
 
         if (($_POST['source'] ?? '') === 'example') {
-            $data = (string) file_get_contents(dirname(__DIR__, 2) . '/public/examples/pile.jpg');
+            $data = (string) file_get_contents(dirname(__DIR__, 2) . '/examples/pile.jpg');
         } else {
             [$data, $error] = Upload::read('photo');
             if ($data === null) {

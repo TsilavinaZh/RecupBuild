@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace RecupBuild\Services;
 
 /**
- * The sample heap of the demo: a real photo (public/demo/pile.jpg) and the scan the
+ * The sample heap of the demo: a real photo (demo/pile.jpg) and the scan the
  * model made of it once (demo-scan.json, outlines in the pixels of that photo). The demo
  * never calls the model again: the projects are the four built-in ones, planned by the
  * engine alone.

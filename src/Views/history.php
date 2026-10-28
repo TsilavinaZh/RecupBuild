@@ -1,4 +1,5 @@
 <?php
+defined('RECUPBUILD') || (http_response_code(404) && exit);
 /**
  * GET /history: every plan and every rebuilt object of the user, newest first. Deleting
  * one is confirmed in a dialog first.

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace RecupBuild\Models;
 
+use RecupBuild\Core\Config;
+
 /**
  * The photos users send (a heap to scan, an object to rebuild), kept as JPEG files in
- * storage/photos, outside public/: only their owner's pages show them, through a
- * controller. A name is random and never comes from the user.
+ * the storage folder (Config::storageDir), outside the site: only their owner's pages
+ * show them, through a controller. A name is random and never comes from the user.
  *
- * "demo" is the sample photo of the demo, served from public/ like any static file.
+ * "demo" is the sample photo of the demo, served from demo/ like any static file.
  */
 final class Photos
 {
@@ -59,6 +61,6 @@ final class Photos
 
     private static function folder(): string
     {
-        return dirname(__DIR__, 2) . '/storage/photos';
+        return Config::storageDir() . '/photos';
     }
 }

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace RecupBuild\Core;
 
 /**
- * Minimal .env reader (the port of backend/app/config.py::_load_dotenv):
- * KEY=VALUE lines, comments and empty lines skipped, existing environment wins.
+ * Minimal .env reader: KEY=VALUE lines, comments and empty lines skipped (so is the
+ * "<?php exit; ?>" line that opens .env.php), existing environment wins.
  */
 final class DotEnv
 {
