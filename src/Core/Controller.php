@@ -20,7 +20,7 @@ abstract class Controller
     /**
      * The signed-in user of this request (their database id included); 401 otherwise.
      *
-     * @return array{id: int, sub: string, email: ?string, name: string, picture: ?string}
+     * @return array{id: int, admin?: bool, sub: string, email: ?string, name: string, picture: ?string}
      */
     protected function user(): array
     {
@@ -37,7 +37,7 @@ abstract class Controller
     /**
      * For the pages: the signed-in user, or off to Google and back to `$return`.
      *
-     * @return array{id: int, sub: string, email: ?string, name: string, picture: ?string}
+     * @return array{id: int, admin?: bool, sub: string, email: ?string, name: string, picture: ?string}
      */
     protected function member(string $return): array
     {

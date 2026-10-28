@@ -31,6 +31,16 @@ final class Config
     /** @var list<string> origins allowed by CORS (or "*" for any) */
     public array $allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173'];
 
+    /** @var list<string> e-mails (lowercase) whose account opens /admin, from ADMIN_EMAILS */
+    public array $adminEmails = [];
+
+    /** SMTP for the welcome e-mail at the first sign-in; empty host: no mail is sent. */
+    public string $smtpHost = '';
+    public int $smtpPort = 587;
+    public string $smtpUser = '';
+    public string $smtpPass = '';
+    public string $smtpFrom = '';
+
     /**
      * $envFile is backend-php/.env.php; a plain .env next to it is still read, for servers
      * already set up to refuse it (deploy/), but .env.php is the one to use.
@@ -54,6 +64,19 @@ final class Config
 
         $origins = self::read('ALLOWED_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173');
         $config->allowedOrigins = array_values(array_filter(array_map('trim', explode(',', $origins)), static fn (string $o): bool => $o !== ''));
+
+        $admins = self::read('ADMIN_EMAILS');
+        $config->adminEmails = array_values(array_filter(array_map(
+            static fn (string $email): string => strtolower(trim($email)),
+            explode(',', $admins),
+        )));
+
+        $config->smtpHost = self::read('SMTP_HOST');
+        $port = filter_var(self::read('SMTP_PORT', '587'), FILTER_VALIDATE_INT);
+        $config->smtpPort = $port === false || $port < 1 || $port > 65535 ? 587 : $port;
+        $config->smtpUser = self::read('SMTP_USER');
+        $config->smtpPass = self::read('SMTP_PASS');
+        $config->smtpFrom = self::read('SMTP_FROM') ?: $config->smtpUser;
 
         return $config;
     }

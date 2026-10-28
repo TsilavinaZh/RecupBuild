@@ -7,6 +7,8 @@ defined('RECUPBUILD') || (http_response_code(404) && exit);
  * @var callable $t @var callable $e @var string $locale @var array $account
  * @var array{build: int, rebuild: int} $credits @var int $free @var list<array> $plans @var string $csrf
  */
+use RecupBuild\Services\Drawing;
+
 $date = static function (?string $iso) use ($locale): string {
     if ($iso === null || $iso === '') {
         return '';
@@ -91,6 +93,10 @@ $words = static fn (string $key, string $fallback): string => ($text = html_enti
             $labels = (array) $plan['labels'];
           ?>
           <li>
+            <?php if (!empty($plan['assembly'])): ?>
+              <!-- The finished object, still: a small three-quarter picture of the plan. -->
+              <figure class="thumb" aria-hidden="true"><?= Drawing::isometric($plan['assembly'], $plan['sizes']) ?></figure>
+            <?php endif ?>
             <div class="plan-info">
               <p class="plan-name"><?= $e($planName) ?></p>
               <p class="muted small"><?= $e($date($plan['created_at'])) ?> · <?= $t('profile.parts', ['count' => $plan['parts']]) ?></p>

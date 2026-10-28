@@ -53,4 +53,27 @@ final class Rebuilds
 
         return $statement->rowCount() > 0;
     }
+
+    /**
+     * The newest reverse builds of the whole site, for the admin's dashboard.
+     *
+     * @return list<array{id: int, user_id: int, user_name: string, name: string, created_at: string}>
+     */
+    public static function latest(\PDO $pdo, int $limit = 8): array
+    {
+        $limit = max(1, min(50, $limit));
+        $statement = $pdo->query(
+            "SELECT r.id, r.user_id, u.name AS user_name, r.name, r.created_at
+             FROM rebuilds r JOIN users u ON u.id = r.user_id
+             ORDER BY r.id DESC LIMIT {$limit}"
+        );
+
+        return array_map(static fn (array $row): array => [
+            'id' => (int) $row['id'],
+            'user_id' => (int) $row['user_id'],
+            'user_name' => (string) $row['user_name'],
+            'name' => (string) $row['name'],
+            'created_at' => (string) $row['created_at'],
+        ], $statement->fetchAll());
+    }
 }

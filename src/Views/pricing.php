@@ -4,7 +4,7 @@ defined('RECUPBUILD') || (http_response_code(404) && exit);
  * GET /pricing. Free is open (and turned on at the first sign-in); Pro and Custom
  * are announced, their buttons disabled, a strip of masking tape across them.
  *
- * @var callable $t @var callable $e @var ?array{build: int, rebuild: int} $credits @var int $free
+ * @var callable $t @var callable $e @var ?array{build: int, rebuild: int} $credits @var int $free @var string $proPrice
  */
 $check = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>';
 ?>
@@ -40,7 +40,7 @@ $check = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/
   <article class="offer offer-soon" aria-describedby="pro-soon">
     <span class="tape" id="pro-soon"><?= $t('pricing.soon') ?></span>
     <h2><?= $t('pricing.pro.name') ?></h2>
-    <p class="price"><span class="figure"><?= $t('pricing.pro.price') ?></span> <span class="muted"><?= $t('pricing.perMonth') ?></span></p>
+    <p class="price"><span class="figure"><?= $e($proPrice) ?></span> <span class="muted"><?= $t('pricing.perMonth') ?></span></p>
     <p class="muted"><?= $t('pricing.pro.for') ?></p>
     <ul class="features">
       <li><?= $check ?><?= $t('pricing.pro.volume') ?></li>

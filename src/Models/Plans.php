@@ -45,14 +45,15 @@ final class Plans
     }
 
     /**
-     * The user's plans, newest first: enough for a list (no plan body).
+     * The user's plans, newest first: enough for a list (no plan body), plus what a
+     * small three-quarter picture of the finished object needs (Drawing::isometric).
      *
-     * @return list<array{id: int, project_id: string, project_name: ?string, params: array<string, int>, labels: array<string, string>, parts: int, created_at: string}>
+     * @return list<array{id: int, project_id: string, project_name: ?string, params: array<string, int>, labels: array<string, string>, parts: int, created_at: string, assembly: ?list<array<string, mixed>>, sizes: array<int, array{length_mm: float, width_mm: float, thickness_mm: float, metal: bool}>}>
      */
     public static function list(\PDO $pdo, int $userId): array
     {
         $statement = $pdo->prepare(
-            'SELECT id, project_id, project_name, definition, result, created_at FROM plans
+            'SELECT id, project_id, project_name, definition, pieces, result, created_at FROM plans
              WHERE user_id = :user ORDER BY id DESC LIMIT ' . self::LIMIT
         );
         $statement->execute(['user' => $userId]);
@@ -68,6 +69,24 @@ final class Plans
                     $labels[$key] = $spec['label'];
                 }
             }
+            // The still 3D picture of the list: the assembled boxes and each part's size.
+            $kinds = [];
+            foreach (is_array($row['pieces'] ?? null) ? (json_decode((string) $row['pieces'], true) ?: []) : [] as $piece) {
+                $kinds[(int) ($piece['id'] ?? 0)] = (string) ($piece['kind'] ?? '');
+            }
+            $sizes = [];
+            foreach (is_array($result['plan']['placements'] ?? null) ? $result['plan']['placements'] : [] as $placement) {
+                $number = (int) ($placement['number'] ?? 0);
+                if ($number <= 0) {
+                    continue;
+                }
+                $sizes[$number] = [
+                    'length_mm' => (float) ($placement['length_mm'] ?? 0),
+                    'width_mm' => (float) ($placement['width_mm'] ?? 0),
+                    'thickness_mm' => (float) ($placement['thickness_mm'] ?? 0),
+                    'metal' => ($kinds[(int) ($placement['piece_id'] ?? -1)] ?? '') === 'sheet_metal',
+                ];
+            }
             $items[] = [
                 'id' => (int) $row['id'],
                 'project_id' => $row['project_id'],
@@ -76,6 +95,8 @@ final class Plans
                 'labels' => (object) $labels,
                 'parts' => is_array($result['plan']['placements'] ?? null) ? count($result['plan']['placements']) : 0,
                 'created_at' => $row['created_at'],
+                'assembly' => is_array($result['assembly'] ?? null) && $result['assembly'] !== [] ? $result['assembly'] : null,
+                'sizes' => $sizes,
             ];
         }
 
@@ -114,6 +135,31 @@ final class Plans
         $statement->execute(['id' => $id, 'user' => $userId]);
 
         return $statement->rowCount() > 0;
+    }
+
+    /**
+     * The newest plans of the whole site, for the admin's dashboard: who asked for
+     * which project, and when.
+     *
+     * @return list<array{id: int, user_id: int, user_name: string, project_id: string, project_name: ?string, created_at: string}>
+     */
+    public static function latest(\PDO $pdo, int $limit = 8): array
+    {
+        $limit = max(1, min(50, $limit));
+        $statement = $pdo->query(
+            "SELECT p.id, p.user_id, u.name AS user_name, p.project_id, p.project_name, p.created_at
+             FROM plans p JOIN users u ON u.id = p.user_id
+             ORDER BY p.id DESC LIMIT {$limit}"
+        );
+
+        return array_map(static fn (array $row): array => [
+            'id' => (int) $row['id'],
+            'user_id' => (int) $row['user_id'],
+            'user_name' => (string) $row['user_name'],
+            'project_id' => (string) $row['project_id'],
+            'project_name' => $row['project_name'] === null ? null : (string) $row['project_name'],
+            'created_at' => (string) $row['created_at'],
+        ], $statement->fetchAll());
     }
 
     private static function json(mixed $value): string

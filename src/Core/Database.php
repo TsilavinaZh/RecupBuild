@@ -54,6 +54,15 @@ final class Database
             created_at TEXT NOT NULL
         );
         CREATE INDEX rebuilds_by_user ON rebuilds (user_id, id DESC)',
+        // 5: the administrators, few and chosen by e-mail (ADMIN_EMAILS in .env.php):
+        // they open /admin to watch the accounts and top up the free credits.
+        'ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0',
+        // 6: the settings the admin edits on /admin (free offer, Pro price, legal notice):
+        // a small key/value table, read back with their defaults (Models\Settings).
+        'CREATE TABLE settings (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        )',
     ];
 
     private static ?\PDO $shared = null;

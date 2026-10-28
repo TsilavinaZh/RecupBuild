@@ -666,6 +666,251 @@ a {
   color: var(--ink-muted);
 }
 
+/* ------------------------------------------------------------------ admin */
+/* The back office: its own shell (sidebar + main), same cards and colours. */
+.admin-shell {
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+  padding-top: 2.5rem;
+  padding-bottom: 3rem;
+}
+
+@media (min-width: 860px) {
+  .admin-shell {
+    grid-template-columns: 14rem minmax(0, 1fr);
+  }
+}
+
+.admin-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--sheet);
+  box-shadow: var(--shadow);
+  padding: 1rem;
+}
+
+@media (max-width: 859px) {
+  .admin-side {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+}
+
+.admin-side-title {
+  margin: 0 0.7rem 0.5rem;
+  font: 600 0.72rem/1.3 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--copper-strong);
+}
+
+@media (max-width: 859px) {
+  .admin-side-title {
+    width: 100%;
+    margin-bottom: 0.25rem;
+  }
+}
+
+.admin-side a {
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.admin-side a:hover {
+  background: var(--sand);
+}
+
+.admin-side a[aria-current='page'] {
+  background: var(--forest);
+  color: var(--paper);
+}
+
+.admin-side-exit {
+  margin-top: auto;
+  color: var(--ink-muted) !important;
+}
+
+@media (max-width: 859px) {
+  .admin-side-exit {
+    margin-top: 0;
+    margin-left: auto;
+  }
+}
+
+.admin-main {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.admin-head h1 {
+  margin: 0.6rem 0 0.3rem;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+}
+
+/* Newest plans and rebuilds, side by side on wide screens. */
+.admin-two {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 1000px) {
+  .admin-two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* The site at a glance: big mono figures, like the rest of the numbers. */
+.admin-stats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+}
+
+.admin-stats .figure {
+  display: block;
+  font-size: 1.9rem;
+  font-weight: 700;
+}
+
+.admin-stats span:last-child {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+}
+
+/* Set the free credits of one account: two counters and a save button. */
+.admin-credits {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-credits input {
+  width: 3.6rem;
+  min-height: 2.2rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--sheet);
+  padding: 0 0.35rem;
+  font: 500 0.9rem/1 var(--mono);
+}
+
+.admin-credits input:focus {
+  outline: 2px solid var(--forest);
+  outline-offset: 1px;
+}
+
+/* The settings forms: a short paper form, labels above the fields. */
+.admin-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 26rem;
+}
+
+.admin-form label {
+  display: grid;
+  gap: 0.3rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.admin-form input {
+  min-height: 2.4rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--sheet);
+  padding: 0 0.5rem;
+  font: inherit;
+}
+
+.admin-form input.figure {
+  font-family: var(--mono);
+}
+
+.admin-form input:focus {
+  outline: 2px solid var(--forest);
+  outline-offset: 1px;
+}
+
+.admin-form .hint {
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+}
+
+.admin-form .button {
+  justify-self: start;
+}
+
+/* The dashboard's charts: SVG drawn by the server, inked like the site. */
+.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 0.25rem;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 1.1rem;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+.chart-key {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-right: 0.35rem;
+  border-radius: 2px;
+  vertical-align: -1px;
+}
+
+.chart-key.plans,
+.chart .bar-plans {
+  background: var(--forest);
+  fill: var(--forest);
+}
+
+.chart-key.rebuilds,
+.chart .bar-rebuilds {
+  background: var(--copper);
+  fill: var(--copper);
+}
+
+.chart-tick {
+  font: 500 10px var(--mono);
+  fill: var(--ink-muted);
+}
+
+.chart-name {
+  font: 600 12px var(--sans);
+  fill: var(--ink);
+}
+
+/* The three legal pages link to one another, under the title. */
+.legal-siblings {
+  margin-top: 1.25rem;
+}
+
+.legal-siblings a[aria-current='page'] {
+  font-weight: 700;
+  color: var(--forest-strong);
+}
+
 /* ------------------------------------------------------------------ dialogs */
 .confirm {
   width: min(26rem, calc(100vw - 2rem));
@@ -717,6 +962,56 @@ a {
   gap: 0.6rem;
   margin-top: 1.4rem;
   flex-wrap: wrap;
+}
+
+/* The floatbox to manage one account (avatar, activity, AI credits). */
+.confirm.manage {
+  width: min(30rem, calc(100vw - 2rem));
+}
+
+.manage-head {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.manage-head h3 {
+  margin: 0 0 0.2rem;
+}
+
+.manage-head p {
+  margin: 0.15rem 0 0;
+}
+
+.manage-fields {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.1rem;
+}
+
+.manage-fields .field {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.manage-fields input {
+  width: 100%;
+  min-width: 0;
+}
+
+/* One row of the accounts table: photo (or initials) beside the name. */
+.user-cell {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.user-cell > div {
+  min-width: 0;
 }
 
 @keyframes pop {
@@ -2894,6 +3189,16 @@ tr:has(.remove input:checked) th {
   object-fit: cover;
   border-radius: 6px;
   border: 1px solid var(--line);
+}
+
+/* The still 3D picture of a plan in a list: same box as a photo thumb. */
+.thumb .iso {
+  display: block;
+  width: 4.5rem;
+  height: 3.4rem;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: radial-gradient(circle at 50% 40%, var(--sheet), var(--sand));
 }
 
 a.plan-name {
