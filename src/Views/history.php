@@ -39,6 +39,10 @@ $deleter = static function (string $kind, int $id, string $name) use ($t, $e, $c
         <?php foreach ($plans as $plan): ?>
           <?php $name = $plan['project_name'] ?? $words('project.' . $plan['project_id'], $plan['project_id']); ?>
           <li>
+            <?php if (!empty($plan['assembly'])): ?>
+              <!-- The finished object, still: a small three-quarter picture of the plan. -->
+              <figure class="thumb" aria-hidden="true"><?= \RecupBuild\Services\Drawing::isometric($plan['assembly'], $plan['sizes']) ?></figure>
+            <?php endif ?>
             <div class="plan-info">
               <a class="plan-name" href="/plans/<?= (int) $plan['id'] ?>"><?= $e($name) ?></a>
               <p class="muted small"><?= $e($date($plan['created_at'])) ?> · <?= $t('profile.parts', ['count' => $plan['parts']]) ?></p>

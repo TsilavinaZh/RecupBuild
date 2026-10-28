@@ -100,6 +100,8 @@ without JavaScript.
 | History | `/history` | plans and rebuilt objects, to reopen or delete |
 | Pricing | `/pricing` | Free (available), Pro and Custom (coming soon) |
 | My profile | `/profile` | account, credits left, plans, sign out |
+| Admin | `/admin` | back office with a sidebar: dashboard (site at a glance + 14-day activity and top-builders charts), users + **AI credits**, pricing settings, legal notice (`ADMIN_EMAILS`) |
+| Legal notice | `/legal` · `/cgu` · `/privacy` | the legal notice, terms of sale (10 articles) and privacy policy (8 articles), linked to one another (facts kept on `/admin/legal`) |
 | About | `/about` | the story of the project, born at the **Meta hackathon** |
 
 <p align="center">
@@ -231,6 +233,9 @@ an `{id}` parameter reaches the action as an `int`.
 | `GET` / `POST` | `/rebuild` · `GET /rebuilds/{id}` | reverse build (1 rebuild credit) | ✓ |
 | `GET` | `/history` · `/profile` | history, profile | ✓ |
 | `POST` | `/profile/plans/{id}/delete` · `/profile/rebuilds/{id}/delete` · `/profile/logout` | confirmed forms (CSRF token) | ✓ |
+| `GET` | `/admin` · `/admin/users` · `/admin/pricing` · `/admin/legal` | back office with a sidebar (dashboard with SVG charts, users, pricing, legal) | admin |
+| `POST` | `/admin/users/{id}/credits` · `/admin/pricing` · `/admin/legal` | confirmed forms (CSRF token) | admin |
+| `GET` | `/legal` · `/cgu` · `/privacy` | legal notice, terms of sale, privacy policy | |
 | `GET` | `/auth/google` · `/auth/google/callback` | server-side Google sign-in | |
 
 **JSON API** (same engine, for other clients)
@@ -261,6 +266,8 @@ API errors look like `{ "detail": { "code": "a4_not_detected" } }` with the righ
 | `STORAGE_PATH` | `../recupbuild-storage` | folder of the database and the photos, outside the project |
 | `DATABASE_PATH` | `<STORAGE_PATH>/recupbuild.sqlite` | SQLite file, if it must live elsewhere |
 | `ALLOWED_ORIGINS` | `http://localhost:5173,...` | CORS, not needed when the site and the API share an origin |
+| `ADMIN_EMAILS` | empty | comma-separated e-mails whose account opens `/admin` (back office: dashboard, users, pricing, legal) |
+| `SMTP_HOST` · `SMTP_PORT` · `SMTP_USER` · `SMTP_PASS` · `SMTP_FROM` | empty · 587 | SMTP used **once**: the welcome e-mail at the first sign-in (`mail.tendry.mg:587`, STARTTLS). Empty host: no e-mail, sign-in still works. |
 
 `.env.php` holds the model key and the Google secret: it is ignored by git, prints nothing if
 it is ever requested, is refused by `.htaccess` and `deploy/nginx.conf.example`, and must never be

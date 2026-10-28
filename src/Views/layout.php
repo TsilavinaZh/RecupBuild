@@ -24,6 +24,8 @@ $isError = $flash !== null && str_starts_with($flash, 'error.');
   <meta name="description" content="<?= $t('footer.tagline') ?>">
   <title><?= $title ?> · RecupBuild</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" href="/images/logo.png" sizes="128x128">
+  <link rel="apple-touch-icon" href="/images/logo.png">
   <link rel="preload" href="/fonts/space-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/pages.css">
   <script src="/js/pages.js" defer></script>
@@ -41,6 +43,7 @@ $isError = $flash !== null && str_starts_with($flash, 'error.');
         <a href="/scan" <?= $active('/scan', '/inventory', '/projects', '/plans') ?>><?= $t('nav.scan') ?></a>
         <a href="/rebuild" <?= $active('/rebuild') ?>><?= $t('nav.rebuild') ?></a>
         <?php if ($user !== null): ?><a href="/history" <?= $active('/history') ?>><?= $t('nav.history') ?></a><?php endif ?>
+        <?php if (!empty($user['admin'])): ?><a href="/admin" <?= $active('/admin') ?>><?= $t('nav.admin') ?></a><?php endif ?>
         <a href="/pricing" <?= $active('/pricing') ?>><?= $t('nav.pricing') ?></a>
         <a href="/about" <?= $active('/about') ?>><?= $t('nav.about') ?></a>
       </nav>
@@ -101,6 +104,11 @@ $isError = $flash !== null && str_starts_with($flash, 'error.');
       <div class="bottom-notes">
         <p class="hackathon"><span class="meta-dot" aria-hidden="true"></span><?= $t('footer.hackathon') ?></p>
         <p class="warning"><?= $t('footer.warning') ?></p>
+        <p class="legal-links">
+          <a href="/legal"><?= $t('legal.title') ?></a> ·
+          <a href="/cgu"><?= $t('cgu.title') ?></a> ·
+          <a href="/privacy"><?= $t('privacy.title') ?></a>
+        </p>
       </div>
     </div>
   </footer>

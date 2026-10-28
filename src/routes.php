@@ -10,6 +10,7 @@ declare(strict_types=1);
  * the app's pages send visitors to Google first. The controllers check both.
  */
 
+use RecupBuild\Controllers\AdminController;
 use RecupBuild\Controllers\AuthController;
 use RecupBuild\Controllers\HealthController;
 use RecupBuild\Controllers\HistoryController;
@@ -28,6 +29,9 @@ return static function (Router $router): void {
 
     $router->get('/', [HomeController::class, 'home']);
     $router->get('/about', [HomeController::class, 'about']);
+    $router->get('/legal', [HomeController::class, 'legal']);
+    $router->get('/cgu', [HomeController::class, 'cgu']);
+    $router->get('/privacy', [HomeController::class, 'privacy']);
     $router->get('/pricing', [PricingController::class, 'show']);
 
     // The app: photo, inventory, projects, then the plan.
@@ -54,6 +58,15 @@ return static function (Router $router): void {
     $router->post('/profile/plans/{id}/delete', [ProfileController::class, 'deletePlan']);
     $router->post('/profile/rebuilds/{id}/delete', [ProfileController::class, 'deleteRebuild']);
     $router->post('/profile/logout', [ProfileController::class, 'logout']);
+
+    // The back office: its own area with a sidebar (ADMIN_EMAILS in .env.php).
+    $router->get('/admin', [AdminController::class, 'dashboard']);
+    $router->get('/admin/users', [AdminController::class, 'users']);
+    $router->post('/admin/users/{id}/credits', [AdminController::class, 'setCredits']);
+    $router->get('/admin/pricing', [AdminController::class, 'pricing']);
+    $router->post('/admin/pricing', [AdminController::class, 'savePricing']);
+    $router->get('/admin/legal', [AdminController::class, 'legal']);
+    $router->post('/admin/legal', [AdminController::class, 'saveLegal']);
 
     // Sign in with Google, done by the server.
     $router->get('/auth/google', [AuthController::class, 'start']);

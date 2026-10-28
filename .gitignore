@@ -2,6 +2,8 @@
 .env
 .env.*
 !.env.example
+# Mail password kept next to the project while set up: never commit it.
+smtp.txt
 
 # The database and the photos live outside the project (../recupbuild-storage); just in case:
 storage/
