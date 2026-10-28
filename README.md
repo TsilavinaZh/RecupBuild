@@ -4,257 +4,261 @@
 
 # RecupBuild
 
-**Photographiez vos matériaux de récupération. Recevez un plan de construction.**
+**Photograph your reclaimed materials. Get a building plan.**
 
-Une feuille A4 posée à côté du tas sert d'échelle : l'IA mesure chaque planche,
-invente quatre projets à la mesure de votre bois, un moteur place chaque coupe,
-et vous repartez avec le plan de coupe, le rendu 3D et les étapes de montage.
+An A4 sheet next to the pile gives the scale: the AI measures every plank,
+invents four projects sized to your wood, an engine places every cut,
+and you leave with the cutting plan, the 3D render and the assembly steps.
 
 ![PHP 8.3](https://img.shields.io/badge/PHP-8.3-2f6b4f?style=flat-square&logo=php&logoColor=white)
-![MVC sans framework](https://img.shields.io/badge/MVC-sans%20framework-c4622d?style=flat-square)
+![MVC, no framework](https://img.shields.io/badge/MVC-no%20framework-c4622d?style=flat-square)
 ![SQLite](https://img.shields.io/badge/SQLite-3-1f2a24?style=flat-square&logo=sqlite&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-80%20vérifications-2f6b4f?style=flat-square)
-![Meta Hackathon](https://img.shields.io/badge/né%20au-hackathon%20Meta-0866ff?style=flat-square&logo=meta&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-80%20checks-2f6b4f?style=flat-square)
+![Meta Hackathon](https://img.shields.io/badge/born%20at-Meta%20hackathon-0866ff?style=flat-square&logo=meta&logoColor=white)
 
 </div>
 
-![La page d'accueil : un tas de planches sur un tapis de découpe, mesuré puis rangé en plan de coupe](docs/images/landing.png)
+![The home page: a pile of planks on a cutting mat, measured then laid out as a cutting plan](docs/images/landing.png)
 
 ---
 
-## Sommaire
+## Contents
 
-- [Ce que fait RecupBuild](#ce-que-fait-recupbuild)
-- [Les pages](#les-pages)
-- [L'offre gratuite](#loffre-gratuite)
-- [Démarrer en local](#démarrer-en-local)
-- [Organisation du code (MVC)](#organisation-du-code-mvc)
-- [Les routes](#les-routes)
+- [What RecupBuild does](#what-recupbuild-does)
+- [The pages](#the-pages)
+- [The free plan](#the-free-plan)
+- [Run it locally](#run-it-locally)
+- [Code layout (MVC)](#code-layout-mvc)
+- [Routes](#routes)
 - [Configuration](#configuration-env)
-- [Déploiement sur un VPS](#déploiement-sur-un-vps)
+- [Deploying on a VPS](#deploying-on-a-vps)
 - [Tests](#tests)
-- [Notes techniques](#notes-techniques)
+- [Technical notes](#technical-notes)
 
 ---
 
-## Ce que fait RecupBuild
+## What RecupBuild does
 
-### Du tas au plan
+### From pile to plan
 
-![Les quatre moments : le tas, mesuré, le plan de coupe numéroté, l'étagère montée](docs/images/pile-to-plan.png)
+![The four moments: the pile, measured, the numbered cutting plan, the assembled shelf](docs/images/pile-to-plan.png)
 
-| Étape | Ce qui se passe |
+| Step | What happens |
 | --- | --- |
-| **1. Scan** | Une photo du tas avec une feuille A4 : le modèle de vision repère chaque pièce et la mesure en millimètres, l'épaisseur est estimée. |
-| **2. Inventaire** | Vous relisez le tableau des pièces et corrigez une cote si besoin. |
-| **3. Projets** | L'IA **invente 4 projets** utiles pour *ce* bois-là (étagère, jardinière, tabouret…) ; le moteur vérifie que chaque pièce est vraiment découpable. |
-| **4. Calcul** | Le moteur de découpe place chaque pièce sur vos planches, trait de scie compté, et réduit les dimensions si ça ne passe pas. |
-| **5. Résultat** | Rendu 3D avec la texture de **votre** bois, plan de coupe numéroté, liste des pièces, étapes de montage et PDF. |
+| **1. Scan** | One photo of the pile with an A4 sheet: the vision model finds every piece and measures it in millimetres; the thickness is estimated. |
+| **2. Inventory** | You check the table of pieces and fix a dimension if needed. |
+| **3. Projects** | The AI **invents 4 useful projects** for *this* wood (shelf, planter, stool…); the engine checks that every part can really be cut. |
+| **4. Calculation** | The cutting engine places every part on your planks, saw kerf included, and shrinks the dimensions when something doesn't fit. |
+| **5. Result** | A 3D render with the texture of **your** wood, a numbered cutting plan, the parts list, the assembly steps and a PDF. |
 
 <p align="center">
-  <img src="docs/images/inventory.png" alt="L'inventaire : la photo avec les pièces numérotées, et le tableau des cotes à corriger" width="49%">
-  <img src="docs/images/projects.png" alt="Les projets : chaque objet dessiné en perspective, avec sa taille et son statut" width="49%">
+  <img src="docs/images/inventory.png" alt="The inventory: the photo with numbered pieces, and the table of dimensions to check" width="49%">
+  <img src="docs/images/projects.png" alt="The projects: each object drawn in perspective, with its size and status" width="49%">
 </p>
 
 <p align="center">
-  <img src="docs/images/plan.png" alt="Le résultat : rendu 3D, dimensions finales et plan de coupe sur le bois de la photo" width="80%">
+  <img src="docs/images/plan.png" alt="The result: 3D render, final dimensions and cutting plan on the wood from the photo" width="80%">
 </p>
 
-> **L'IA propose, le moteur décide.** Aucun chiffre affiché n'est une estimation libre :
-> chaque plan a été vérifié pièce par pièce par `Services/Solver.php`.
+> **The AI proposes, the engine decides.** No figure on screen is a free guess:
+> every plan has been checked part by part by `Services/Solver.php`.
 
-### Le build inversé
+### The reverse build
 
-Photographiez un objet fini (une table, un tabouret, une bibliothèque) : RecupBuild vous dit
-quelles pièces couper, avec quels outils et dans quel ordre, et le reconstruit en 3D.
+Photograph a finished object (a table, a stool, a bookcase): RecupBuild tells you which
+parts to cut, with which tools and in what order, and rebuilds it in 3D.
 
 <p align="center">
-  <img src="docs/images/reverse-build.png" alt="Build inversé d'une table : nom, difficulté, durée, dimensions estimées" width="49%">
-  <img src="docs/images/result-3d.png" alt="La table reconstruite en 3D, pièce par pièce" width="49%">
+  <img src="docs/images/reverse-build.png" alt="Reverse build of a table: name, difficulty, time, estimated dimensions" width="49%">
+  <img src="docs/images/result-3d.png" alt="The table rebuilt in 3D, part by part" width="49%">
 </p>
 
 ---
 
-## Les pages
+## The pages
 
-Tout le site est rendu par **PHP** (`src/Views`), avec la même identité visuelle partout :
-papier millimétré, vert forêt, cuivre. Un petit fichier JavaScript sans bibliothèque
-(`public/js/pages.js`) ajoute ce qui demande un script : l'animation de l'accueil, l'écran
-d'attente pendant que l'IA travaille, les fenêtres de confirmation, l'aperçu de la photo.
-La 3D du résultat utilise three.js, embarqué dans `public/vendor/three`. Chaque page reste
-utilisable sans JavaScript.
+The whole site is rendered by **PHP** (`src/Views`), with the same look everywhere:
+graph paper, forest green, copper. A small library-free JavaScript file
+(`public/js/pages.js`) adds what needs a script: the home page animation, the waiting
+screen while the AI works, the confirmation dialogs, the photo preview.
+The 3D result uses three.js, bundled in `public/vendor/three`. Every page still works
+without JavaScript.
 
-| Page | Adresse | Contenu |
+| Page | Address | Content |
 | --- | --- | --- |
-| Accueil | `/` | le tas qui devient plan (4 moments animés), les étapes, les projets, le build inversé |
-| Construire | `/scan` → `/inventory` → `/projects` → `/plans/{id}` | photo, inventaire à corriger, 4 projets, résultat |
-| Reproduire un objet | `/rebuild` → `/rebuilds/{id}` | build inversé d'un objet photographié |
-| Historique | `/history` | plans et objets reproduits, à rouvrir ou supprimer |
-| Tarifs | `/pricing` | Gratuit (disponible), Pro et Personnalisé (bientôt) |
-| Mon profil | `/profile` | compte, crédits restants, plans, déconnexion |
-| À propos | `/about` | l'histoire du projet, né au **hackathon Meta** |
+| Home | `/` | the pile becoming a plan (4 animated moments), the steps, the projects, the reverse build |
+| Build | `/scan` → `/inventory` → `/projects` → `/plans/{id}` | photo, inventory to check, 4 projects, result |
+| Rebuild an object | `/rebuild` → `/rebuilds/{id}` | reverse build of a photographed object |
+| History | `/history` | plans and rebuilt objects, to reopen or delete |
+| Pricing | `/pricing` | Free (available), Pro and Custom (coming soon) |
+| My profile | `/profile` | account, credits left, plans, sign out |
+| About | `/about` | the story of the project, born at the **Meta hackathon** |
 
 <p align="center">
-  <img src="docs/images/pricing.png" alt="La page Tarifs : Gratuit disponible, Pro et Personnalisé bientôt disponibles" width="49%">
-  <img src="docs/images/profile.png" alt="La page Profil : compte, crédits restants en mètre ruban, plans enregistrés" width="49%">
+  <img src="docs/images/pricing.png" alt="The Pricing page: Free available, Pro and Custom coming soon" width="49%">
+  <img src="docs/images/profile.png" alt="The Profile page: account, credits left on a tape measure, saved plans" width="49%">
 </p>
 
-Supprimer un plan et se déconnecter passent par une **fenêtre de confirmation**
-(`<dialog>` natif : clavier, Échap, focus rendu au bouton).
+Deleting a plan and signing out go through a **confirmation dialog**
+(native `<dialog>`: keyboard, Escape, focus returned to the button).
 
 <p align="center">
-  <img src="docs/images/confirm-dialog.png" alt="Fenêtre de confirmation avant de supprimer un plan" width="420">
+  <img src="docs/images/confirm-dialog.png" alt="Confirmation dialog before deleting a plan" width="420">
 </p>
 
-**Mode démo** : sur `/scan`, l'exemple « Tas de planches et tôle » suit tout le parcours avec
-les quatre projets de base calculés par le moteur seul, **sans appel à l'IA ni crédit utilisé**.
+**Examples**: on `/scan`, both examples use a real photo of offcuts next to an A4 sheet.
+"Instant demo" shows the scan the model made of it once (`src/Services/demo-scan.json`) and
+the four built-in projects planned by the engine alone, **with no AI call and no credit used**;
+the other example sends the same photo to the AI live. On `/rebuild`, the example is a real
+photo of a solid wood table.
 
-Les pages parlent **français** et **anglais** (`?lang=fr|en`, mémorisé dans un cookie ; **anglais par défaut**).
-L’onglet malagasy est masqué (en commentaire dans `src/Views/layout.php`) en attendant ses traductions.
+The pages speak **English** and **French** (`?lang=en|fr`, remembered in a cookie; **English by default**).
+The Malagasy tab is hidden (commented out in `src/Views/layout.php`) until its translations are written.
 
 ---
 
-## L'offre gratuite
+## The free plan
 
-| Offre | Prix | Contenu | Statut |
+| Plan | Price | Includes | Status |
 | --- | --- | --- | --- |
-| **Gratuit** | 0 $ | 5 builds + 5 rebuilds, historique, rendu 3D, PDF | **Disponible**, activée automatiquement à la première connexion |
-| **Pro** | 10 $ / mois | builds et rebuilds en volume, analyse prioritaire | Bientôt disponible |
-| **Personnalisé** | sur devis | associations, écoles, ressourceries | Bientôt disponible |
+| **Free** | $0 | 5 builds + 5 rebuilds, history, 3D render, PDF | **Available**, turned on automatically at first sign-in |
+| **Pro** | $10 / month | builds and rebuilds in volume, priority analysis | Coming soon |
+| **Custom** | on quote | associations, schools, reuse centres | Coming soon |
 
-- un **build** = un plan de coupe réussi (`POST /api/plan`) ;
-- un **rebuild** = un build inversé réussi (`POST /api/reverse`) ;
-- le scan et les cartes de projets ne sont **pas** comptés ;
-- un crédit n'est consommé **qu'en cas de succès**, et à zéro le serveur refuse **avant** d'appeler
-  le modèle (`402 {"detail":{"code":"quota_exhausted"}}`).
+- a **build** = one successful cutting plan (`POST /api/plan`);
+- a **rebuild** = one successful reverse build (`POST /api/reverse`);
+- the scan and the project cards are **not** counted;
+- a credit is spent **only on success**, and at zero the server refuses **before** calling
+  the model (`402 {"detail":{"code":"quota_exhausted"}}`).
 
-Les compteurs vivent dans la table `users` (`build_credits`, `rebuild_credits`) ; un seul
-`UPDATE … WHERE credits > 0` les décrémente, deux requêtes simultanées ne dépensent donc jamais
-le même crédit.
+The counters live in the `users` table (`build_credits`, `rebuild_credits`); a single
+`UPDATE … WHERE credits > 0` decrements them, so two simultaneous requests never spend
+the same credit.
 
 ---
 
-## Démarrer en local
+## Run it locally
 
 ```sh
-cp .env.example .env               # y mettre MODEL_API_KEY et les identifiants Google
+cp .env.example .env               # put MODEL_API_KEY and the Google credentials in it
 php -S localhost:8080 index.php
 ```
 
-Ou, sans nommer de script, depuis le dossier `public/` :
+Or, without naming a script, serve the `public/` folder:
 
 ```sh
 php -S localhost:8080 -t public
 ```
 
-> ⚠️ Ne lancez pas `php -S localhost:8080` seul à la racine du projet : sans script d'entrée, le
-> serveur de PHP sert tous les fichiers du dossier tels quels, y compris `.env` (clés API) et la
-> base SQLite. `index.php` et `-t public` ne servent que `public/`.
+> ⚠️ Don't run a bare `php -S localhost:8080` at the project root: without an entry script,
+> PHP's built-in server serves every file of the folder as is, including `.env` (API keys) and
+> the SQLite database. `index.php` and `-t public` only serve `public/`.
 
-Puis ouvrir **http://localhost:8080** (et non `127.0.0.1`, sinon le retour de Google ne correspond pas).
+Then open **http://localhost:8080** (not `127.0.0.1`, or the Google redirect won't match).
 
-| Adresse | Page |
+| Address | Page |
 | --- | --- |
-| `http://localhost:8080` | l'accueil |
-| `http://localhost:8080/scan` | l'application (connexion Google demandée) |
-| `http://localhost:8080/pricing` | les tarifs |
-| `http://localhost:8080/profile` | le profil (connexion Google demandée) |
-| `http://localhost:8080/api/health` | l'état du serveur |
+| `http://localhost:8080` | the home page |
+| `http://localhost:8080/scan` | the app (Google sign-in required) |
+| `http://localhost:8080/pricing` | pricing |
+| `http://localhost:8080/profile` | the profile (Google sign-in required) |
+| `http://localhost:8080/api/health` | server status |
 
-La base SQLite (`storage/recupbuild.sqlite`) se crée et se met à jour seule au premier accès.
+The SQLite database (`storage/recupbuild.sqlite`) creates and migrates itself on first access.
 
 ---
 
-## Organisation du code (MVC)
+## Code layout (MVC)
 
-Aucun framework, aucune dépendance Composer : seulement les extensions `curl`, `gd`, `exif`,
-`fileinfo`, `pdo_sqlite`, `mbstring` et `json`.
+No framework, no Composer dependency: only the `curl`, `gd`, `exif`, `fileinfo`,
+`pdo_sqlite`, `mbstring` and `json` extensions.
 
 ```
+index.php            entry point for PHP's built-in server (serves public/, then the app)
 public/
-  index.php          contrôleur frontal : chargement, CORS, puis le routeur
-  css/ js/ fonts/    le style, le script et les polices des pages
-  vendor/three/      three.js (licence MIT), pour la 3D du résultat
-  demo/ examples/    la photo de démonstration et les exemples à essayer
+  index.php          front controller: bootstrap, CORS, then the router
+  css/ js/ fonts/    the pages' style, script and fonts
+  vendor/three/      three.js (MIT licence), for the 3D result
+  demo/ examples/    the demo photo and the examples to try
 src/
-  routes.php         toutes les routes : méthode + chemin -> contrôleur@action
+  routes.php         every route: method + path -> controller@action
   Core/              Router, Controller, View, Config, DotEnv, Http, Request, Session, Database, Upload, Cors
-  Controllers/       Home, Workspace (scan -> projets), PlanPage, Rebuild, Profile, Pricing, Auth,
-                     et l'API : Health, Scan, Plan, History
-  Models/            Users (comptes, crédits), Plans, Rebuilds, Photos, Workspace (le parcours en session),
-                     Projects (définitions de projets)
-  Services/          Vision (le modèle), Planner, Solver (moteur de découpe), Scan, Reverse, Image,
-                     GoogleAuth, Assembly (montage 3D), Drawing (dessins SVG), Demo
+  Controllers/       Home, Workspace (scan -> projects), PlanPage, Rebuild, Profile, Pricing, Auth,
+                     and the API: Health, Scan, Plan, History
+  Models/            Users (accounts, credits), Plans, Rebuilds, Photos, Workspace (the journey in session),
+                     Projects (project definitions)
+  Services/          Vision (the model), Planner, Solver (cutting engine), Scan, Reverse, Image,
+                     GoogleAuth, Assembly (3D layout), Drawing (SVG drawings), Demo
   Errors/            ScanError, VisionError, AuthError
-  Views/             layout et une vue par page, leurs textes dans lang/fr.php et lang/en.php
-storage/             la base SQLite et les photos (hors de public/, jamais servies directement)
+  Views/             the layout and one view per page, their texts in lang/en.php and lang/fr.php
+storage/             the SQLite database and the photos (outside public/, never served directly)
 tests/               php tests/run.php
 ```
 
-- **Modèles** : les données (SQLite via PDO, photos dans `storage/photos`) et leurs règles.
-- **Vues** : les pages (`Core\View` + `src/Views`) et les réponses JSON de l'API (`Core\Http`).
-- **Contrôleurs** : une classe par domaine ; `member()` exige une session (sinon Google),
-  `checkForm()` vérifie le jeton CSRF, `user()` protège l'API.
-- **Services** : le travail, sans HTTP ni base (le modèle, le moteur, les images, les dessins).
+- **Models**: the data (SQLite through PDO, photos in `storage/photos`) and their rules.
+- **Views**: the pages (`Core\View` + `src/Views`) and the API's JSON answers (`Core\Http`).
+- **Controllers**: one class per area; `member()` requires a session (otherwise Google),
+  `checkForm()` checks the CSRF token, `user()` guards the API.
+- **Services**: the actual work, with no HTTP and no database (the model, the engine, images, drawings).
 
-Ajouter une page, c'est une ligne dans `src/routes.php`, une méthode de contrôleur et une vue ;
-un paramètre `{id}` arrive en `int` dans l'action.
+Adding a page means one line in `src/routes.php`, one controller method and one view;
+an `{id}` parameter reaches the action as an `int`.
 
 ---
 
-## Les routes
+## Routes
 
 **Pages**
 
-| Méthode | Route | Rôle | Session |
+| Method | Route | Purpose | Session |
 | --- | --- | --- | --- |
-| `GET` | `/` · `/about` · `/pricing` | accueil, à propos, tarifs | |
-| `GET` / `POST` | `/scan` | photo du tas (envoi, exemple IA ou démo) | ✓ |
-| `GET` / `POST` | `/inventory` | inventaire à corriger | ✓ |
-| `GET` | `/projects` · `POST /projects/choose` | 4 projets, puis le plan du projet choisi (1 crédit build) | ✓ |
-| `GET` | `/plans/{id}` · `/plans/{id}/photo` | le résultat et la photo d'origine | ✓ |
-| `GET` / `POST` | `/rebuild` · `GET /rebuilds/{id}` | build inversé (1 crédit rebuild) | ✓ |
-| `GET` | `/history` · `/profile` | historique, profil | ✓ |
-| `POST` | `/profile/plans/{id}/delete` · `/profile/rebuilds/{id}/delete` · `/profile/logout` | formulaires confirmés (jeton CSRF) | ✓ |
-| `GET` | `/auth/google` · `/auth/google/callback` | connexion Google par le serveur | |
+| `GET` | `/` · `/about` · `/pricing` | home, about, pricing | |
+| `GET` / `POST` | `/scan` | photo of the pile (upload, AI example or demo) | ✓ |
+| `GET` / `POST` | `/inventory` | inventory to check | ✓ |
+| `GET` | `/projects` · `POST /projects/choose` | 4 projects, then the plan of the chosen one (1 build credit) | ✓ |
+| `GET` | `/plans/{id}` · `/plans/{id}/photo` | the result and the original photo | ✓ |
+| `GET` / `POST` | `/rebuild` · `GET /rebuilds/{id}` | reverse build (1 rebuild credit) | ✓ |
+| `GET` | `/history` · `/profile` | history, profile | ✓ |
+| `POST` | `/profile/plans/{id}/delete` · `/profile/rebuilds/{id}/delete` · `/profile/logout` | confirmed forms (CSRF token) | ✓ |
+| `GET` | `/auth/google` · `/auth/google/callback` | server-side Google sign-in | |
 
-**API JSON** (même moteur, pour d'autres clients)
+**JSON API** (same engine, for other clients)
 
-| Méthode | Route | Rôle |
+| Method | Route | Purpose |
 | --- | --- | --- |
-| `GET` | `/api/health` | état de la clé et du modèle (public) |
-| `GET` | `/api/me` | l'utilisateur connecté, ou 401 |
-| `POST` | `/api/scan` · `/api/reverse` | photo (`file`) → pièces mesurées · objet à reproduire |
-| `POST` | `/api/projects` · `/api/plan` | projets inventés · plan de coupe |
-| `GET` / `DELETE` | `/api/history` · `/api/history/{id}` | historique des plans |
+| `GET` | `/api/health` | key and model status (public) |
+| `GET` | `/api/me` | the signed-in user, or 401 |
+| `POST` | `/api/scan` · `/api/reverse` | photo (`file`) → measured pieces · object to rebuild |
+| `POST` | `/api/projects` · `/api/plan` | invented projects · cutting plan |
+| `GET` / `DELETE` | `/api/history` · `/api/history/{id}` | plan history |
 
-Les erreurs de l'API ont la forme `{ "detail": { "code": "a4_not_detected" } }` avec le bon statut
-(401 non connecté, 402 crédits épuisés, 413 trop lourd, 415 format, 422 analyse, 502 modèle,
-504 délai dépassé). Toute autre adresse affiche la page « introuvable ».
+API errors look like `{ "detail": { "code": "a4_not_detected" } }` with the right status
+(401 not signed in, 402 no credits left, 413 too large, 415 format, 422 analysis, 502 model,
+504 timeout). Any other address shows the "not found" page.
 
 ---
 
 ## Configuration (`.env`)
 
-| Variable | Défaut | Rôle |
+| Variable | Default | Purpose |
 | --- | --- | --- |
-| `MODEL_API_KEY` (ou `MUSE_IMAGE_API_KEY`) | vide | clé du modèle Meta, obligatoire pour l'IA |
-| `META_API_BASE` | `https://api.meta.ai/v1` | point d'entrée du modèle |
-| `VISION_MODEL` | `muse-spark-1.3` | modèle interrogé |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | vide | connexion Google (Google Cloud Console → Clients, « Application Web ») |
-| `GOOGLE_REDIRECT_URI` | `http(s)://<hôte>/auth/google/callback` | à déclarer tel quel dans « URI de redirection autorisés » |
-| `DATABASE_PATH` | `storage/recupbuild.sqlite` | fichier SQLite, à garder hors de `public/` |
-| `ALLOWED_ORIGINS` | `http://localhost:5173,...` | CORS, inutile quand le site et l'API partagent l'origine |
+| `MODEL_API_KEY` (or `MUSE_IMAGE_API_KEY`) | empty | Meta model key, required for the AI |
+| `META_API_BASE` | `https://api.meta.ai/v1` | model endpoint |
+| `VISION_MODEL` | `muse-spark-1.3` | model used |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | empty | Google sign-in (Google Cloud Console → Clients, "Web application") |
+| `GOOGLE_REDIRECT_URI` | `http(s)://<host>/auth/google/callback` | declare it exactly under "Authorized redirect URIs" |
+| `DATABASE_PATH` | `storage/recupbuild.sqlite` | SQLite file, keep it outside `public/` |
+| `ALLOWED_ORIGINS` | `http://localhost:5173,...` | CORS, not needed when the site and the API share an origin |
 
-`.env` contient la clé du modèle et le secret Google : il est ignoré par git, interdit par
-`public/.htaccess` et par `deploy/nginx.conf.example`, et ne doit jamais être publié.
+`.env` holds the model key and the Google secret: it is ignored by git, blocked by
+`public/.htaccess` and by `deploy/nginx.conf.example`, and must never be published.
 
 ---
 
-## Déploiement sur un VPS
+## Deploying on a VPS
 
 <details>
-<summary><b>1. Envoyer le code</b></summary>
+<summary><b>1. Upload the code</b></summary>
 
 ```sh
 rsync -av --exclude .env --exclude storage/ backend-php/ user@vps:/var/www/recupbuild/backend-php/
@@ -264,13 +268,13 @@ ssh user@vps 'cd /var/www/recupbuild/backend-php && nano .env'
 </details>
 
 <details>
-<summary><b>2. Installer PHP et ses extensions</b></summary>
+<summary><b>2. Install PHP and its extensions</b></summary>
 
 ```sh
 sudo apt install php-fpm php-gd php-curl php-xml php-mbstring php-sqlite3
 ```
 
-Dans `/etc/php/8.3/fpm/php.ini` (et `cli/php.ini`) :
+In `/etc/php/8.3/fpm/php.ini` (and `cli/php.ini`):
 
 ```ini
 upload_max_filesize = 12M
@@ -279,23 +283,23 @@ max_execution_time = 300
 memory_limit = 256M
 ```
 
-Dans `/etc/php/8.3/fpm/pool.d/www.conf` : `request_terminate_timeout = 300s`, puis
-`sudo systemctl restart php8.3-fpm`. Sans cela, la requête est coupée à 30 s alors que
-l'invention des projets prend de 45 à 110 s.
+In `/etc/php/8.3/fpm/pool.d/www.conf`: `request_terminate_timeout = 300s`, then
+`sudo systemctl restart php8.3-fpm`. Without this, the request is cut off at 30 s while
+inventing the projects takes 45 to 110 s.
 
-Le dossier `storage/` doit être accessible en écriture par PHP-FPM :
+The `storage/` folder must be writable by PHP-FPM:
 `sudo chown -R www-data: storage`.
 
 </details>
 
 <details>
-<summary><b>3. Servir le site (nginx ou Apache)</b></summary>
+<summary><b>3. Serve the site (nginx or Apache)</b></summary>
 
-**nginx** : recopier `deploy/nginx.conf.example` dans `/etc/nginx/sites-available/`
-(domaine et version de PHP), puis `sudo nginx -t && sudo systemctl reload nginx`.
+**nginx**: copy `deploy/nginx.conf.example` into `/etc/nginx/sites-available/`
+(domain and PHP version), then `sudo nginx -t && sudo systemctl reload nginx`.
 
-**Apache** : recopier `deploy/apache-vhost.conf.example` ; `DocumentRoot` pointe sur
-`public/`, avec `AllowOverride All` pour le `.htaccess`.
+**Apache**: copy `deploy/apache-vhost.conf.example`; `DocumentRoot` points to
+`public/`, with `AllowOverride All` for the `.htaccess`.
 
 </details>
 
@@ -307,8 +311,8 @@ sudo apt install certbot python3-certbot-nginx
 sudo certbot --nginx -d recupbuild.example.com
 ```
 
-Puis déclarer `https://recupbuild.example.com` dans les origines JavaScript et
-`https://recupbuild.example.com/auth/google/callback` dans les URI de redirection Google.
+Then declare `https://recupbuild.example.com` under the JavaScript origins and
+`https://recupbuild.example.com/auth/google/callback` under the Google redirect URIs.
 
 </details>
 
@@ -317,24 +321,24 @@ Puis déclarer `https://recupbuild.example.com` dans les origines JavaScript et
 ## Tests
 
 ```sh
-php tests/run.php            # 80 vérifications : scan, moteur de découpe, projets inventés, build inversé,
-                             # connexion Google, SQLite, historique, crédits, dessins, inventaire, textes des pages
-php tests/live_plan.php      # appel réel au modèle : cartes, plan et étapes
+php tests/run.php            # 80 checks: scan, cutting engine, invented projects, reverse build,
+                             # Google sign-in, SQLite, history, credits, drawings, inventory, page texts
+php tests/live_plan.php      # real call to the model: cards, plan and steps
 ```
 
 ---
 
-## Notes techniques
+## Technical notes
 
-- **L'IA, en sécurité** : tout ce que le modèle renvoie (projets, pièces, layouts 3D) est borné et
-  revalidé par `Models/Projects::sanitize` ou `Services/Reverse::build` avant d'atteindre le navigateur.
-- **Connexion Google** : flux *authorization code* côté serveur, avec `state` et `nonce` ; le secret
-  ne quitte jamais le serveur, la session est un cookie `HttpOnly` / `SameSite=Lax`.
-- **Pages** : chaque texte est échappé, les formulaires portent un jeton CSRF, et une
-  *Content-Security-Policy* n'autorise que les scripts et styles du site.
-- **Images** : décodage GD (JPEG, PNG, WebP), rotation EXIF, plus grande arête à 1600 px, JPEG 85.
-- **Latence** : une requête occupe un *worker* PHP pendant l'appel au modèle ; prévoir
-  `pm.max_children` ≥ 5 si plusieurs personnes l'utilisent en même temps.
+- **Safe AI output**: everything the model returns (projects, parts, 3D layouts) is bounded and
+  validated again by `Models/Projects::sanitize` or `Services/Reverse::build` before it reaches the browser.
+- **Google sign-in**: server-side *authorization code* flow, with `state` and `nonce`; the secret
+  never leaves the server, the session is an `HttpOnly` / `SameSite=Lax` cookie.
+- **Pages**: every text is escaped, forms carry a CSRF token, and a
+  *Content-Security-Policy* only allows the site's own scripts and styles.
+- **Images**: GD decoding (JPEG, PNG, WebP), EXIF rotation, longest edge at 1600 px, JPEG 85.
+- **Latency**: a request holds a PHP *worker* during the model call; plan for
+  `pm.max_children` ≥ 5 if several people use it at once.
 
 ---
 
@@ -342,8 +346,8 @@ php tests/live_plan.php      # appel réel au modèle : cartes, plan et étapes
 
 <img src="public/favicon.svg" alt="" width="28" height="28">
 
-**RecupBuild** est né pendant le **hackathon Meta** : construire avec ce qu'on a déjà sous la main.
+**RecupBuild** was born at the **Meta Global AI Developer Hackathon**: building with what you already have.
 
-*Plan indicatif : vérifiez chaque cote sur vos pièces avant de couper.*
+*Indicative plan: check every dimension on your pieces before cutting.*
 
 </div>
