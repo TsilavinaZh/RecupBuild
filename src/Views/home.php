@@ -142,6 +142,20 @@ $batten = Drawing::plank(1196, 18, 88, 0.6);
   </div>
 </section>
 
+<!-- The 3-minute pitch, on YouTube (privacy-enhanced player: no cookie until it plays). -->
+<section class="wrap section pitch" aria-labelledby="pitch-title">
+  <div class="pitch-intro">
+    <p class="eyebrow"><?= $t('home.video.eyebrow') ?></p>
+    <h2 id="pitch-title" class="section-title"><?= $t('home.video.title') ?></h2>
+    <p class="lead left"><?= $t('home.video.text') ?></p>
+  </div>
+  <div class="pitch-frame">
+    <iframe src="https://www.youtube-nocookie.com/embed/sO_UkvMmugU?rel=0" title="<?= $t('home.video.frameTitle') ?>"
+            loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+  </div>
+</section>
+
 <!-- Two ways in: from a heap of pieces, or from an object seen somewhere. -->
 <section class="wrap section modes" aria-labelledby="modes-title">
   <p class="eyebrow"><?= $t('home.modes.eyebrow') ?></p>
