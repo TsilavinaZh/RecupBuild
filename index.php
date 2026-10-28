@@ -3,12 +3,13 @@
 declare(strict_types=1);
 
 /**
- * Router for PHP's built-in server (development only):
+ * Entry point for PHP's built-in server (development only), from the project folder:
  *
- *   php -S localhost:8080 router.php
+ *   php -S localhost:8080 index.php
  *
  * Files under public/ are served by this script itself (the document root stays the
- * folder where the command runs), everything else goes to the API in public/index.php.
+ * project folder), everything else goes to the app in public/index.php. Nothing outside
+ * public/ is ever served: .env, src/ and storage/ stay private.
  */
 
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);

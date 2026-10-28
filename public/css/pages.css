@@ -1627,10 +1627,10 @@ body.wide .wrap {
   animation: pin-pulse 2.4s ease-out infinite;
 }
 
-.pin-a { left: 52%; top: 34%; }
-.pin-b { left: 16%; top: 64%; animation-delay: 0.6s; }
-.pin-c { left: 40%; top: 46%; animation-delay: 1.2s; }
-.pin-d { left: 77%; top: 38%; animation-delay: 1.8s; }
+.pin-a { left: 52%; top: 30%; }
+.pin-b { left: 36%; top: 66%; animation-delay: 0.6s; }
+.pin-c { left: 25%; top: 87%; animation-delay: 1.2s; }
+.pin-d { left: 31%; top: 42%; animation-delay: 1.8s; }
 
 @keyframes pin-pulse {
   0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--copper) 60%, transparent); }

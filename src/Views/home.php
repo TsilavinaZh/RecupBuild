@@ -51,8 +51,9 @@ $tags = [
     ['crate', 2.8, '<path d="M10 18 H70 V50 H10 Z M10 29 H70 M10 40 H70 M18 18 V50 M62 18 V50"/>'],
     ['coop', 1.2, '<path d="M8 26 L40 6 L72 26 M14 22 V52 H66 V22 M34 52 V36 H46 V52"/>'],
 ];
-// The example table of the reverse build: [letter, cut dimensions in mm, quantity].
-$parts = [['A', '1200 × 700 × 20', 1], ['B', '700 × 45 × 45', 4], ['C', '1050 × 80 × 20', 2], ['D', '560 × 80 × 20', 2]];
+// The table of the reverse build, as the model read public/examples/table.jpg:
+// [letter, cut dimensions in mm, quantity].
+$parts = [['A', '1800 × 900 × 40', 1], ['B', '680 × 70 × 60', 4], ['C', '580 × 60 × 80', 2], ['D', '700 × 70 × 40', 2]];
 $batten = Drawing::plank(1196, 18, 88, 0.6);
 ?>
 <!-- Hero: the cutting mat. -->
@@ -146,7 +147,7 @@ $batten = Drawing::plank(1196, 18, 88, 0.6);
   <p class="eyebrow"><?= $t('home.modes.eyebrow') ?></p>
   <h2 id="modes-title" class="section-title"><?= $t('home.modes.title') ?></h2>
   <div class="mode-grid">
-    <?php foreach (['build' => ['/demo/sample-pile.svg', '/scan'], 'rebuild' => ['/examples/table.svg', '/rebuild']] as $mode => [$picture, $href]): ?>
+    <?php foreach (['build' => ['/demo/pile.jpg', '/scan'], 'rebuild' => ['/examples/table.jpg', '/rebuild']] as $mode => [$picture, $href]): ?>
       <article class="mode mode-<?= $mode ?>" data-reveal>
         <div class="mode-art"><img src="<?= $picture ?>" alt="" width="1000" height="760" loading="lazy"></div>
         <p class="mode-tag figure"><?= $mode === 'build' ? '01' : '02' ?> · <?= $mode === 'build' ? 'BUILD' : 'REBUILD' ?></p>
@@ -213,7 +214,7 @@ $batten = Drawing::plank(1196, 18, 88, 0.6);
     <div class="reverse-grid">
       <figure class="reverse-photo" data-reveal>
         <div class="scan-frame">
-          <img src="/examples/table.svg" alt="<?= $t('home.rebuild.photoAlt') ?>" width="1000" height="760" loading="lazy">
+          <img src="/examples/table.jpg" alt="<?= $t('home.rebuild.photoAlt') ?>" width="495" height="244" loading="lazy">
           <span class="scan-line" aria-hidden="true"></span>
           <?php foreach ($parts as [$letter]): ?><span class="pin pin-<?= strtolower($letter) ?> figure" aria-hidden="true"><?= $letter ?></span><?php endforeach ?>
         </div>

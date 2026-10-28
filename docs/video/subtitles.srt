@@ -1,0 +1,152 @@
+1
+00:00:00,500 --> 00:00:02,875
+Hi, I'm Tendry Tsilavina Razanamalala.
+
+2
+00:00:03,125 --> 00:00:07,812
+I'm a full-stack developer from Madagascar and the founder of Tirex Agency.
+
+3
+00:00:08,062 --> 00:00:13,875
+I build web, mobile and AI software, and I like tools that solve problems people really have.
+
+4
+00:00:14,125 --> 00:00:18,062
+For the Meta Global AI Developer Hackathon, I built RecupBuild.
+
+5
+00:00:19,100 --> 00:00:22,162
+A lot of people keep piles of reclaimed material:
+
+6
+00:00:22,412 --> 00:00:26,475
+old planks, plywood, sheet metal, leftovers from a building site.
+
+7
+00:00:26,725 --> 00:00:29,475
+The wood is there. What's missing is a plan.
+
+8
+00:00:29,725 --> 00:00:33,100
+Plans online assume you buy new boards at exact sizes.
+
+9
+00:00:33,350 --> 00:00:37,475
+Measuring every piece by hand and working out the cuts takes time,
+
+10
+00:00:37,725 --> 00:00:40,975
+and one mistake wastes the little material you have.
+
+11
+00:00:42,000 --> 00:00:46,938
+RecupBuild turns this around: you start from your pieces, not from a catalogue.
+
+12
+00:00:47,188 --> 00:00:50,688
+You put an A4 sheet next to the pile and take one photo.
+
+13
+00:00:50,938 --> 00:00:55,125
+Meta's Muse Spark model reads the photo, uses the sheet as a ruler,
+
+14
+00:00:55,375 --> 00:00:57,562
+and finds and measures every piece.
+
+15
+00:00:57,812 --> 00:01:00,875
+Then it suggests projects that fit your material.
+
+16
+00:01:01,125 --> 00:01:05,938
+A cutting engine places every part on your real planks, counting the saw cut.
+
+17
+00:01:06,188 --> 00:01:08,375
+The AI proposes; the engine checks.
+
+18
+00:01:09,400 --> 00:01:11,212
+Let's run it on the real app.
+
+19
+00:01:11,462 --> 00:01:15,900
+I start with a real photo of my offcuts, with an A4 sheet next to them.
+
+20
+00:01:16,150 --> 00:01:19,150
+The analysis takes a moment, so I've sped it up.
+
+21
+00:01:20,150 --> 00:01:24,650
+Here's the inventory: every piece is outlined and numbered on the photo,
+
+22
+00:01:24,900 --> 00:01:27,838
+with its length, width and estimated thickness.
+
+23
+00:01:28,088 --> 00:01:30,150
+If something's off, I can fix it.
+
+24
+00:01:34,924 --> 00:01:38,112
+Next, the projects, each one sized to these pieces.
+
+25
+00:01:38,362 --> 00:01:39,049
+I pick one.
+
+26
+00:01:48,291 --> 00:01:51,416
+And here's the plan: a 3D model I can turn around,
+
+27
+00:01:51,666 --> 00:01:53,666
+the cuts drawn on my own planks,
+
+28
+00:01:53,916 --> 00:01:57,541
+the list of parts, and the assembly steps, ready to print.
+
+29
+00:02:08,191 --> 00:02:10,128
+There's a second mode: Rebuild.
+
+30
+00:02:10,378 --> 00:02:12,628
+I give it a photo of a table I like.
+
+31
+00:02:12,878 --> 00:02:16,503
+It breaks it down into the parts to cut, the tools I need,
+
+32
+00:02:16,753 --> 00:02:18,816
+and the order to put it together.
+
+33
+00:02:30,269 --> 00:02:34,957
+It's for makers, small workshops, schools and communities on tight budgets:
+
+34
+00:02:35,207 --> 00:02:39,707
+reclaimed material becomes shelves, storage and furniture, from a phone.
+
+35
+00:02:39,957 --> 00:02:42,707
+Next, I want to test it with real workshops,
+
+36
+00:02:42,957 --> 00:02:46,207
+support more materials and joints, and add Malagasy.
+
+37
+00:02:47,169 --> 00:02:49,982
+RecupBuild: build with what you already have.
+
+38
+00:02:50,232 --> 00:02:52,232
+I'm Tendry. Thanks for watching.
+

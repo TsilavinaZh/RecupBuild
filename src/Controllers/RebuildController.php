@@ -30,7 +30,7 @@ use RecupBuild\Services\Reverse;
 final class RebuildController extends Controller
 {
     /** The example objects in public/examples, drawn for those who have no photo at hand. */
-    public const EXAMPLES = ['table', 'stool', 'bookcase'];
+    public const EXAMPLES = ['table'];
 
     public function form(): never
     {

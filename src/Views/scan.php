@@ -56,7 +56,7 @@
           <input type="hidden" name="csrf" value="<?= $e($csrf) ?>">
           <input type="hidden" name="source" value="demo">
           <button class="example" type="submit">
-            <span class="example-picture"><img src="/demo/sample-pile.svg" alt="" loading="lazy"><span class="badge"><?= $t('scan.demoBadge') ?></span></span>
+            <span class="example-picture"><img src="/demo/pile.jpg" alt="" loading="lazy"><span class="badge"><?= $t('scan.demoBadge') ?></span></span>
             <span class="example-name"><?= $t('scan.demo') ?></span>
             <span class="muted small"><?= $t('scan.demoHint') ?></span>
           </button>
@@ -65,7 +65,7 @@
           <input type="hidden" name="csrf" value="<?= $e($csrf) ?>">
           <input type="hidden" name="source" value="example">
           <button class="example" type="submit">
-            <span class="example-picture"><img src="/examples/pile-garden.svg" alt="" loading="lazy"><span class="badge"><?= $t('scan.gardenBadge') ?></span></span>
+            <span class="example-picture"><img src="/examples/pile.jpg" alt="" loading="lazy"><span class="badge"><?= $t('scan.gardenBadge') ?></span></span>
             <span class="example-name"><?= $t('scan.garden') ?></span>
           </button>
         </form>
@@ -80,7 +80,7 @@
       <li><?= $t('scan.tip.above') ?></li>
       <li><?= $t('scan.tip.light') ?></li>
     </ol>
-    <img src="/demo/sample-pile.svg" alt="" loading="lazy" class="tips-art">
+    <img src="/demo/pile.jpg" alt="" loading="lazy" class="tips-art">
     <a class="rebuild-link" href="/rebuild"><?= $t('scan.rebuild') ?> <span aria-hidden="true">→</span></a>
   </aside>
 </div>
