@@ -465,6 +465,12 @@ php benchmarks/scan.php      # real models on photos of known sizes
 
 ---
 
+## Security and changes
+
+See [SECURITY.md](SECURITY.md) to report a problem, and [CHANGELOG.md](CHANGELOG.md) for what changed.
+
+---
+
 ## License
 
 RecupBuild is released under the [MIT License](LICENSE). Some parts keep their own license:
