@@ -153,7 +153,7 @@ $batten = Drawing::plank(1196, 18, 88, 0.6);
     <p class="lead left"><?= $t('home.video.text') ?></p>
   </div>
   <div class="pitch-frame">
-    <iframe src="https://www.youtube-nocookie.com/embed/sO_UkvMmugU?rel=0" title="<?= $t('home.video.frameTitle') ?>"
+    <iframe src="https://www.youtube-nocookie.com/embed/EafmljX9CQ4?rel=0" title="<?= $t('home.video.frameTitle') ?>"
             loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
   </div>
