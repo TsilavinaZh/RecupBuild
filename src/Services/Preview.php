@@ -23,6 +23,10 @@ final class Preview
 
     private const MAX_PARTS = 10;
 
+    /** The model answers 503 when it is only busy: worth a short wait, unlike any other refusal. */
+    private const ATTEMPTS = 3;
+    private const WAIT_S = 3;
+
     /**
      * A JPEG of the finished object, ready to store.
      *
@@ -33,7 +37,7 @@ final class Preview
      */
     public static function of(string $photo, array $plan, Config $config): string
     {
-        $answer = Vision::post('/images/edits', [
+        $request = [
             'model' => self::MODEL,
             'prompt' => self::prompt($plan),
             'images' => [['image_url' => 'data:image/jpeg;base64,' . base64_encode($photo)]],
@@ -41,7 +45,18 @@ final class Preview
             'size' => self::SIZE,
             'output_format' => 'jpeg',
             'response_format' => 'b64_json',
-        ], $config);
+        ];
+        for ($attempt = 1; ; ++$attempt) {
+            try {
+                $answer = Vision::post('/images/edits', $request, $config);
+                break;
+            } catch (VisionError $error) {
+                if ($attempt >= self::ATTEMPTS || !self::retryable($error)) {
+                    throw $error;
+                }
+                sleep(self::WAIT_S * $attempt);
+            }
+        }
 
         $encoded = $answer['data'][0]['b64_json'] ?? null;
         $image = is_string($encoded) ? base64_decode($encoded, true) : false;
@@ -50,6 +65,12 @@ final class Preview
         }
 
         return Image::prepare($image, $config)[0];
+    }
+
+    /** Only a busy model is worth asking again: a refused image is refused for good, and paid for nothing. */
+    public static function retryable(VisionError $error): bool
+    {
+        return str_contains($error->getMessage(), 'HTTP 503');
     }
 
     /**

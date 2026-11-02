@@ -396,3 +396,10 @@ foreach ([
     check("the simple project always fits {$label}", $simple !== null && Solver::solve($simple, $offcut)['status'] === 'feasible');
 }
 
+
+echo "preview retries\n";
+
+$retryable = static fn (string $code, string $message): bool => RecupBuild\Services\Preview::retryable(new RecupBuild\Errors\VisionError($code, $message));
+check('a busy image model is asked again', $retryable('server', 'Model answered HTTP 503 on /images/edits: busy'));
+check('a refused image is not', !$retryable('server', 'Model answered HTTP 400 on /images/edits: content_policy_violation'));
+check('a timeout is not', !$retryable('timeout', 'Operation timed out'));
