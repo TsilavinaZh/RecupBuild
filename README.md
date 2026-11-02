@@ -49,6 +49,7 @@ and you leave with the cutting plan, the 3D render and the assembly steps.
 - [Deploying on a VPS](#deploying-on-a-vps)
 - [Tests](#tests)
 - [Technical notes](#technical-notes)
+- [License](#license)
 
 ---
 
@@ -444,6 +445,15 @@ php benchmarks/scan.php      # real models on photos of known sizes
 - **Images**: GD decoding (JPEG, PNG, WebP), EXIF rotation, longest edge at 1600 px, JPEG 85.
 - **Latency**: a request holds a PHP *worker* during the model call; plan for
   `pm.max_children` ≥ 5 if several people use it at once.
+
+---
+
+## License
+
+RecupBuild is released under the [MIT License](LICENSE). Some parts keep their own license:
+`src/Services/SamMask.php` under the [SAM License](docs/licenses/SAM-LICENSE.txt), `vendor/three`
+under MIT, and the fonts in `fonts/` under the SIL Open Font License. The
+[open dataset](https://huggingface.co/datasets/tsilavinaZh/recupbuild-scan-benchmark) is under CC BY 4.0.
 
 ---
 
