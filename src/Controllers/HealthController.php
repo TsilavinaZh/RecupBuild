@@ -7,7 +7,7 @@ namespace RecupBuild\Controllers;
 use RecupBuild\Core\Controller;
 use RecupBuild\Core\Http;
 
-/** GET /api/health: whether the model key is there, and which model answers. */
+/** GET /api/health: whether the model key is there, and which models answer. */
 final class HealthController extends Controller
 {
     public function show(): never
@@ -16,6 +16,7 @@ final class HealthController extends Controller
             'status' => 'ok',
             'vision_model' => $this->config->visionModel,
             'key_configured' => $this->config->metaApiKey !== '',
+            'open_weights_model' => $this->config->openWeightsBase !== '' ? $this->config->openWeightsModel : null,
         ]);
     }
 }

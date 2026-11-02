@@ -10,6 +10,9 @@ services:
       - "8080:80"
     environment:
       MODEL_API_KEY: ${MODEL_API_KEY:-}
+      OPEN_WEIGHTS_BASE: ${OPEN_WEIGHTS_BASE:-}
+      OPEN_WEIGHTS_MODEL: ${OPEN_WEIGHTS_MODEL:-muse-glimmer:30b-mlx}
+      OPEN_WEIGHTS_API_KEY: ${OPEN_WEIGHTS_API_KEY:-}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
       GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-http://localhost:8080/auth/google/callback}
