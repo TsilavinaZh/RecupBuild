@@ -403,3 +403,21 @@ $retryable = static fn (string $code, string $message): bool => RecupBuild\Servi
 check('a busy image model is asked again', $retryable('server', 'Model answered HTTP 503 on /images/edits: busy'));
 check('a refused image is not', !$retryable('server', 'Model answered HTTP 400 on /images/edits: content_policy_violation'));
 check('a timeout is not', !$retryable('timeout', 'Operation timed out'));
+
+
+echo "one picture per plan\n";
+
+$claims = RecupBuild\Core\Database::open(':memory:');
+$buyer = RecupBuild\Models\Users::signedIn($claims, ['sub' => 'claim-owner', 'email' => null, 'name' => 'Owner', 'picture' => null]);
+$stranger = RecupBuild\Models\Users::signedIn($claims, ['sub' => 'claim-other', 'email' => null, 'name' => 'Other', 'picture' => null]);
+$claimed = RecupBuild\Models\Plans::save($claims, $buyer['id'], ['id' => 'bench', 'name' => 'Bench'], [], []);
+check('nobody reserves the picture of a plan of someone else', !RecupBuild\Models\Plans::claimPreview($claims, $stranger['id'], $claimed, 1000));
+check('the first click reserves the picture', RecupBuild\Models\Plans::claimPreview($claims, $buyer['id'], $claimed, 1000));
+check('a second click pays for nothing', !RecupBuild\Models\Plans::claimPreview($claims, $buyer['id'], $claimed, 1001));
+RecupBuild\Models\Plans::releasePreview($claims, $buyer['id'], $claimed);
+check('a failed picture can be tried again', RecupBuild\Models\Plans::claimPreview($claims, $buyer['id'], $claimed, 1002));
+check('a request that died does not block the plan forever', RecupBuild\Models\Plans::claimPreview($claims, $buyer['id'], $claimed, 1002 + 301));
+RecupBuild\Models\Plans::savePreview($claims, $buyer['id'], $claimed, 'picture.jpg');
+check('a finished picture is never made again', !RecupBuild\Models\Plans::claimPreview($claims, $buyer['id'], $claimed, 9999));
+RecupBuild\Models\Plans::releasePreview($claims, $buyer['id'], $claimed);
+check('releasing leaves a finished picture alone', RecupBuild\Models\Plans::find($claims, $buyer['id'], $claimed)['preview'] === 'picture.jpg');
