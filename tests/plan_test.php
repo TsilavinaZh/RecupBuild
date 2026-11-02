@@ -291,8 +291,17 @@ echo "instant demo
 $sample = array_map(static fn (array $piece): array => array_diff_key($piece, ['outline' => 1]), RecupBuild\Services\Demo::scan()['pieces']);
 foreach (['en', 'fr'] as $locale) {
     $projects = RecupBuild\Services\Demo::projects($locale);
-    $built = array_filter($projects, static fn (array $project): bool => Solver::solve($project, $sample)['status'] === 'feasible');
-    check("the demo in {$locale} offers projects that can all be built", count($projects) >= 3 && count($built) === count($projects), count($built) . ' of ' . count($projects));
+    $complete = 0;
+    foreach ($projects as $saved) {
+        $result = Solver::solve($saved['definition'], $sample, $saved['params']);
+        $numbers = array_column($result['plan']['placements'] ?? [], 'number');
+        if ($result['status'] === 'feasible' && $result['plan']['params'] == $saved['params']
+            && $saved['steps'] !== [] && $saved['assembly'] !== []
+            && array_diff(array_column($saved['assembly'], 'number'), $numbers) === []) {
+            ++$complete;
+        }
+    }
+    check("the demo in {$locale} offers buildable projects with their steps and 3D view", count($projects) >= 3 && $complete === count($projects), $complete . ' of ' . count($projects));
 }
 check('a language without its own projects falls back on French', RecupBuild\Services\Demo::projects('mg') === RecupBuild\Services\Demo::projects('fr'));
 
@@ -371,3 +380,19 @@ $hosted->metaApiKey = 'meta-key';
 $hosted->metaApiBase = 'http://127.0.0.1:' . STUB_PORT . '/hosted';
 $answer = RecupBuild\Services\Vision::complete('Hello', ['type' => 'object'], 'Steps', $hosted);
 check('without a local server nothing changes', $answer['path'] === '/hosted/chat/completions' && $answer['model'] === $hosted->visionModel);
+
+
+echo "the simple project
+";
+
+foreach ([
+    'a wide short panel' => [320, 170, 12],
+    'a long plank' => [2400, 140, 22],
+    'a nearly square board' => [300, 290, 18],
+    'a short offcut' => [120, 95, 24],
+] as $label => [$pieceLength, $pieceWidth, $pieceThickness]) {
+    $offcut = [['id' => 1, 'kind' => 'plank', 'length_mm' => $pieceLength, 'width_mm' => $pieceWidth, 'thickness_mm' => $pieceThickness]];
+    $simple = Projects::simplest(Solver::toStock($offcut), 'en');
+    check("the simple project always fits {$label}", $simple !== null && Solver::solve($simple, $offcut)['status'] === 'feasible');
+}
+

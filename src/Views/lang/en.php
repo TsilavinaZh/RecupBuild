@@ -523,7 +523,7 @@ return [
     'plan.newScan' => 'New scan',
     'plan.failedTitle' => 'No plan possible',
     'plan.failedText' => 'Even with smaller dimensions, not every part finds room in your wood.',
-    'plan.demo' => 'Demo plan, worked out by the engine without AI.',
+    'plan.demo' => 'Demo plan: the AI worked on this heap once, and the engine plans it again at each visit.',
 
     'history.title' => 'History',
     'history.lead' => 'Your plans and your rebuilt objects, newest first.',

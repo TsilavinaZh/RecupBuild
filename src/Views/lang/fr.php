@@ -533,7 +533,7 @@ return [
     'plan.newScan' => 'Nouveau scan',
     'plan.failedTitle' => 'Pas de plan possible',
     'plan.failedText' => 'Même en réduisant les dimensions, toutes les pièces ne trouvent pas de place dans votre bois.',
-    'plan.demo' => 'Plan de démonstration, calculé par le moteur sans IA.',
+    'plan.demo' => 'Plan de démonstration : l’IA a travaillé une fois sur ce tas, et le moteur le recalcule à chaque visite.',
 
     // History.
     'history.title' => 'Historique',
