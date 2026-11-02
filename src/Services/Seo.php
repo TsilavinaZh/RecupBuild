@@ -11,7 +11,7 @@ final class Seo
     private const PUBLIC_PAGES = ['/', '/about', '/pricing', '/legal', '/cgu', '/privacy'];
 
     /** @var list<string> */
-    private const PRIVATE_PAGES = ['/scan', '/inventory', '/projects', '/plans/', '/rebuild', '/rebuilds/', '/history', '/profile', '/admin', '/auth/', '/api/'];
+    private const PRIVATE_PAGES = ['/try', '/scan', '/inventory', '/projects', '/plans/', '/rebuild', '/rebuilds/', '/history', '/profile', '/admin', '/auth/', '/api/'];
 
     public static function origin(): string
     {

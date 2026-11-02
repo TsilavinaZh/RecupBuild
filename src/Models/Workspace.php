@@ -24,7 +24,7 @@ final class Workspace
 
     public const KINDS = ['plank', 'batten', 'plywood', 'sheet_metal', 'pallet_board', 'other'];
 
-    /** @return ?array{demo: bool, photo: string, image: array{width: int, height: int}, pieces: list<array<string, mixed>>, confirmed: bool, cards: ?array} */
+    /** @return ?array{demo: bool, photo: string, image: array{width: int, height: int}, pieces: list<array<string, mixed>>, confirmed: bool, cards: ?array, plan?: array<string, mixed>} */
     public static function get(): ?array
     {
         Session::start();
@@ -70,6 +70,15 @@ final class Workspace
         Session::start();
         if (isset($_SESSION['workspace'])) {
             $_SESSION['workspace']['cards'] = $cards;
+        }
+    }
+
+    /** The plan of a visitor in the demo: it lives here, they have no history to keep it in. */
+    public static function setPlan(array $plan): void
+    {
+        Session::start();
+        if (isset($_SESSION['workspace'])) {
+            $_SESSION['workspace']['plan'] = $plan;
         }
     }
 

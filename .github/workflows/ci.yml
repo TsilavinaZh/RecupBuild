@@ -78,6 +78,10 @@ jobs:
           curl -fs http://localhost:8080/robots.txt | grep -q 'Sitemap: http://localhost:8080/sitemap.xml'
           curl -fs http://localhost:8080/sitemap.xml | grep -q '<loc>http://localhost:8080/about</loc>'
 
+      - name: Check the instant demo without an account
+        run: |
+          curl -fsL -c demo.jar -b demo.jar http://localhost:8080/try | grep -q 'Demo mode'
+
       - name: Check that the web user can create the database in the volume
         run: |
           docker exec -u www-data -w /var/www/html recupbuild php -r '

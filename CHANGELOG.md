@@ -3,6 +3,8 @@
 ## 2026-11-02
 
 ### Added
+- The instant demo opens with one click at `/try`, with no account and no key: nothing is stored but
+  the session, and a visitor reaches no model and no credit.
 - SAM 3.1 traces the real edges of every piece, with Muse Spark naming them and estimating thickness.
 - Muse Image shows the finished object in the user's own wood, once per plan.
 - Optional local route for the text-only steps, with Muse Glimmer 30B on the user's own hardware.
