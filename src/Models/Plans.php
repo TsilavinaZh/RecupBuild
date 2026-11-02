@@ -136,13 +136,24 @@ final class Plans
         $statement->execute(['preview' => $preview, 'id' => $id, 'user' => $userId]);
     }
 
-    /** Removes one plan of this user; false when there was none. */
+    /**
+     * Removes one plan of this user and the picture generated for it; false when there
+     * was none. The photo stays: other plans of the same scan may be cut from it.
+     */
     public static function delete(\PDO $pdo, int $userId, int $id): bool
     {
+        $preview = $pdo->prepare('SELECT preview FROM plans WHERE id = :id AND user_id = :user');
+        $preview->execute(['id' => $id, 'user' => $userId]);
+        $picture = $preview->fetchColumn();
+
         $statement = $pdo->prepare('DELETE FROM plans WHERE id = :id AND user_id = :user');
         $statement->execute(['id' => $id, 'user' => $userId]);
+        if ($statement->rowCount() === 0) {
+            return false;
+        }
+        Photos::remove(is_string($picture) ? $picture : null);
 
-        return $statement->rowCount() > 0;
+        return true;
     }
 
     /**
