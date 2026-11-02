@@ -108,6 +108,10 @@ check('every test and benchmark refuses to run from a web request', array_filter
     static fn (string $file): bool => !str_contains((string) file_get_contents($file), "PHP_SAPI !== 'cli'")) === []);
 check('a file of the site carries its date, so a deployment reaches the browser', preg_match('#^/css/pages\.css\?v=[1-9][0-9]+$#', RecupBuild\Core\View::asset('/css/pages.css')) === 1);
 check('a missing file still gives an address', RecupBuild\Core\View::asset('/css/missing.css') === '/css/missing.css?v=0');
+$headers = RecupBuild\Core\View::securityHeaders(false);
+check('every page limits what it shares and what it may use', in_array('Referrer-Policy: strict-origin-when-cross-origin', $headers, true) && in_array('Permissions-Policy: camera=(), microphone=(), geolocation=()', $headers, true));
+check('the content policy stays on every page', count(array_filter($headers, static fn (string $header): bool => str_starts_with($header, 'Content-Security-Policy:'))) === 1);
+check('HTTPS is pinned only over HTTPS', !in_array('Strict-Transport-Security: max-age=31536000', $headers, true) && in_array('Strict-Transport-Security: max-age=31536000', RecupBuild\Core\View::securityHeaders(true), true));
 $views = ['layout', 'home', 'about', 'legal', 'cgu', 'privacy', 'notfound', 'pricing', 'profile', 'scan', 'inventory', 'projects', 'plan', 'plan-failed', 'history', 'rebuild', 'rebuild-show',
     'admin/_nav', 'admin/dashboard', 'admin/users', 'admin/pricing', 'admin/legal'];
 check('every page has its view', array_filter($views, static fn (string $view): bool => !is_file(dirname(__DIR__) . '/src/Views/' . $view . '.php')) === []);

@@ -17,6 +17,27 @@ final class View
     private const LOCALES = ['fr', 'en', 'mg'];
 
     /**
+     * What every page asks of the browser. HTTPS is pinned only when the page came over it,
+     * so a local http:// server is never told to refuse itself.
+     *
+     * @return list<string>
+     */
+    public static function securityHeaders(bool $https): array
+    {
+        $headers = [
+            'X-Content-Type-Options: nosniff',
+            'Referrer-Policy: strict-origin-when-cross-origin',
+            'Permissions-Policy: camera=(), microphone=(), geolocation=()',
+            "Content-Security-Policy: default-src 'self'; img-src 'self' https: data:; style-src 'self'; script-src 'self'; frame-src https://www.youtube-nocookie.com; frame-ancestors 'none'",
+        ];
+        if ($https) {
+            $headers[] = 'Strict-Transport-Security: max-age=31536000';
+        }
+
+        return $headers;
+    }
+
+    /**
      * The address of a file of the site, marked with its date: the browser keeps these
      * files for days, and a new date makes it fetch the new one after a deployment.
      */
@@ -59,8 +80,9 @@ final class View
 
         header('Content-Type: text/html; charset=utf-8');
         header('Cache-Control: no-store');
-        header('X-Content-Type-Options: nosniff');
-        header("Content-Security-Policy: default-src 'self'; img-src 'self' https: data:; style-src 'self'; script-src 'self'; frame-src https://www.youtube-nocookie.com; frame-ancestors 'none'");
+        foreach (self::securityHeaders(($_SERVER['HTTPS'] ?? '') !== '' && ($_SERVER['HTTPS'] ?? '') !== 'off') as $header) {
+            header($header);
+        }
         echo $page;
         exit;
     }
