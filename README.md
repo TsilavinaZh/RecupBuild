@@ -44,7 +44,7 @@ A sustainability tool with one job: keep usable material out of the skip.
 
 ### ▶ Watch the 3-minute pitch
 
-[![RecupBuild — 3-minute pitch on YouTube](https://img.youtube.com/vi/sO_UkvMmugU/maxresdefault.jpg)](https://youtu.be/sO_UkvMmugU)
+[![RecupBuild — 3-minute pitch on YouTube](https://img.youtube.com/vi/EafmljX9CQ4/maxresdefault.jpg)](https://youtu.be/EafmljX9CQ4)
 
 </div>
 
@@ -55,7 +55,7 @@ A sustainability tool with one job: keep usable material out of the skip.
 ## Contents
 
 - [Live app](https://recupbuild.tendry.mg)
-- [Pitch video (YouTube)](https://youtu.be/sO_UkvMmugU)
+- [Pitch video (YouTube)](https://youtu.be/EafmljX9CQ4)
 - [Why it matters](#why-it-matters)
 - [What RecupBuild does](#what-recupbuild-does)
 - [Built with Meta](#built-with-meta)
