@@ -212,8 +212,9 @@ final class WorkspaceController extends Controller
     }
 
     /**
-     * The four cards: the model's projects for this wood, or the built-in projects
-     * planned by the engine (the demo, or when the model cannot answer).
+     * The four cards: the model's projects for this wood; in the demo, those it invented
+     * once for the sample heap; when it cannot answer, the built-in projects. In the last
+     * two cases the engine alone plans them.
      *
      * @return array{0: list<array<string, mixed>>, 1: string} the cards and where they come from
      */
@@ -229,9 +230,17 @@ final class WorkspaceController extends Controller
                 error_log('[recupbuild] projects failed: ' . $error->getMessage());
             }
         }
+        $locale = Request::locale();
         $cards = [];
-        foreach (Projects::IDS as $id) {
-            $cards[] = ['definition' => Projects::definition($id), 'result' => Solver::solve($id, $pieces)];
+        foreach ($workspace['demo'] ? Demo::projects($locale) : Projects::IDS as $project) {
+            $cards[] = ['definition' => Projects::definition($project), 'result' => Solver::solve($project, $pieces)];
+        }
+        if (array_filter($cards, static fn (array $card): bool => $card['result']['status'] === 'feasible') === []) {
+            // Small offcuts fit none of the built-in projects: a simple one always does.
+            $simple = Projects::simplest(Solver::toStock($pieces), $locale);
+            if ($simple !== null) {
+                array_unshift($cards, ['definition' => $simple, 'result' => Solver::solve($simple, $pieces)]);
+            }
         }
 
         return [self::withPreview($cards), $workspace['demo'] ? 'demo' : 'engine'];

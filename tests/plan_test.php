@@ -283,3 +283,16 @@ RecupBuild\Models\Plans::savePreview($pdo, $other['id'], $saved, 'stolen.jpg');
 check('nobody can set the preview of a plan of someone else', RecupBuild\Models\Plans::find($pdo, $owner['id'], $saved)['preview'] === null);
 RecupBuild\Models\Plans::savePreview($pdo, $owner['id'], $saved, 'picture.jpg');
 check('a preview stays with its plan', RecupBuild\Models\Plans::find($pdo, $owner['id'], $saved)['preview'] === 'picture.jpg');
+
+
+echo "instant demo
+";
+
+$sample = array_map(static fn (array $piece): array => array_diff_key($piece, ['outline' => 1]), RecupBuild\Services\Demo::scan()['pieces']);
+foreach (['en', 'fr'] as $locale) {
+    $projects = RecupBuild\Services\Demo::projects($locale);
+    $built = array_filter($projects, static fn (array $project): bool => Solver::solve($project, $sample)['status'] === 'feasible');
+    check("the demo in {$locale} offers projects that can all be built", count($projects) >= 3 && count($built) === count($projects), count($built) . ' of ' . count($projects));
+}
+check('a language without its own projects falls back on French', RecupBuild\Services\Demo::projects('mg') === RecupBuild\Services\Demo::projects('fr'));
+

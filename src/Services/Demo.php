@@ -7,8 +7,7 @@ namespace RecupBuild\Services;
 /**
  * The sample heap of the demo: a real photo (demo/pile.jpg) and the scan the
  * model made of it once (demo-scan.json, outlines in the pixels of that photo). The demo
- * never calls the model again: the projects are the four built-in ones, planned by the
- * engine alone.
+ * never calls the model again: the engine alone plans the projects kept for that heap.
  */
 final class Demo
 {
@@ -22,5 +21,19 @@ final class Demo
     public static function scan(): array
     {
         return json_decode((string) file_get_contents(__DIR__ . '/demo-scan.json'), true, flags: JSON_THROW_ON_ERROR);
+    }
+
+    /**
+     * The projects the model invented once for the sample heap (demo-projects.json):
+     * small offcuts fit none of the built-in projects. The engine still checks them
+     * at every visit; the demo itself calls no model.
+     *
+     * @return list<array<string, mixed>> project definitions
+     */
+    public static function projects(string $locale): array
+    {
+        $projects = json_decode((string) file_get_contents(__DIR__ . '/demo-projects.json'), true, flags: JSON_THROW_ON_ERROR);
+
+        return $projects[$locale] ?? $projects['fr'];
     }
 }
