@@ -20,6 +20,14 @@ final class Config
     public string $metaApiBase = 'https://api.meta.ai/v1';
     public string $visionModel = 'muse-spark-1.3';
 
+    /**
+     * A local server for open weights (Ollama, llama.cpp), for the text-only steps:
+     * empty, every call goes to the Meta Model API.
+     */
+    public string $openWeightsBase = '';
+    public string $openWeightsModel = 'muse-glimmer:30b-mlx';
+    public string $openWeightsKey = '';
+
     /** "Sign in with Google" done by the server (see GoogleAuth). The secret never leaves it. */
     public string $googleClientId = '';
     public string $googleClientSecret = '';
@@ -57,6 +65,10 @@ final class Config
         $config->metaApiKey = self::read('MODEL_API_KEY') ?: self::read('MUSE_IMAGE_API_KEY');
         $config->metaApiBase = self::read('META_API_BASE', $config->metaApiBase);
         $config->visionModel = self::read('VISION_MODEL', $config->visionModel);
+
+        $config->openWeightsBase = self::read('OPEN_WEIGHTS_BASE');
+        $config->openWeightsModel = self::read('OPEN_WEIGHTS_MODEL', $config->openWeightsModel);
+        $config->openWeightsKey = self::read('OPEN_WEIGHTS_API_KEY');
 
         $config->googleClientId = self::read('GOOGLE_CLIENT_ID');
         $config->googleClientSecret = self::read('GOOGLE_CLIENT_SECRET');
