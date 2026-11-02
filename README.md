@@ -10,6 +10,8 @@ An A4 sheet next to the pile gives the scale: the AI measures every plank,
 invents four projects sized to your wood, an engine places every cut,
 and you leave with the cutting plan, the 3D render and the assembly steps.
 
+A sustainability tool with one job: keep usable material out of the skip.
+
 *Built for the Meta Global AI Hackathon 2026 with Muse Spark, SAM 3.1 and Muse Image on the Meta Model API.*
 
 ![PHP 8.3](https://img.shields.io/badge/PHP-8.3-2f6b4f?style=flat-square&logo=php&logoColor=white)
@@ -36,6 +38,7 @@ and you leave with the cutting plan, the 3D render and the assembly steps.
 
 - [Live app](https://recupbuild.tendry.mg)
 - [Pitch video (YouTube)](https://youtu.be/sO_UkvMmugU)
+- [Why it matters](#why-it-matters)
 - [What RecupBuild does](#what-recupbuild-does)
 - [Built with Meta](#built-with-meta)
 - [Benchmarks](#benchmarks)
@@ -50,6 +53,26 @@ and you leave with the cutting plan, the 3D render and the assembly steps.
 - [Tests](#tests)
 - [Technical notes](#technical-notes)
 - [License](#license)
+
+---
+
+## Why it matters
+
+Building work, renovations and old furniture leave behind wood and metal that are still good.
+Too often they end up in a skip or forgotten in a corner, not because they are useless but because
+nobody can tell what that exact pile could become. Finding out means measuring every piece and
+working out the cuts by hand, and one wrong cut spoils the material you meant to save.
+
+RecupBuild is a sustainability project: it makes reuse the easy option.
+
+- **Start from what already exists.** Projects are sized to the pieces in your photo, not to a shopping list.
+- **Waste less of it.** The engine places every cut on your pieces, saw kerf included, and tells you when a project does not fit, before you touch the wood.
+- **A phone and an A4 sheet are enough.** No measuring session, no CAD software, no drawing skills.
+- **Think before buying new.** The reverse build turns a photo of an object you like into the list of parts to make it yourself.
+
+It is made for home makers today, and an offer for schools, associations and reuse centres is planned.
+RecupBuild publishes no figure for waste or carbon saved: nothing in it measures them. What it does
+measure is in the [benchmarks](#benchmarks).
 
 ---
 
