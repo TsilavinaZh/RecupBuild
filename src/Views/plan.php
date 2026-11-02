@@ -70,7 +70,7 @@ $scene = json_encode([
       <div class="viewer" data-scene3d="<?= $e($scene) ?>" role="img" aria-label="<?= $t('plan.renderAlt') ?>">
         <?= Drawing::isometric($assembly, $sizes) ?>
       </div>
-      <script type="module" src="/js/assembly3d.js"></script>
+      <script type="module" src="<?= $e(\RecupBuild\Core\View::asset('/js/assembly3d.js')) ?>"></script>
     </section>
   <?php endif ?>
 

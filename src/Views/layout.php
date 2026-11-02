@@ -27,8 +27,8 @@ $isError = $flash !== null && str_starts_with($flash, 'error.');
   <link rel="icon" type="image/png" href="/images/logo.png" sizes="128x128">
   <link rel="apple-touch-icon" href="/images/logo.png">
   <link rel="preload" href="/fonts/space-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/pages.css">
-  <script src="/js/pages.js" defer></script>
+  <link rel="stylesheet" href="<?= $e(\RecupBuild\Core\View::asset('/css/pages.css')) ?>">
+  <script src="<?= $e(\RecupBuild\Core\View::asset('/js/pages.js')) ?>" defer></script>
 </head>
 <body class="<?= $wide ? 'wide' : '' ?>">
   <a class="skip" href="#main"><?= $t('skip') ?></a>

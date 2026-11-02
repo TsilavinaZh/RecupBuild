@@ -16,6 +16,17 @@ final class View
 {
     private const LOCALES = ['fr', 'en', 'mg'];
 
+    /**
+     * The address of a file of the site, marked with its date: the browser keeps these
+     * files for days, and a new date makes it fetch the new one after a deployment.
+     */
+    public static function asset(string $path): string
+    {
+        $changed = @filemtime(dirname(__DIR__, 2) . $path);
+
+        return $path . '?v=' . ($changed === false ? 0 : $changed);
+    }
+
     /** @param array<string, mixed> $data */
     public static function render(string $template, string $titleKey, array $data = []): never
     {
