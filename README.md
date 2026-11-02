@@ -10,12 +10,12 @@ An A4 sheet next to the pile gives the scale: the AI measures every plank,
 invents four projects sized to your wood, an engine places every cut,
 and you leave with the cutting plan, the 3D render and the assembly steps.
 
-*Built for the Meta Global AI Hackathon 2026 with Muse Spark on the Meta Model API.*
+*Built for the Meta Global AI Hackathon 2026 with Muse Spark and SAM 3.1 on the Meta Model API.*
 
 ![PHP 8.3](https://img.shields.io/badge/PHP-8.3-2f6b4f?style=flat-square&logo=php&logoColor=white)
 ![MVC, no framework](https://img.shields.io/badge/MVC-no%20framework-c4622d?style=flat-square)
 ![SQLite](https://img.shields.io/badge/SQLite-3-1f2a24?style=flat-square&logo=sqlite&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-105%20checks-2f6b4f?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-127%20checks-2f6b4f?style=flat-square)
 ![Meta Hackathon](https://img.shields.io/badge/born%20at-Meta%20hackathon-0866ff?style=flat-square&logo=meta&logoColor=white)
 
 ### 🌐 Try it live: **[recupbuild.tendry.mg](https://recupbuild.tendry.mg)**
@@ -93,18 +93,26 @@ authenticated with your `MODEL_API_KEY`), from `src/Services/Vision.php`.
 
 | Step | Model | What it does |
 | --- | --- | --- |
-| Scan | **Muse Spark** (`muse-spark-1.3`), vision | finds the A4 sheet and every piece on the photo, estimates each thickness |
+| Scan | **Muse Spark** (`muse-spark-1.3`), vision | finds the A4 sheet and every piece on the photo, names its kind, estimates its thickness |
+| Scan | **SAM 3.1** (`sam-3.1`), segmentation | traces the real edges of the wood, the metal and the sheet of paper (`src/Services/Segmentation.php`) |
 | Projects | **Muse Spark**, reasoning | invents up to four parametric projects for this inventory |
 | Assembly | **Muse Spark**, reasoning | writes the steps of the chosen project, in the user's language |
 | Rebuild | **Muse Spark**, vision | reads a finished object: parts, tools, hardware, steps and a 3D layout |
 
 Each call asks for a **structured output** (`response_format` with a JSON schema), so the server
-receives data it can check, never free text. A deterministic engine then has the last word:
+receives data it can check, never free text. A deterministic engine then has the last word.
+
+**Why two models on the scan?** Muse Spark understands the photo, but its corners can sit tens of
+pixels off, and a measurement is only as good as its edges. SAM 3.1 traces those edges: each mask
+becomes the tightest rotated rectangle around the piece, and the piece keeps the kind and thickness
+Muse Spark read. If SAM fails, the scan simply keeps Muse Spark's corners.
 
 ```mermaid
 flowchart LR
-    photo[Photo + A4 sheet] --> spark[Muse Spark<br>finds and measures]
+    photo[Photo + A4 sheet] --> spark[Muse Spark<br>finds, names, thickness]
+    photo --> sam[SAM 3.1<br>traces the real edges]
     spark --> scale[A4 scale<br>pixels to mm]
+    sam --> scale
     scale --> inventory[Inventory<br>the user corrects it]
     inventory --> ideas[Muse Spark<br>invents projects]
     ideas --> solver[Cutting engine<br>checks every part]
@@ -236,8 +244,8 @@ src/
                      and the API: Health, Scan, Plan, History
   Models/            Users (accounts, credits), Plans, Rebuilds, Photos, Workspace (the journey in session),
                      Projects (project definitions)
-  Services/          Vision (the model), Planner, Solver (cutting engine), Scan, Reverse, Image,
-                     GoogleAuth, Assembly (3D layout), Drawing (SVG drawings), Demo
+  Services/          Vision (Muse Spark), Segmentation and SamMask (SAM 3.1), Planner, Solver (cutting
+                     engine), Scan, Reverse, Image, GoogleAuth, Assembly (3D layout), Drawing, Demo
   Errors/            ScanError, VisionError, AuthError
   Views/             the layout and one view per page, their texts in lang/en.php and lang/fr.php
 tests/               php tests/run.php
@@ -379,7 +387,7 @@ Then declare `https://recupbuild.example.com` under the JavaScript origins and
 ## Tests
 
 ```sh
-php tests/run.php            # 105 checks: scan, cutting engine, invented projects, reverse build,
+php tests/run.php            # 127 checks: scan, cutting engine, invented projects, reverse build,
                              # Google sign-in, SQLite, history, credits, drawings, inventory, page texts
 php tests/live_plan.php      # real call to the model: cards, plan and steps
 ```
@@ -394,6 +402,8 @@ php tests/live_plan.php      # real call to the model: cards, plan and steps
   never leaves the server, the session is an `HttpOnly` / `SameSite=Lax` cookie.
 - **Pages**: every text is escaped, forms carry a CSRF token, and a
   *Content-Security-Policy* only allows the site's own scripts and styles.
+- **SAM masks**: `Services/SamMask.php` is a port of the decoder of Meta's `meta-sam-parser`,
+  under the [SAM License](docs/licenses/SAM-LICENSE.txt).
 - **Images**: GD decoding (JPEG, PNG, WebP), EXIF rotation, longest edge at 1600 px, JPEG 85.
 - **Latency**: a request holds a PHP *worker* during the model call; plan for
   `pm.max_children` ≥ 5 if several people use it at once.

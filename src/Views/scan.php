@@ -32,7 +32,7 @@ defined('RECUPBUILD') || (http_response_code(404) && exit);
 
     <!-- The photo: dropped on the zone or chosen; pages.js shows it before it is sent. -->
     <form class="dropzone" method="post" action="/scan" enctype="multipart/form-data"
-          data-loading="<?= $t('scan.analysing') ?>" data-seconds="25">
+          data-loading="<?= $t('scan.analysing') ?>" data-seconds="40">
       <input type="hidden" name="csrf" value="<?= $e($csrf) ?>">
       <input type="hidden" name="source" value="upload">
       <label class="drop" data-drop>
@@ -62,7 +62,7 @@ defined('RECUPBUILD') || (http_response_code(404) && exit);
             <span class="muted small"><?= $t('scan.demoHint') ?></span>
           </button>
         </form>
-        <form method="post" action="/scan" data-loading="<?= $t('scan.analysing') ?>" data-seconds="25">
+        <form method="post" action="/scan" data-loading="<?= $t('scan.analysing') ?>" data-seconds="40">
           <input type="hidden" name="csrf" value="<?= $e($csrf) ?>">
           <input type="hidden" name="source" value="example">
           <button class="example" type="submit">

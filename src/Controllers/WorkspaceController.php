@@ -22,6 +22,7 @@ use RecupBuild\Services\Demo;
 use RecupBuild\Services\Image;
 use RecupBuild\Services\Planner;
 use RecupBuild\Services\Scan;
+use RecupBuild\Services\Segmentation;
 use RecupBuild\Services\Solver;
 use RecupBuild\Services\Vision;
 
@@ -75,7 +76,7 @@ final class WorkspaceController extends Controller
 
         try {
             [$jpeg, $width, $height] = Image::prepare($data, $this->config);
-            $scan = Scan::buildResponse(Vision::analyse($jpeg, $this->config), $width, $height);
+            $scan = Scan::buildResponse(Segmentation::refine(Vision::analyse($jpeg, $this->config), $jpeg, $width, $height, $this->config), $width, $height);
             Workspace::start(Photos::store($jpeg), $scan['image'], $scan['pieces'], false);
         } catch (ScanError $error) {
             self::failed($error->errorCode);

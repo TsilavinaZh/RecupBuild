@@ -14,6 +14,7 @@ use RecupBuild\Models\Users;
 use RecupBuild\Services\Image;
 use RecupBuild\Services\Reverse;
 use RecupBuild\Services\Scan;
+use RecupBuild\Services\Segmentation;
 use RecupBuild\Services\Vision;
 
 /**
@@ -32,7 +33,7 @@ final class ScanController extends Controller
         $data = $this->upload();
         try {
             [$jpeg, $width, $height] = Image::prepare($data, $this->config);
-            Http::json(200, Scan::buildResponse(Vision::analyse($jpeg, $this->config), $width, $height));
+            Http::json(200, Scan::buildResponse(Segmentation::refine(Vision::analyse($jpeg, $this->config), $jpeg, $width, $height, $this->config), $width, $height));
         } catch (ScanError $error) {
             Http::fail($error->errorCode, $error->status);
         } catch (VisionError $error) {
