@@ -8,6 +8,7 @@ use RecupBuild\Core\Controller;
 use RecupBuild\Core\Database;
 use RecupBuild\Core\View;
 use RecupBuild\Models\Settings;
+use RecupBuild\Services\Seo;
 
 /**
  * The public pages:
@@ -17,6 +18,7 @@ use RecupBuild\Models\Settings;
  *   GET /legal   the legal notice (the few facts the admin keeps on /admin/legal)
  *   GET /cgu     the terms of use
  *   GET /privacy the privacy policy
+ *   GET /robots.txt and /sitemap.xml  for search engines
  *   any other    "page not found"
  */
 final class HomeController extends Controller
@@ -46,6 +48,20 @@ final class HomeController extends Controller
     public function privacy(): never
     {
         View::render('privacy', 'privacy.title');
+    }
+
+    public function robots(): never
+    {
+        header('Content-Type: text/plain; charset=utf-8');
+        echo Seo::robots(Seo::origin());
+        exit;
+    }
+
+    public function sitemap(): never
+    {
+        header('Content-Type: application/xml; charset=utf-8');
+        echo Seo::sitemap(Seo::origin());
+        exit;
     }
 
     public function notFound(): never

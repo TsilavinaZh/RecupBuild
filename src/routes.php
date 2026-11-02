@@ -29,6 +29,8 @@ return static function (Router $router): void {
 
     $router->get('/', [HomeController::class, 'home']);
     $router->get('/about', [HomeController::class, 'about']);
+    $router->get('/robots.txt', [HomeController::class, 'robots']);
+    $router->get('/sitemap.xml', [HomeController::class, 'sitemap']);
     $router->get('/legal', [HomeController::class, 'legal']);
     $router->get('/cgu', [HomeController::class, 'cgu']);
     $router->get('/privacy', [HomeController::class, 'privacy']);

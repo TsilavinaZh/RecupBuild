@@ -115,6 +115,12 @@ check('HTTPS is pinned only over HTTPS', !in_array('Strict-Transport-Security: m
 $layout = (string) file_get_contents(dirname(__DIR__) . '/src/Views/layout.php');
 check('a shared link shows a title, a text and a picture', str_contains($layout, 'og:title') && str_contains($layout, 'og:description') && str_contains($layout, 'summary_large_image'));
 check('the picture of a shared link exists', str_contains($layout, '/images/preview-bench.jpg') && is_file(dirname(__DIR__) . '/images/preview-bench.jpg'));
+$robots = RecupBuild\Services\Seo::robots('https://example.test');
+check('search engines stay out of the private pages', str_contains($robots, 'Disallow: /scan') && str_contains($robots, 'Disallow: /api/'));
+check('they are told where the public pages are', str_contains($robots, 'Sitemap: https://example.test/sitemap.xml'));
+$map = RecupBuild\Services\Seo::sitemap('https://example.test');
+check('the sitemap lists the public pages and only those', str_contains($map, '<loc>https://example.test/about</loc>') && !str_contains($map, '/scan'));
+check('the sitemap is valid XML', simplexml_load_string($map) !== false);
 $views = ['layout', 'home', 'about', 'legal', 'cgu', 'privacy', 'notfound', 'pricing', 'profile', 'scan', 'inventory', 'projects', 'plan', 'plan-failed', 'history', 'rebuild', 'rebuild-show',
     'admin/_nav', 'admin/dashboard', 'admin/users', 'admin/pricing', 'admin/legal'];
 check('every page has its view', array_filter($views, static fn (string $view): bool => !is_file(dirname(__DIR__) . '/src/Views/' . $view . '.php')) === []);
