@@ -106,6 +106,8 @@ check('the site files sit next to index.php', is_file(dirname(__DIR__) . '/index
     && is_file(dirname(__DIR__) . '/js/pages.js') && !is_dir(dirname(__DIR__) . '/public'));
 check('every test and benchmark refuses to run from a web request', array_filter([...(glob(__DIR__ . '/*.php') ?: []), ...(glob(dirname(__DIR__) . '/benchmarks/*.php') ?: [])],
     static fn (string $file): bool => !str_contains((string) file_get_contents($file), "PHP_SAPI !== 'cli'")) === []);
+check('a file of the site carries its date, so a deployment reaches the browser', preg_match('#^/css/pages\.css\?v=[1-9][0-9]+$#', RecupBuild\Core\View::asset('/css/pages.css')) === 1);
+check('a missing file still gives an address', RecupBuild\Core\View::asset('/css/missing.css') === '/css/missing.css?v=0');
 $views = ['layout', 'home', 'about', 'legal', 'cgu', 'privacy', 'notfound', 'pricing', 'profile', 'scan', 'inventory', 'projects', 'plan', 'plan-failed', 'history', 'rebuild', 'rebuild-show',
     'admin/_nav', 'admin/dashboard', 'admin/users', 'admin/pricing', 'admin/legal'];
 check('every page has its view', array_filter($views, static fn (string $view): bool => !is_file(dirname(__DIR__) . '/src/Views/' . $view . '.php')) === []);
