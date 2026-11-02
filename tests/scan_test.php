@@ -15,7 +15,9 @@ if (PHP_SAPI !== 'cli') {
 
 use RecupBuild\Core\Config;
 use RecupBuild\Services\Image;
+use RecupBuild\Services\SamMask;
 use RecupBuild\Services\Scan;
+use RecupBuild\Services\Segmentation;
 
 require_once __DIR__ . '/support.php';
 require_once __DIR__ . '/../src/bootstrap.php';
@@ -115,3 +117,95 @@ check('downsizes a 4000 x 3000 photo to 1600 x 1200', same([1600, 1200], [$width
 check('re-encodes as JPEG', str_starts_with($jpeg, "\xFF\xD8"));
 
 throwsScan(static fn () => Image::prepare('not an image', $config), 'unsupported_type', 'refuses a file that is not an image');
+
+echo "SAM 3.1\n";
+
+$answer = (string) file_get_contents(__DIR__ . '/fixtures/sam-wood.txt');
+$records = Segmentation::parse($answer);
+check('reads every record of a real SAM answer', count($records) === 10, (string) count($records));
+
+$record = $records[2];
+$mask = SamMask::decode($record['payload'], $record['width'], $record['height']);
+check('decodes a real mask to its full size', count($mask) === 72 * 395, (string) count($mask));
+check('the mask holds only zeros and ones', array_diff($mask, [0, 1]) === []);
+check('the mask fills the box of its plank', abs(array_sum($mask) / count($mask) - 0.939) < 0.001, (string) (array_sum($mask) / count($mask)));
+
+$refused = false;
+try {
+    SamMask::decode('!!!!!!', 10, 10);
+} catch (RuntimeException) {
+    $refused = true;
+}
+check('refuses a mask that is not one', $refused);
+$refused = false;
+try {
+    SamMask::decode($record['payload'], 100000, 100000);
+} catch (RuntimeException) {
+    $refused = true;
+}
+check('refuses a mask too large to decode', $refused);
+
+$objects = Segmentation::objects($answer);
+check('turns each trace into a rectangle', count($objects) === 10 && count($objects[0]['corners']) === 4);
+check('a rectangle hugs a tilted plank tighter than its box', $objects[0]['area'] < 0.9 * (130 - 33) * (454 - 19), (string) $objects[0]['area']);
+
+$angle = deg2rad(20);
+$tilted = [];
+foreach ([[0, 0], [300, 0], [300, 100], [0, 100], [150, 50]] as [$x, $y]) {
+    $tilted[] = [500 + $x * cos($angle) - $y * sin($angle), 200 + $x * sin($angle) + $y * cos($angle)];
+}
+$rectangle = Segmentation::tightestRectangle($tilted);
+$first = hypot($rectangle[1][0] - $rectangle[0][0], $rectangle[1][1] - $rectangle[0][1]);
+$second = hypot($rectangle[2][0] - $rectangle[1][0], $rectangle[2][1] - $rectangle[1][1]);
+check('finds the tightest rectangle of a tilted shape', abs(max($first, $second) - 300) < 0.01 && abs(min($first, $second) - 100) < 0.01, "{$first} x {$second}");
+check('three aligned points make no rectangle', Segmentation::tightestRectangle([[0.0, 0.0], [1.0, 1.0], [2.0, 2.0]]) === null);
+
+/** A trace of SAM, from its edges on a 1000 x 1000 photo. */
+function trace(float $left, float $top, float $right, float $bottom, float $confidence = 0.95): array
+{
+    return [
+        'corners' => [[$left, $top], [$right, $top], [$right, $bottom], [$left, $bottom]],
+        'box' => [$left, $top, $right, $bottom],
+        'area' => ($right - $left) * ($bottom - $top),
+        'confidence' => $confidence,
+    ];
+}
+
+function rectangleOn(float $left, float $top, float $right, float $bottom): array
+{
+    return [[$left, $top], [$right, $top], [$right, $bottom], [$left, $bottom]];
+}
+
+$sheet = ['found' => true, 'corners' => rectangleOn(790, 90, 940, 302)];
+$spark = ['a4' => $sheet, 'pieces' => [['kind' => 'plywood', 'thickness_mm' => 12, 'corners' => rectangleOn(120, 120, 420, 320)]]];
+
+$merged = Segmentation::merge($spark, ['paper' => [trace(800, 100, 950, 312)], 'wood' => [trace(100, 100, 400, 300)], 'metal' => []], 1000, 1000);
+check('a piece takes the corners SAM traced', same(rectangleOn(100, 100, 400, 300), $merged['pieces'][0]['corners']));
+check('and keeps what Muse Spark read', $merged['pieces'][0]['kind'] === 'plywood' && $merged['pieces'][0]['thickness_mm'] === 12);
+check('the A4 sheet takes its real edges too', same(rectangleOn(800, 100, 950, 312), $merged['a4']['corners']));
+check('counts what was sharpened', $merged['refined'] === 2, (string) $merged['refined']);
+
+$thin = ['a4' => $sheet, 'pieces' => [['kind' => 'batten', 'thickness_mm' => 30, 'corners' => rectangleOn(130, 100, 160, 500)]]];
+$merged = Segmentation::merge($thin, ['wood' => [trace(100, 100, 135, 500)]], 1000, 1000);
+check('a thin piece finds its trace beside it, without a double', count($merged['pieces']) === 1 && same(rectangleOn(100, 100, 135, 500), $merged['pieces'][0]['corners']));
+
+$merged = Segmentation::merge($spark, ['wood' => [trace(100, 100, 400, 300), trace(500, 500, 700, 600)]], 1000, 1000);
+check('a piece only SAM saw joins the inventory', count($merged['pieces']) === 2 && $merged['pieces'][1]['kind'] === 'plank');
+check('with no thickness, for the usual one of its kind', $merged['pieces'][1]['thickness_mm'] === null);
+
+$merged = Segmentation::merge($spark, ['wood' => [trace(100, 100, 400, 300), trace(500, 500, 700, 600, 0.6)]], 1000, 1000);
+check('an unsure trace adds nothing', count($merged['pieces']) === 1);
+
+$merged = Segmentation::merge($spark, ['paper' => [trace(800, 100, 950, 312)], 'wood' => [trace(800, 100, 950, 312)]], 1000, 1000);
+check('the A4 sheet is never a piece', count($merged['pieces']) === 1);
+
+$merged = Segmentation::merge($spark, ['metal' => [trace(120, 120, 130, 130)]], 1000, 1000);
+check('a trace of another size leaves the piece as it is', same($spark['pieces'][0]['corners'], $merged['pieces'][0]['corners']));
+
+$merged = Segmentation::merge(['a4' => ['found' => false, 'corners' => []], 'pieces' => []], ['paper' => [trace(800, 100, 950, 312)]], 1000, 1000);
+check('SAM can find the sheet Muse Spark missed', $merged['a4']['found'] === true);
+
+ini_set('log_errors', '0');
+$untouched = Segmentation::refine($spark, 'jpeg', 1000, 1000, new Config());
+ini_set('log_errors', '1');
+check('without SAM the scan keeps the corners of Muse Spark', same($spark['pieces'], $untouched['pieces']) && $untouched['refined'] === 0);

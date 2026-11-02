@@ -128,21 +128,45 @@ final class Vision
      */
     private static function ask(array $messages, string $name, array $schema, Config $config): array
     {
-        if ($config->metaApiKey === '') {
-            throw new VisionError('server', 'No Meta API key configured (MODEL_API_KEY in the repository .env).');
-        }
-
-        $body = [
+        $decoded = self::post('/chat/completions', [
             'model' => $config->visionModel,
             'messages' => $messages,
             'response_format' => ['type' => 'json_schema', 'json_schema' => ['name' => $name, 'schema' => $schema]],
-        ];
+        ], $config);
+
+        $content = $decoded['choices'][0]['message']['content'] ?? null;
+        if (!is_string($content)) {
+            throw new VisionError('invalid_json', 'the model answer has no message content');
+        }
+
+        $model = json_decode($content, true);
+        if (!is_array($model)) {
+            throw new VisionError('invalid_json', 'the content is not a JSON object');
+        }
+
+        return $model;
+    }
+
+    /**
+     * One call to the Meta Model API, for every model the app uses.
+     *
+     * @param array<string, mixed> $body
+     *
+     * @return array<string, mixed> the decoded JSON answer
+     *
+     * @throws VisionError timeout / server / invalid_json
+     */
+    public static function post(string $path, array $body, Config $config): array
+    {
+        if ($config->metaApiKey === '') {
+            throw new VisionError('server', 'No Meta API key configured (MODEL_API_KEY in .env.php).');
+        }
 
         // The connection to the model sometimes cannot even be opened: then nothing was
         // sent (nothing paid), and one more attempt is safe. A request that reached the
         // model is never sent twice.
         for ($attempt = 1; ; ++$attempt) {
-            $client = curl_init(rtrim($config->metaApiBase, '/') . '/chat/completions');
+            $client = curl_init(rtrim($config->metaApiBase, '/') . $path);
             if ($client === false) {
                 throw new VisionError('server', 'curl_init failed');
             }
@@ -180,23 +204,14 @@ final class Vision
         curl_close($client);
 
         if ($status >= 400) {
-            throw new VisionError('server', 'Vision model answered HTTP ' . $status . ': ' . substr((string) $response, 0, 300));
+            throw new VisionError('server', 'Model answered HTTP ' . $status . ' on ' . $path . ': ' . substr((string) $response, 0, 300));
         }
 
         $decoded = json_decode((string) $response, true);
         if (!is_array($decoded)) {
             throw new VisionError('invalid_json', 'the model answer is not JSON');
         }
-        $content = $decoded['choices'][0]['message']['content'] ?? null;
-        if (!is_string($content)) {
-            throw new VisionError('invalid_json', 'the model answer has no message content');
-        }
 
-        $model = json_decode($content, true);
-        if (!is_array($model)) {
-            throw new VisionError('invalid_json', 'the content is not a JSON object');
-        }
-
-        return $model;
+        return $decoded;
     }
 }
