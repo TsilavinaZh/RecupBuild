@@ -164,6 +164,12 @@ Nothing private can leak, even though PHP's built-in server serves the whole fol
   (or wherever `STORAGE_PATH` points);
 - the views and the tests answer 404 when they are requested directly.
 
+Or with Docker (PHP, Apache and every extension included; the database and the photos stay in a volume):
+
+```sh
+MODEL_API_KEY=... GOOGLE_CLIENT_ID=... GOOGLE_CLIENT_SECRET=... docker compose up --build
+```
+
 Then open **http://localhost:8080** (not `127.0.0.1`, or the Google redirect won't match).
 
 | Address | Page |

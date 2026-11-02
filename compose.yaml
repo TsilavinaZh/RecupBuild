@@ -1,0 +1,27 @@
+# docker compose up --build, then open http://localhost:8080
+#
+# The settings come from your shell, for example:
+#   MODEL_API_KEY=... GOOGLE_CLIENT_ID=... GOOGLE_CLIENT_SECRET=... docker compose up --build
+# Without a key the site still starts; only the AI steps need one.
+services:
+  recupbuild:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      MODEL_API_KEY: ${MODEL_API_KEY:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-http://localhost:8080/auth/google/callback}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+    volumes:
+      - recupbuild-data:/data
+    restart: unless-stopped
+
+volumes:
+  recupbuild-data:
