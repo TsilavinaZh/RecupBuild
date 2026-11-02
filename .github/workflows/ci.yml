@@ -75,6 +75,8 @@ jobs:
           curl -fs -o /dev/null http://localhost:8080/js/pages.js
           curl -fs -o /dev/null http://localhost:8080/demo/pile.jpg
           curl -fs -o /dev/null http://localhost:8080/pricing
+          curl -fs http://localhost:8080/robots.txt | grep -q 'Sitemap: http://localhost:8080/sitemap.xml'
+          curl -fs http://localhost:8080/sitemap.xml | grep -q '<loc>http://localhost:8080/about</loc>'
 
       - name: Check that the web user can create the database in the volume
         run: |
