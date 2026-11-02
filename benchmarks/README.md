@@ -55,7 +55,7 @@ single fault fails the run, and with it the CI.
 | **Faults** | **0** |
 | Wood used, median share of the pieces cut | 43.0 % |
 | Solve time, median | 0.12 ms |
-| Solve time, slowest | 3.09 ms |
+| Solve time, slowest | 3.41 ms |
 
 A project with no plan is a valid answer: on these inventories some projects simply do not fit, and
 the app then shows or invents others. The 43 % counts the whole of each piece used, so the offcuts
