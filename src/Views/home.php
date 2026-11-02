@@ -195,6 +195,30 @@ $batten = Drawing::plank(1196, 18, 88, 0.6);
   </div>
 </section>
 
+<!-- The three Meta models, each shown at work on the real photo of the demo. -->
+<section class="wrap section models" aria-labelledby="models-title">
+  <p class="eyebrow"><?= $t('home.models.eyebrow') ?></p>
+  <h2 id="models-title" class="section-title"><?= $t('home.models.title') ?></h2>
+  <ul class="model-list">
+    <?php foreach (['spark', 'sam', 'image'] as $model): ?>
+      <li>
+        <h3><?= $t("home.models.{$model}.name") ?></h3>
+        <p><?= $t("home.models.{$model}.text") ?></p>
+      </li>
+    <?php endforeach ?>
+  </ul>
+  <div class="model-figures">
+    <figure>
+      <img src="/images/sam-vs-spark.jpg" alt="<?= $t('home.models.edgesAlt') ?>" width="1032" height="676" loading="lazy">
+      <figcaption><?= $t('home.models.edges') ?></figcaption>
+    </figure>
+    <figure>
+      <img src="/images/preview-bench.jpg" alt="<?= $t('home.models.previewAlt') ?>" width="1200" height="800" loading="lazy">
+      <figcaption><?= $t('home.models.preview') ?></figcaption>
+    </figure>
+  </div>
+</section>
+
 <!-- Projects: the tags on the wall. -->
 <section class="wrap section" aria-labelledby="projects-title">
   <p class="eyebrow"><?= $t('home.projects.eyebrow') ?></p>

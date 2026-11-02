@@ -2045,6 +2045,58 @@ body.wide .wrap {
   }
 }
 
+/* ---------------------------------------------------------- the three models */
+.model-list {
+  display: grid;
+  gap: 1.25rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.model-list li {
+  border-top: 3px solid var(--forest);
+  padding-top: 0.75rem;
+}
+
+.model-list p {
+  margin-top: 0.35rem;
+}
+
+.model-figures {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.model-figures figure {
+  margin: 0;
+}
+
+.model-figures img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  box-shadow: var(--lift);
+}
+
+.model-figures figcaption {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+}
+
+@media (min-width: 860px) {
+  .model-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .model-figures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* ------------------------------------------------------------- two modes */
 .hackathon-pill {
   display: inline-flex;
