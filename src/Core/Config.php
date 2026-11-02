@@ -13,7 +13,8 @@ final class Config
     /** The photo is analysed at this size at most: enough to see the pieces, cheap in tokens. */
     public const MAX_EDGE_PX = 1600;
     public const MAX_UPLOAD_BYTES = 12 * 1024 * 1024;
-    public const VISION_TIMEOUT_S = 120;
+    /** Inventing projects for a large inventory can take the model over two minutes. */
+    public const VISION_TIMEOUT_S = 180;
 
     public string $metaApiKey = '';
     public string $metaApiBase = 'https://api.meta.ai/v1';
