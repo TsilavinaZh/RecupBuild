@@ -15,7 +15,7 @@ and you leave with the cutting plan, the 3D render and the assembly steps.
 ![PHP 8.3](https://img.shields.io/badge/PHP-8.3-2f6b4f?style=flat-square&logo=php&logoColor=white)
 ![MVC, no framework](https://img.shields.io/badge/MVC-no%20framework-c4622d?style=flat-square)
 ![SQLite](https://img.shields.io/badge/SQLite-3-1f2a24?style=flat-square&logo=sqlite&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-143%20checks-2f6b4f?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-157%20checks-2f6b4f?style=flat-square)
 ![Meta Hackathon](https://img.shields.io/badge/born%20at-Meta%20hackathon-0866ff?style=flat-square&logo=meta&logoColor=white)
 
 ### 🌐 Try it live: **[recupbuild.tendry.mg](https://recupbuild.tendry.mg)**
@@ -112,6 +112,20 @@ receives data it can check, never free text. A deterministic engine then has the
 pixels off, and a measurement is only as good as its edges. SAM 3.1 traces those edges: each mask
 becomes the tightest rotated rectangle around the piece, and the piece keeps the kind and thickness
 Muse Spark read. If SAM fails, the scan simply keeps Muse Spark's corners.
+
+**Optional: open weights on your own hardware.** Set `OPEN_WEIGHTS_BASE` and the text-only steps
+(inventing projects, sizing them, writing the assembly) go to **Muse Glimmer 30B** on a local server
+such as Ollama, at no API cost and with the inventory staying on your machine. Reading a photo stays
+on Muse Spark and SAM 3.1, and if the local server fails the app goes back to Muse Spark.
+
+```sh
+ollama pull muse-glimmer:30b-mlx                      # the Apple Silicon build; use the tag your server offers
+OPEN_WEIGHTS_BASE=http://localhost:11434/v1 php -S localhost:8080
+```
+
+> This route is tested against a stand-in server that speaks the same protocol
+> (`tests/fixtures/openai_stub.php`), **not yet against real Glimmer weights**: they weigh about
+> 60 GB and need far more memory than the machine it was built on. RecupBuild does not fine-tune any model.
 
 **Why three families of models?** Each does what the others cannot: Muse Spark reasons about what is
 on the photo and what to build, SAM 3.1 gives the measurement its precision, and Muse Image shows the
@@ -343,6 +357,9 @@ API errors look like `{ "detail": { "code": "a4_not_detected" } }` with the righ
 | `MODEL_API_KEY` (or `MUSE_IMAGE_API_KEY`) | empty | Meta Model API key from [dev.meta.ai](https://dev.meta.ai/), required for the AI |
 | `META_API_BASE` | `https://api.meta.ai/v1` | Meta Model API endpoint |
 | `VISION_MODEL` | `muse-spark-1.3` | model used |
+| `OPEN_WEIGHTS_BASE` | empty | optional local server for the text-only steps, such as `http://localhost:11434/v1` |
+| `OPEN_WEIGHTS_MODEL` | `muse-glimmer:30b-mlx` | model on that server |
+| `OPEN_WEIGHTS_API_KEY` | empty | only if that server asks for one |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | empty | Google sign-in (Google Cloud Console → Clients, "Web application") |
 | `GOOGLE_REDIRECT_URI` | `http(s)://<host>/auth/google/callback` | declare it exactly under "Authorized redirect URIs" |
 | `STORAGE_PATH` | `../recupbuild-storage` | folder of the database and the photos, outside the project |
@@ -423,7 +440,7 @@ Then declare `https://recupbuild.example.com` under the JavaScript origins and
 ## Tests
 
 ```sh
-php tests/run.php            # 143 checks: scan, cutting engine, invented projects, reverse build,
+php tests/run.php            # 157 checks: scan, cutting engine, invented projects, reverse build,
                              # Google sign-in, SQLite, history, credits, drawings, inventory, page texts
 php tests/live_plan.php      # real call to the model: cards, plan and steps
 php benchmarks/solver.php    # every plan of 41 inventories checked from scratch (also in CI)

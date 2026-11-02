@@ -318,3 +318,56 @@ check('deleting a plan that is gone says so', !RecupBuild\Models\Plans::delete($
 @rmdir($folder);
 putenv($storage === false ? 'STORAGE_PATH' : 'STORAGE_PATH=' . $storage);
 
+
+echo "open weights\n";
+
+// A stand-in for a local model server, on a port of its own, never the one of the app.
+const STUB_PORT = 8096;
+$stub = proc_open(
+    [PHP_BINARY, '-S', '127.0.0.1:' . STUB_PORT, __DIR__ . '/fixtures/openai_stub.php'],
+    [0 => ['pipe', 'r'], 1 => ['file', PHP_OS_FAMILY === 'Windows' ? 'NUL' : '/dev/null', 'w'], 2 => ['file', PHP_OS_FAMILY === 'Windows' ? 'NUL' : '/dev/null', 'w']],
+    $pipes,
+);
+// Whatever happens below, the stand-in stops with the tests.
+register_shutdown_function(static function () use ($stub): void {
+    proc_terminate($stub);
+});
+for ($wait = 0; $wait < 100 && @fsockopen('127.0.0.1', STUB_PORT, $code, $message, 0.1) === false; ++$wait) {
+    usleep(50000);
+}
+
+$local = new RecupBuild\Core\Config();
+$local->openWeightsBase = 'http://127.0.0.1:' . STUB_PORT . '/v1';
+$local->openWeightsModel = 'muse-glimmer:test';
+
+$answer = RecupBuild\Services\Vision::complete('Hello', ['type' => 'object'], 'Steps', $local);
+check('the text steps go to the local server, with no Meta key', $answer['path'] === '/v1/chat/completions' && $answer['model'] === 'muse-glimmer:test', json_encode($answer));
+check('they keep their JSON schema', $answer['schema'] === 'Steps');
+check('no key is sent to a local server that wants none', $answer['auth'] === '');
+
+$local->openWeightsKey = 'local-key';
+$answer = RecupBuild\Services\Vision::complete('Hello', ['type' => 'object'], 'Steps', $local);
+check('a key is sent when the server wants one', $answer['auth'] === 'Bearer local-key');
+
+$local->metaApiKey = 'meta-key';
+$local->metaApiBase = 'http://127.0.0.1:' . STUB_PORT . '/hosted';
+$local->openWeightsBase = 'http://127.0.0.1:' . (STUB_PORT - 1) . '/v1';
+ini_set('log_errors', '0');
+$answer = RecupBuild\Services\Vision::complete('Hello', ['type' => 'object'], 'Steps', $local);
+check('when the local server is down the app goes back to Muse Spark', $answer['path'] === '/hosted/chat/completions' && $answer['model'] === $local->visionModel && $answer['auth'] === 'Bearer meta-key', json_encode($answer));
+
+$local->metaApiKey = '';
+$failed = false;
+try {
+    RecupBuild\Services\Vision::complete('Hello', ['type' => 'object'], 'Steps', $local);
+} catch (RecupBuild\Errors\VisionError) {
+    $failed = true;
+}
+ini_set('log_errors', '1');
+check('with neither model the failure is reported', $failed);
+
+$hosted = new RecupBuild\Core\Config();
+$hosted->metaApiKey = 'meta-key';
+$hosted->metaApiBase = 'http://127.0.0.1:' . STUB_PORT . '/hosted';
+$answer = RecupBuild\Services\Vision::complete('Hello', ['type' => 'object'], 'Steps', $hosted);
+check('without a local server nothing changes', $answer['path'] === '/hosted/chat/completions' && $answer['model'] === $hosted->visionModel);

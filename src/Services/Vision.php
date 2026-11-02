@@ -106,6 +106,8 @@ final class Vision
 
     /**
      * One text turn with a JSON schema answer: the plan, the project sizes, the steps.
+     * With a local server configured these go to open weights (Muse Glimmer), at no API
+     * cost, and back to Muse Spark if it fails. Reading a photo always stays on Muse Spark.
      *
      * @param array<string, mixed> $schema
      *
@@ -114,8 +116,20 @@ final class Vision
     public static function complete(string $text, array $schema, string $name, Config $config): array
     {
         $messages = [['role' => 'user', 'content' => [['type' => 'text', 'text' => $text]]]];
+        if ($config->openWeightsBase === '') {
+            return self::ask($messages, $name, $schema, $config);
+        }
 
-        return self::ask($messages, $name, $schema, $config);
+        try {
+            return self::ask($messages, $name, $schema, $config, true);
+        } catch (VisionError $error) {
+            if ($config->metaApiKey === '') {
+                throw $error;
+            }
+            error_log('[recupbuild] open weights failed, back to Muse Spark: ' . $error->getMessage());
+
+            return self::ask($messages, $name, $schema, $config);
+        }
     }
 
     /**
@@ -126,13 +140,13 @@ final class Vision
      *
      * @throws VisionError
      */
-    private static function ask(array $messages, string $name, array $schema, Config $config): array
+    private static function ask(array $messages, string $name, array $schema, Config $config, bool $local = false): array
     {
         $decoded = self::post('/chat/completions', [
-            'model' => $config->visionModel,
+            'model' => $local ? $config->openWeightsModel : $config->visionModel,
             'messages' => $messages,
             'response_format' => ['type' => 'json_schema', 'json_schema' => ['name' => $name, 'schema' => $schema]],
-        ], $config);
+        ], $config, $local);
 
         $content = $decoded['choices'][0]['message']['content'] ?? null;
         if (!is_string($content)) {
@@ -148,7 +162,7 @@ final class Vision
     }
 
     /**
-     * One call to the Meta Model API, for every model the app uses.
+     * One call to the Meta Model API, for every model the app uses, or to the local server.
      *
      * @param array<string, mixed> $body
      *
@@ -156,17 +170,23 @@ final class Vision
      *
      * @throws VisionError timeout / server / invalid_json
      */
-    public static function post(string $path, array $body, Config $config): array
+    public static function post(string $path, array $body, Config $config, bool $local = false): array
     {
-        if ($config->metaApiKey === '') {
+        if (!$local && $config->metaApiKey === '') {
             throw new VisionError('server', 'No Meta API key configured (MODEL_API_KEY in .env.php).');
+        }
+        $base = $local ? $config->openWeightsBase : $config->metaApiBase;
+        $key = $local ? $config->openWeightsKey : $config->metaApiKey;
+        $headers = ['Content-Type: application/json'];
+        if ($key !== '') {
+            $headers[] = 'Authorization: Bearer ' . $key;
         }
 
         // The connection to the model sometimes cannot even be opened: then nothing was
         // sent (nothing paid), and one more attempt is safe. A request that reached the
         // model is never sent twice.
         for ($attempt = 1; ; ++$attempt) {
-            $client = curl_init(rtrim($config->metaApiBase, '/') . $path);
+            $client = curl_init(rtrim($base, '/') . $path);
             if ($client === false) {
                 throw new VisionError('server', 'curl_init failed');
             }
@@ -174,10 +194,7 @@ final class Vision
                 CURLOPT_POST => true,
                 CURLOPT_POSTFIELDS => json_encode($body, JSON_UNESCAPED_SLASHES),
                 CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_HTTPHEADER => [
-                    'Content-Type: application/json',
-                    'Authorization: Bearer ' . $config->metaApiKey,
-                ],
+                CURLOPT_HTTPHEADER => $headers,
                 CURLOPT_TIMEOUT => $config::VISION_TIMEOUT_S,
                 CURLOPT_CONNECTTIMEOUT => 15,
             ]);
