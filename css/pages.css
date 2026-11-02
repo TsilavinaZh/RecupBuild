@@ -2995,6 +2995,18 @@ tr:has(.remove input:checked) th {
   gap: 1.25rem;
 }
 
+.preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-block: 0.75rem;
+  border-radius: 10px;
+}
+
+.preview .button {
+  margin-top: 0.75rem;
+}
+
 .viewer {
   position: relative;
   display: grid;

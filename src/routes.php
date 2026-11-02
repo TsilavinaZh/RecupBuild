@@ -45,6 +45,8 @@ return static function (Router $router): void {
     $router->post('/projects/choose', [WorkspaceController::class, 'choose']);
     $router->get('/plans/{id}', [PlanPageController::class, 'show']);
     $router->get('/plans/{id}/photo', [PlanPageController::class, 'photo']);
+    $router->post('/plans/{id}/preview', [PlanPageController::class, 'preview']);
+    $router->get('/plans/{id}/preview', [PlanPageController::class, 'previewImage']);
     $router->get('/history', [PlanPageController::class, 'history']);
 
     // The reverse build: from a finished object to how to make it.

@@ -110,7 +110,7 @@ final class Plans
      */
     public static function find(\PDO $pdo, int $userId, int $id): ?array
     {
-        $statement = $pdo->prepare('SELECT id, definition, pieces, result, created_at, photo, outlines FROM plans WHERE id = :id AND user_id = :user');
+        $statement = $pdo->prepare('SELECT id, definition, pieces, result, created_at, photo, outlines, preview FROM plans WHERE id = :id AND user_id = :user');
         $statement->execute(['id' => $id, 'user' => $userId]);
         $row = $statement->fetch();
         if (!is_array($row)) {
@@ -125,7 +125,15 @@ final class Plans
             'result' => (array) json_decode((string) $row['result'], true),
             'photo' => $row['photo'],
             'outlines' => $row['outlines'] === null ? null : json_decode((string) $row['outlines'], true),
+            'preview' => $row['preview'],
         ];
+    }
+
+    /** Keeps the realistic picture of one plan of this user (a name from Models\Photos). */
+    public static function savePreview(\PDO $pdo, int $userId, int $id, string $preview): void
+    {
+        $statement = $pdo->prepare('UPDATE plans SET preview = :preview WHERE id = :id AND user_id = :user');
+        $statement->execute(['preview' => $preview, 'id' => $id, 'user' => $userId]);
     }
 
     /** Removes one plan of this user; false when there was none. */

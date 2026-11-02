@@ -10,12 +10,12 @@ An A4 sheet next to the pile gives the scale: the AI measures every plank,
 invents four projects sized to your wood, an engine places every cut,
 and you leave with the cutting plan, the 3D render and the assembly steps.
 
-*Built for the Meta Global AI Hackathon 2026 with Muse Spark and SAM 3.1 on the Meta Model API.*
+*Built for the Meta Global AI Hackathon 2026 with Muse Spark, SAM 3.1 and Muse Image on the Meta Model API.*
 
 ![PHP 8.3](https://img.shields.io/badge/PHP-8.3-2f6b4f?style=flat-square&logo=php&logoColor=white)
 ![MVC, no framework](https://img.shields.io/badge/MVC-no%20framework-c4622d?style=flat-square)
 ![SQLite](https://img.shields.io/badge/SQLite-3-1f2a24?style=flat-square&logo=sqlite&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-127%20checks-2f6b4f?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-135%20checks-2f6b4f?style=flat-square)
 ![Meta Hackathon](https://img.shields.io/badge/born%20at-Meta%20hackathon-0866ff?style=flat-square&logo=meta&logoColor=white)
 
 ### 🌐 Try it live: **[recupbuild.tendry.mg](https://recupbuild.tendry.mg)**
@@ -98,6 +98,7 @@ authenticated with your `MODEL_API_KEY`), from `src/Services/Vision.php`.
 | Projects | **Muse Spark**, reasoning | invents up to four parametric projects for this inventory |
 | Assembly | **Muse Spark**, reasoning | writes the steps of the chosen project, in the user's language |
 | Rebuild | **Muse Spark**, vision | reads a finished object: parts, tools, hardware, steps and a 3D layout |
+| Preview | **Muse Image** (`muse-image-1.0`) | pictures the finished object in the user's own wood, from the photo of the pile (`src/Services/Preview.php`) |
 
 Each call asks for a **structured output** (`response_format` with a JSON schema), so the server
 receives data it can check, never free text. A deterministic engine then has the last word.
@@ -106,6 +107,10 @@ receives data it can check, never free text. A deterministic engine then has the
 pixels off, and a measurement is only as good as its edges. SAM 3.1 traces those edges: each mask
 becomes the tightest rotated rectangle around the piece, and the piece keeps the kind and thickness
 Muse Spark read. If SAM fails, the scan simply keeps Muse Spark's corners.
+
+**Why three families of models?** Each does what the others cannot: Muse Spark reasons about what is
+on the photo and what to build, SAM 3.1 gives the measurement its precision, and Muse Image shows the
+result in the real material. The picture is an illustration; the sizes and the cuts remain the engine's.
 
 ```mermaid
 flowchart LR
@@ -117,6 +122,7 @@ flowchart LR
     inventory --> ideas[Muse Spark<br>invents projects]
     ideas --> solver[Cutting engine<br>checks every part]
     solver --> plan[Plan: 3D, cuts, parts, steps]
+    plan --> image[Muse Image<br>realistic preview]
     object[Photo of an object] --> reverse[Muse Spark<br>reverse build]
     reverse --> plan
 ```
@@ -244,8 +250,9 @@ src/
                      and the API: Health, Scan, Plan, History
   Models/            Users (accounts, credits), Plans, Rebuilds, Photos, Workspace (the journey in session),
                      Projects (project definitions)
-  Services/          Vision (Muse Spark), Segmentation and SamMask (SAM 3.1), Planner, Solver (cutting
-                     engine), Scan, Reverse, Image, GoogleAuth, Assembly (3D layout), Drawing, Demo
+  Services/          Vision (Muse Spark), Segmentation and SamMask (SAM 3.1), Preview (Muse Image),
+                     Planner, Solver (cutting engine), Scan, Reverse, Image, GoogleAuth, Assembly,
+                     Drawing, Demo
   Errors/            ScanError, VisionError, AuthError
   Views/             the layout and one view per page, their texts in lang/en.php and lang/fr.php
 tests/               php tests/run.php
@@ -276,6 +283,7 @@ an `{id}` parameter reaches the action as an `int`.
 | `GET` / `POST` | `/inventory` | inventory to check | ✓ |
 | `GET` | `/projects` · `POST /projects/choose` | 4 projects, then the plan of the chosen one (1 build credit) | ✓ |
 | `GET` | `/plans/{id}` · `/plans/{id}/photo` | the result and the original photo | ✓ |
+| `POST` / `GET` | `/plans/{id}/preview` | generates the realistic picture (once per plan), then shows it | ✓ |
 | `GET` / `POST` | `/rebuild` · `GET /rebuilds/{id}` | reverse build (1 rebuild credit) | ✓ |
 | `GET` | `/history` · `/profile` | history, profile | ✓ |
 | `POST` | `/profile/plans/{id}/delete` · `/profile/rebuilds/{id}/delete` · `/profile/logout` | confirmed forms (CSRF token) | ✓ |
@@ -387,7 +395,7 @@ Then declare `https://recupbuild.example.com` under the JavaScript origins and
 ## Tests
 
 ```sh
-php tests/run.php            # 127 checks: scan, cutting engine, invented projects, reverse build,
+php tests/run.php            # 135 checks: scan, cutting engine, invented projects, reverse build,
                              # Google sign-in, SQLite, history, credits, drawings, inventory, page texts
 php tests/live_plan.php      # real call to the model: cards, plan and steps
 ```
