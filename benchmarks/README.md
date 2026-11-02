@@ -63,6 +63,9 @@ that remain are often still usable.
 
 ## Dataset
 
+The scenes and their true sizes are published on the Hugging Face Hub:
+**[tsilavinaZh/recupbuild-scan-benchmark](https://huggingface.co/datasets/tsilavinaZh/recupbuild-scan-benchmark)**.
+
 ```sh
 php benchmarks/export_dataset.php     # 50 scenes, 387 pieces, into ../recupbuild-scan-benchmark
 ```

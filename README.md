@@ -20,6 +20,8 @@ and you leave with the cutting plan, the 3D render and the assembly steps.
 
 ### 🌐 Try it live: **[recupbuild.tendry.mg](https://recupbuild.tendry.mg)**
 
+### 📊 Open dataset: **[recupbuild-scan-benchmark on Hugging Face](https://huggingface.co/datasets/tsilavinaZh/recupbuild-scan-benchmark)**
+
 ### ▶ Watch the 3-minute pitch
 
 [![RecupBuild — 3-minute pitch on YouTube](https://img.youtube.com/vi/sO_UkvMmugU/maxresdefault.jpg)](https://youtu.be/sO_UkvMmugU)
@@ -37,6 +39,7 @@ and you leave with the cutting plan, the 3D render and the assembly steps.
 - [What RecupBuild does](#what-recupbuild-does)
 - [Built with Meta](#built-with-meta)
 - [Benchmarks](#benchmarks)
+- [Open dataset (Hugging Face)](https://huggingface.co/datasets/tsilavinaZh/recupbuild-scan-benchmark)
 - [The pages](#the-pages)
 - [The free plan](#the-free-plan)
 - [Run it locally](#run-it-locally)
@@ -140,6 +143,9 @@ Measured on photos of known sizes, with the real models ([method, limits and raw
 | Length error (mean) | 41.5 mm | **1.8 mm** |
 | Width error (mean) | 15.2 mm | **2.5 mm** |
 | A4 scale error | 6.37 % | **0.86 %** |
+
+The photos and their true sizes are published as an open dataset, so anyone can score their own
+pipeline against these numbers: **[50 scenes and 387 pieces on the Hugging Face Hub](https://huggingface.co/datasets/tsilavinaZh/recupbuild-scan-benchmark)**.
 
 The cutting engine is checked independently, on every CI run: **1,144 parts on 182 plans, 0 overlap,
 0 part outside its piece**, each plan solved in about 0.1 ms.
