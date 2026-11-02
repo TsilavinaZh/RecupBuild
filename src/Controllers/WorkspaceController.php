@@ -15,6 +15,7 @@ use RecupBuild\Errors\VisionError;
 use RecupBuild\Models\Photos;
 use RecupBuild\Models\Plans;
 use RecupBuild\Models\Projects;
+use RecupBuild\Models\Usage;
 use RecupBuild\Models\Users;
 use RecupBuild\Models\Workspace;
 use RecupBuild\Services\Assembly;
@@ -56,7 +57,7 @@ final class WorkspaceController extends Controller
 
     public function upload(): never
     {
-        $this->member('/scan');
+        $user = $this->member('/scan');
         $this->checkForm('/scan');
 
         if (($_POST['source'] ?? '') === 'demo') {
@@ -72,6 +73,10 @@ final class WorkspaceController extends Controller
             if ($data === null) {
                 self::failed($error ?? 'unknown');
             }
+        }
+
+        if (!Usage::allow(Database::get($this->config), $user['id'], 'scan', Usage::SCANS_PER_HOUR)) {
+            self::failed('too_many_scans');
         }
 
         try {

@@ -11,6 +11,7 @@ use RecupBuild\Core\Request;
 use RecupBuild\Errors\ScanError;
 use RecupBuild\Errors\VisionError;
 use RecupBuild\Models\Users;
+use RecupBuild\Models\Usage;
 use RecupBuild\Services\Image;
 use RecupBuild\Services\Reverse;
 use RecupBuild\Services\Scan;
@@ -29,8 +30,11 @@ final class ScanController extends Controller
 {
     public function scan(): never
     {
-        $this->user();
+        $user = $this->user();
         $data = $this->upload();
+        if (!Usage::allow(Database::get($this->config), $user['id'], 'scan', Usage::SCANS_PER_HOUR)) {
+            Http::fail('too_many_scans', 429);
+        }
         try {
             [$jpeg, $width, $height] = Image::prepare($data, $this->config);
             Http::json(200, Scan::buildResponse(Segmentation::refine(Vision::analyse($jpeg, $this->config), $jpeg, $width, $height, $this->config), $width, $height));

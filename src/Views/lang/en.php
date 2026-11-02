@@ -258,6 +258,7 @@ return [
     'error.unknown' => 'Choose a photo first.',
     'error.file_too_large' => 'This photo is over 12 MB: pick a lighter image.',
     'error.unsupported_type' => 'This file is not a JPG, PNG or WebP image.',
+    'error.too_many_scans' => 'You have run many analyses in a short time. Try again in an hour.',
 
     'steps.label' => 'Steps',
     'steps.scan' => 'Photo',

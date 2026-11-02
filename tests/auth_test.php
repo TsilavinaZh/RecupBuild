@@ -224,3 +224,16 @@ check('an embedded picture rides along as multipart/related, by cid',
     && str_contains($withLogo, 'Content-ID: <logo>')
     && str_contains($withLogo, 'Content-Type: image/png')
     && str_contains($withLogo, base64_encode('PNGDATA')));
+
+
+echo "scan limit\n";
+
+$limits = RecupBuild\Core\Database::open(':memory:');
+$scanner = RecupBuild\Models\Users::signedIn($limits, ['sub' => 'scan-one', 'email' => null, 'name' => 'One', 'picture' => null]);
+$neighbour = RecupBuild\Models\Users::signedIn($limits, ['sub' => 'scan-two', 'email' => null, 'name' => 'Two', 'picture' => null]);
+$allow = static fn (int $id, int $now): bool => RecupBuild\Models\Usage::allow($limits, $id, 'scan', 2, $now);
+check('scans are allowed up to the limit', $allow($scanner['id'], 1000) && $allow($scanner['id'], 1001));
+check('one more is refused', !$allow($scanner['id'], 1002));
+check('a limit belongs to one account', $allow($neighbour['id'], 1002));
+check('a refused scan is not counted', $allow($scanner['id'], 4600) && !$allow($scanner['id'], 4600));
+check('the limit lifts after an hour', $allow($scanner['id'], 4601 + 3600));
