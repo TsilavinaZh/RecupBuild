@@ -7,7 +7,8 @@ declare(strict_types=1);
  *
  * Pages (rendered by the server, src/Views) for people, and a JSON API under /api/.
  * Every /api/ route but /api/health needs a signed-in user (the model is paid for);
- * the app's pages send visitors to Google first. The controllers check both.
+ * the app's pages send visitors to Google first, except the instant demo, which calls
+ * no model. The controllers check both.
  */
 
 use RecupBuild\Controllers\AdminController;
@@ -37,6 +38,8 @@ return static function (Router $router): void {
     $router->get('/pricing', [PricingController::class, 'show']);
 
     // The app: photo, inventory, projects, then the plan.
+    $router->get('/try', [WorkspaceController::class, 'demo']);
+    $router->get('/try/plan', [PlanPageController::class, 'demo']);
     $router->get('/scan', [WorkspaceController::class, 'scan']);
     $router->post('/scan', [WorkspaceController::class, 'upload']);
     $router->get('/scan/photo', [WorkspaceController::class, 'photo']);

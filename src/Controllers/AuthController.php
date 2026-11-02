@@ -26,8 +26,9 @@ final class AuthController extends Controller
 {
     public function start(): never
     {
+        // A copy of the repository with no Google credentials still shows the app.
         if ($this->config->googleClientId === '' || $this->config->googleClientSecret === '') {
-            Http::fail('auth_not_configured', 503);
+            self::redirect('/try');
         }
         Session::start();
         $_SESSION['oauth'] = [

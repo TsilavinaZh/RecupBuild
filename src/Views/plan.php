@@ -7,7 +7,7 @@ defined('RECUPBUILD') || (http_response_code(404) && exit);
  *
  * @var callable $t @var callable $e @var array $plan @var ?array $assembly
  * @var ?array{url: string, width: int, height: int} $photo @var array<int, list<array>> $outlines
- * @var ?string $preview @var bool $canPreview @var string $csrf
+ * @var ?string $preview @var bool $canPreview @var bool $visitor @var string $csrf
  */
 use RecupBuild\Services\Drawing;
 
@@ -201,6 +201,6 @@ $scene = json_encode([
   <div class="row actions">
     <button class="button" type="button" data-print><?= $t('plan.print') ?></button>
     <a class="button ghost" href="/projects"><?= $t('plan.another') ?></a>
-    <a class="button ghost" href="/scan"><?= $t('plan.newScan') ?></a>
+    <a class="button ghost" href="/scan"><?= $t($visitor ? 'plan.ownWood' : 'plan.newScan') ?></a>
   </div>
 </div>

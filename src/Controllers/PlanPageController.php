@@ -11,6 +11,7 @@ use RecupBuild\Core\View;
 use RecupBuild\Models\Photos;
 use RecupBuild\Models\Plans;
 use RecupBuild\Models\Rebuilds;
+use RecupBuild\Models\Workspace;
 use RecupBuild\Services\Assembly;
 use RecupBuild\Services\Demo;
 use RecupBuild\Services\Preview;
@@ -18,6 +19,7 @@ use RecupBuild\Services\Preview;
 /**
  * The plans of the signed-in user:
  *
+ *   GET /try/plan          the plan of a visitor in the instant demo, from their session
  *   GET /plans/{id}        the result: 3D view, cutting plan on the real wood, parts, steps
  *   GET /plans/{id}/photo  the photo of the heap it was cut from
  *   POST /plans/{id}/preview  pictures the finished object, once per plan (Muse Image)
@@ -34,7 +36,22 @@ final class PlanPageController extends Controller
             http_response_code(404);
             View::render('notfound', 'notfound.title');
         }
+        $this->page($plan, false);
+    }
 
+    public function demo(): never
+    {
+        $plan = Workspace::get()['plan'] ?? null;
+        if (!is_array($plan)) {
+            self::redirect('/try');
+        }
+        $this->page($plan, true);
+    }
+
+    /** The result page; a demo plan has no photo of its own, so it can never ask for a picture. */
+    private function page(array $plan, bool $visitor): never
+    {
+        $id = $plan['id'];
         $result = $plan['result'];
         $photo = null;
         $outlines = $plan['outlines']['pieces'] ?? [];
@@ -53,6 +70,7 @@ final class PlanPageController extends Controller
             'outlines' => $outlines,
             'preview' => $plan['preview'] !== null && Photos::path($plan['preview']) !== null ? '/plans/' . $id . '/preview' : null,
             'canPreview' => $this->config->metaApiKey !== '' && Photos::path($plan['photo']) !== null,
+            'visitor' => $visitor,
             'csrf' => Session::csrfToken(),
         ]);
     }

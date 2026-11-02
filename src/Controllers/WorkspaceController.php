@@ -30,6 +30,7 @@ use RecupBuild\Services\Vision;
 /**
  * The app, from the photo to the plan (pages, rendered by the server):
  *
+ *   GET  /try               the instant demo for a visitor, no account (see visitor())
  *   GET  /scan              the photo of the heap (upload, the AI example or the demo)
  *   POST /scan              analyses it, then on to the inventory
  *   GET  /scan/photo        the analysed photo of this session
@@ -44,6 +45,17 @@ use RecupBuild\Services\Vision;
  */
 final class WorkspaceController extends Controller
 {
+    public function demo(): never
+    {
+        // A cross-site link must not replace the work of someone signed in.
+        if (Session::user() !== null) {
+            self::redirect('/scan');
+        }
+        $scan = Demo::scan();
+        Workspace::start(Photos::DEMO, $scan['image'], $scan['pieces'], true);
+        self::redirect('/inventory');
+    }
+
     public function scan(): never
     {
         $user = $this->member('/scan');
@@ -115,7 +127,7 @@ final class WorkspaceController extends Controller
 
     public function inventory(): never
     {
-        $this->member('/inventory');
+        $this->visitor('/inventory');
         $workspace = $this->workspace();
         View::render('inventory', 'inventory.title', [
             'step' => 'inventory',
@@ -128,7 +140,7 @@ final class WorkspaceController extends Controller
 
     public function saveInventory(): never
     {
-        $this->member('/inventory');
+        $this->visitor('/inventory');
         $this->checkForm('/inventory');
         $workspace = $this->workspace();
         $pieces = Workspace::fromForm($workspace['pieces'], $_POST['pieces'] ?? null);
@@ -144,7 +156,7 @@ final class WorkspaceController extends Controller
 
     public function projects(): never
     {
-        $this->member('/projects');
+        $this->visitor('/projects');
         $workspace = $this->workspace();
         if (!$workspace['confirmed']) {
             self::redirect('/inventory');
@@ -171,7 +183,7 @@ final class WorkspaceController extends Controller
 
     public function choose(): never
     {
-        $user = $this->member('/projects');
+        $user = $this->visitor('/projects');
         $this->checkForm('/projects');
         $workspace = $this->workspace();
         $card = $workspace['cards']['list'][(int) ($_POST['card'] ?? -1)] ?? null;
@@ -179,7 +191,6 @@ final class WorkspaceController extends Controller
             self::redirect('/projects');
         }
 
-        $pdo = Database::get($this->config);
         $definition = $card['definition'];
         $pieces = Workspace::wire($workspace['pieces']);
         $params = $card['result']['plan']['params'];
@@ -188,7 +199,7 @@ final class WorkspaceController extends Controller
             // The demo plans with the engine alone: its steps and 3D view were saved with the project.
             $result = Solver::solve($definition, $pieces, $params) + ['steps' => $card['result']['steps'] ?? null, 'assembly' => $card['result']['assembly'] ?? null];
         } else {
-            if (Users::credits($pdo, $user['id'])['build'] <= 0) {
+            if (Users::credits(Database::get($this->config), $user['id'])['build'] <= 0) {
                 Session::flash('projects.noCredit');
                 self::redirect('/projects');
             }
@@ -204,16 +215,45 @@ final class WorkspaceController extends Controller
         if ($result['status'] !== 'feasible') {
             View::render('plan-failed', 'plan.failedTitle', ['step' => 'plan', 'result' => $result]);
         }
-        if (!$workspace['demo']) {
-            Users::spend($pdo, $user['id'], 'build');
-        }
-
         $outlines = [];
         foreach ($workspace['pieces'] as $piece) {
             $outlines[(int) $piece['id']] = $piece['outline'] ?? [];
         }
+        if ($user === null) {
+            Workspace::setPlan([
+                'id' => 0,
+                'definition' => $definition,
+                'pieces' => $pieces,
+                'result' => $result,
+                'photo' => $workspace['photo'],
+                'outlines' => ['image' => $workspace['image'], 'pieces' => $outlines],
+                'preview' => null,
+            ]);
+            self::redirect('/try/plan');
+        }
+
+        $pdo = Database::get($this->config);
+        if (!$workspace['demo']) {
+            Users::spend($pdo, $user['id'], 'build');
+        }
         $id = Plans::save($pdo, $user['id'], $definition, $pieces, $result, null, $workspace['photo'], $outlines, $workspace['image']);
         self::redirect('/plans/' . $id);
+    }
+
+    /**
+     * The signed-in user, or null for a visitor inside the instant demo, which calls no
+     * model, spends nothing and keeps everything in their session. Nothing else lets a
+     * visitor in: a workspace only stops being a demo through upload(), for members.
+     *
+     * @return ?array{id: int, admin?: bool, sub: string, email: ?string, name: string, picture: ?string}
+     */
+    private function visitor(string $return): ?array
+    {
+        if (Session::user() === null && (Workspace::get()['demo'] ?? false) === true) {
+            return null;
+        }
+
+        return $this->member($return);
     }
 
     /**

@@ -15,5 +15,6 @@ if (PHP_SAPI !== 'cli') {
 require_once __DIR__ . '/scan_test.php';
 require_once __DIR__ . '/plan_test.php';
 require_once __DIR__ . '/auth_test.php';
+require_once __DIR__ . '/demo_test.php';
 
 finished();

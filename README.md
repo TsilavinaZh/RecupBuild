@@ -17,7 +17,7 @@ A sustainability tool with one job: keep usable material out of the skip.
 ![PHP 8.3](https://img.shields.io/badge/PHP-8.3-2f6b4f?style=flat-square&logo=php&logoColor=white)
 ![MVC, no framework](https://img.shields.io/badge/MVC-no%20framework-c4622d?style=flat-square)
 ![SQLite](https://img.shields.io/badge/SQLite-3-1f2a24?style=flat-square&logo=sqlite&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-185%20checks-2f6b4f?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-203%20checks-2f6b4f?style=flat-square)
 ![Meta Hackathon](https://img.shields.io/badge/born%20at-Meta%20hackathon-0866ff?style=flat-square&logo=meta&logoColor=white)
 
 ### 🌐 Try it live: **[recupbuild.tendry.mg](https://recupbuild.tendry.mg)**
@@ -204,6 +204,7 @@ without JavaScript.
 | Page | Address | Content |
 | --- | --- | --- |
 | Home | `/` | the pile becoming a plan (4 animated moments), the steps, the projects, the reverse build |
+| Try it | `/try` → `/inventory` → `/projects` → `/try/plan` | the instant demo with no account: a saved scan, no model called, nothing stored but the session |
 | Build | `/scan` → `/inventory` → `/projects` → `/plans/{id}` | photo, inventory to check, 4 projects, result |
 | Rebuild an object | `/rebuild` → `/rebuilds/{id}` | reverse build of a photographed object |
 | History | `/history` | plans and rebuilt objects, to reopen or delete |
@@ -259,6 +260,15 @@ the same credit.
 
 ## Run it locally
 
+**With no keys at all**, a fresh clone already runs the instant demo, from the inventory to the plan
+and its 3D view:
+
+```sh
+php -S localhost:8080              # then open http://localhost:8080/try
+```
+
+**For real scans**, add a Meta key and the Google credentials:
+
 ```sh
 cp .env.example .env.php           # put MODEL_API_KEY and the Google credentials in it
 php -S localhost:8080
@@ -285,6 +295,7 @@ Then open **http://localhost:8080** (not `127.0.0.1`, or the Google redirect won
 | Address | Page |
 | --- | --- |
 | `http://localhost:8080` | the home page |
+| `http://localhost:8080/try` | the instant demo (no account, no key) |
 | `http://localhost:8080/scan` | the app (Google sign-in required) |
 | `http://localhost:8080/pricing` | pricing |
 | `http://localhost:8080/profile` | the profile (Google sign-in required) |
@@ -344,9 +355,10 @@ an `{id}` parameter reaches the action as an `int`.
 | Method | Route | Purpose | Session |
 | --- | --- | --- | --- |
 | `GET` | `/` · `/about` · `/pricing` | home, about, pricing | |
+| `GET` | `/try` · `/try/plan` | the instant demo for a visitor, and its plan | |
 | `GET` / `POST` | `/scan` | photo of the pile (upload, AI example or demo) | ✓ |
-| `GET` / `POST` | `/inventory` | inventory to check | ✓ |
-| `GET` | `/projects` · `POST /projects/choose` | 4 projects, then the plan of the chosen one (1 build credit) | ✓ |
+| `GET` / `POST` | `/inventory` | inventory to check | ✓ or demo |
+| `GET` | `/projects` · `POST /projects/choose` | 4 projects, then the plan of the chosen one (1 build credit, none in the demo) | ✓ or demo |
 | `GET` | `/plans/{id}` · `/plans/{id}/photo` | the result and the original photo | ✓ |
 | `POST` / `GET` | `/plans/{id}/preview` | generates the realistic picture (once per plan), then shows it | ✓ |
 | `GET` / `POST` | `/rebuild` · `GET /rebuilds/{id}` | reverse build (1 rebuild credit) | ✓ |
@@ -463,8 +475,9 @@ Then declare `https://recupbuild.example.com` under the JavaScript origins and
 ## Tests
 
 ```sh
-php tests/run.php            # 185 checks: scan, cutting engine, invented projects, reverse build,
-                             # Google sign-in, SQLite, history, credits, drawings, inventory, page texts
+php tests/run.php            # 203 checks: scan, cutting engine, invented projects, reverse build,
+                             # Google sign-in, SQLite, history, credits, drawings, inventory, page texts,
+                             # the instant demo over HTTP (no key, nothing stored, nothing paid for)
 php tests/live_plan.php      # real call to the model: cards, plan and steps
 php benchmarks/solver.php    # every plan of 41 inventories checked from scratch (also in CI)
 php benchmarks/scan.php      # real models on photos of known sizes
