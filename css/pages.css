@@ -2551,6 +2551,32 @@ body.wide .wrap {
   }
 }
 
+.proof-scroll {
+  overflow-x: auto;
+}
+
+.proof {
+  width: 100%;
+  min-width: 26rem;
+  border-collapse: collapse;
+}
+
+.proof th,
+.proof td {
+  border-bottom: 1px solid var(--line);
+  padding: 0.55rem 0.75rem 0.55rem 0;
+  text-align: left;
+}
+
+.proof thead th {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+.proof tbody th {
+  font-weight: 500;
+}
+
 .about-art {
   width: 100%;
   max-width: 24rem;

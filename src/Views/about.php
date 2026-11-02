@@ -4,7 +4,7 @@ defined('RECUPBUILD') || (http_response_code(404) && exit);
  * GET /about: the story of the project (built at the Meta Global AI Developer
  * Hackathon), who made it, how it works and what happens to the data.
  *
- * @var callable $t
+ * @var callable $t @var callable $e
  */
 $skills = ['PHP', 'Laravel', 'JavaScript', 'TypeScript', 'Python', 'React', 'Node.js', 'SQLite', 'MySQL', 'IA / ML', 'Docker', 'Figma'];
 $links = [
@@ -12,6 +12,11 @@ $links = [
     ['https://github.com/TsilavinaZh/TsilavinaZH', 'GitHub'],
     ['https://www.linkedin.com/in/tendry-tsilavina-razanamalala-9a6aa82ab/', 'LinkedIn'],
     ['mailto:contact@tendry.mg', 'contact@tendry.mg'],
+];
+$sources = [
+    ['https://huggingface.co/datasets/tsilavinaZh/recupbuild-scan-benchmark', 'about.proof.dataset'],
+    ['https://github.com/TsilavinaZh/RecupBuild/tree/master/benchmarks', 'about.proof.method'],
+    ['https://github.com/TsilavinaZh/RecupBuild', 'about.proof.code'],
 ];
 ?>
 <section class="wrap hero" aria-labelledby="about-title">
@@ -68,6 +73,32 @@ $links = [
       <li><?= $t('about.how.engine') ?></li>
       <li><?= $t('about.how.server') ?></li>
     </ol>
+  </section>
+
+  <!-- What was measured, with what it does not prove: the numbers come from benchmarks/. -->
+  <section class="card" aria-labelledby="proof-title">
+    <h2 id="proof-title"><?= $t('about.proof.title') ?></h2>
+    <p><?= $t('about.proof.text') ?></p>
+    <div class="proof-scroll">
+      <table class="proof">
+        <thead>
+          <tr><th scope="col"><?= $t('about.proof.metric') ?></th><th scope="col">Muse Spark</th><th scope="col">Muse Spark + SAM 3.1</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row"><?= $t('about.proof.found') ?></th><td class="figure">46 / 46</td><td class="figure">46 / 46</td></tr>
+          <tr><th scope="row"><?= $t('about.proof.length') ?></th><td class="figure">41.5 mm</td><td class="figure"><strong>1.8 mm</strong></td></tr>
+          <tr><th scope="row"><?= $t('about.proof.width') ?></th><td class="figure">15.2 mm</td><td class="figure"><strong>2.5 mm</strong></td></tr>
+          <tr><th scope="row"><?= $t('about.proof.scale') ?></th><td class="figure">6.37 %</td><td class="figure"><strong>0.86 %</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><?= $t('about.proof.engine') ?></p>
+    <p class="muted small"><?= $t('about.proof.limits') ?></p>
+    <ul class="author-links">
+      <?php foreach ($sources as [$href, $key]): ?>
+        <li><a href="<?= $e($href) ?>" target="_blank" rel="noopener"><?= $t($key) ?></a></li>
+      <?php endforeach ?>
+    </ul>
   </section>
 
   <section class="card" aria-labelledby="data-title">
