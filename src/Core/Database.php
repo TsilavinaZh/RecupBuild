@@ -63,6 +63,8 @@ final class Database
             key TEXT PRIMARY KEY,
             value TEXT NOT NULL
         )',
+        // 7: the realistic picture of a plan, stored like a photo (Services\Preview).
+        'ALTER TABLE plans ADD COLUMN preview TEXT',
     ];
 
     private static ?\PDO $shared = null;

@@ -7,6 +7,7 @@ defined('RECUPBUILD') || (http_response_code(404) && exit);
  *
  * @var callable $t @var callable $e @var array $plan @var ?array $assembly
  * @var ?array{url: string, width: int, height: int} $photo @var array<int, list<array>> $outlines
+ * @var ?string $preview @var bool $canPreview @var string $csrf
  */
 use RecupBuild\Services\Drawing;
 
@@ -70,6 +71,23 @@ $scene = json_encode([
         <?= Drawing::isometric($assembly, $sizes) ?>
       </div>
       <script type="module" src="/js/assembly3d.js"></script>
+    </section>
+  <?php endif ?>
+
+  <?php if ($preview !== null || $canPreview): ?>
+    <!-- The finished object in the user's own wood (Muse Image), an illustration of the plan. -->
+    <section class="card preview" aria-labelledby="preview-title">
+      <h2 id="preview-title"><?= $t('plan.preview') ?></h2>
+      <?php if ($preview !== null): ?>
+        <img src="<?= $e($preview) ?>" alt="<?= $t('plan.previewAlt', ['name' => $name]) ?>" loading="lazy">
+        <p class="muted small"><?= $t('plan.previewNote') ?></p>
+      <?php else: ?>
+        <p class="muted small"><?= $t('plan.previewHint') ?></p>
+        <form method="post" action="/plans/<?= (int) $plan['id'] ?>/preview" data-loading="<?= $t('plan.previewLoading') ?>" data-seconds="60">
+          <input type="hidden" name="csrf" value="<?= $e($csrf) ?>">
+          <button class="button" type="submit"><?= $t('plan.previewButton') ?></button>
+        </form>
+      <?php endif ?>
     </section>
   <?php endif ?>
 

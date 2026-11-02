@@ -247,3 +247,39 @@ $edited = RecupBuild\Models\Workspace::fromForm($scanned, [1 => ['kind' => 'batt
 check('reads the corrected table, keeps the outline, drops a removed piece', count($edited) === 1 && $edited[0]['kind'] === 'batten'
     && $edited[0]['width_mm'] === 40.5 && $edited[0]['length_mm'] === null && $edited[0]['outline'] === [[0, 0], [1, 0], [1, 1], [0, 1]]);
 check('refuses an unknown kind of material', RecupBuild\Models\Workspace::fromForm($scanned, [1 => ['kind' => '<script>']])[0]['kind'] === 'plank');
+
+
+echo "realistic preview\n";
+
+$plan = [
+    'definition' => [
+        'id' => 'bench',
+        'name' => 'Low Workshop Bench',
+        'description' => 'A sturdy low bench.',
+        'parts' => [['name' => 'top', 'label' => 'Top'], ['name' => 'leg', 'label' => 'Leg']],
+    ],
+    'result' => ['plan' => [
+        'params' => ['length' => 650.4, 'height' => 350],
+        'placements' => [
+            ['part' => 'top', 'length_mm' => 650, 'width_mm' => 150],
+            ['part' => 'leg', 'length_mm' => 350, 'width_mm' => 150],
+            ['part' => 'leg', 'length_mm' => 350, 'width_mm' => 150],
+        ],
+    ]],
+];
+$prompt = RecupBuild\Services\Preview::prompt($plan);
+check('the prompt names the object', str_contains($prompt, 'finished Low Workshop Bench'));
+check('the prompt gives the sizes of the plan', str_contains($prompt, 'length 650 mm') && str_contains($prompt, 'height 350 mm'));
+check('the prompt counts the parts, under their labels', str_contains($prompt, '1 x Top 650 x 150 mm') && str_contains($prompt, '2 x Leg 350 x 150 mm'));
+check('the object is made of the wood of the photo', str_contains($prompt, 'reclaimed materials in the reference photo'));
+check('the prompt survives an empty plan', str_contains(RecupBuild\Services\Preview::prompt([]), 'finished object'));
+
+$pdo = RecupBuild\Core\Database::open(':memory:');
+$owner = RecupBuild\Models\Users::signedIn($pdo, ['sub' => 'preview-owner', 'email' => null, 'name' => 'Owner', 'picture' => null]);
+$other = RecupBuild\Models\Users::signedIn($pdo, ['sub' => 'preview-other', 'email' => null, 'name' => 'Other', 'picture' => null]);
+$saved = RecupBuild\Models\Plans::save($pdo, $owner['id'], ['id' => 'bench', 'name' => 'Bench'], [], []);
+check('a new plan has no preview', RecupBuild\Models\Plans::find($pdo, $owner['id'], $saved)['preview'] === null);
+RecupBuild\Models\Plans::savePreview($pdo, $other['id'], $saved, 'stolen.jpg');
+check('nobody can set the preview of a plan of someone else', RecupBuild\Models\Plans::find($pdo, $owner['id'], $saved)['preview'] === null);
+RecupBuild\Models\Plans::savePreview($pdo, $owner['id'], $saved, 'picture.jpg');
+check('a preview stays with its plan', RecupBuild\Models\Plans::find($pdo, $owner['id'], $saved)['preview'] === 'picture.jpg');
