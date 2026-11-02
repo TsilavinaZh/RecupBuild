@@ -16,7 +16,7 @@
     </Directory>
 
     # The code, the tests, the docs and the secrets are never served.
-    <DirectoryMatch "/var/www/recupbuild/backend-php/(src|tests|docs|deploy|\.git)">
+    <DirectoryMatch "/var/www/recupbuild/backend-php/(src|tests|benchmarks|docs|deploy|scripts|\.git)">
         Require all denied
     </DirectoryMatch>
     <FilesMatch "^\.env">

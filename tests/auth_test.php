@@ -104,7 +104,7 @@ check('the database and the photos live outside the project folder, which PHP ma
     && (getenv('DATABASE_PATH') !== false || dirname($config->databasePath) === RecupBuild\Core\Config::storageDir()));
 check('the site files sit next to index.php', is_file(dirname(__DIR__) . '/index.php') && is_file(dirname(__DIR__) . '/css/pages.css')
     && is_file(dirname(__DIR__) . '/js/pages.js') && !is_dir(dirname(__DIR__) . '/public'));
-check('every test refuses to run from a web request', array_filter(glob(__DIR__ . '/*.php') ?: [],
+check('every test and benchmark refuses to run from a web request', array_filter([...(glob(__DIR__ . '/*.php') ?: []), ...(glob(dirname(__DIR__) . '/benchmarks/*.php') ?: [])],
     static fn (string $file): bool => !str_contains((string) file_get_contents($file), "PHP_SAPI !== 'cli'")) === []);
 $views = ['layout', 'home', 'about', 'legal', 'cgu', 'privacy', 'notfound', 'pricing', 'profile', 'scan', 'inventory', 'projects', 'plan', 'plan-failed', 'history', 'rebuild', 'rebuild-show',
     'admin/_nav', 'admin/dashboard', 'admin/users', 'admin/pricing', 'admin/legal'];

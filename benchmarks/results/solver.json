@@ -1,0 +1,45 @@
+{
+    "inventories": 41,
+    "projects": 8,
+    "plans_attempted": 328,
+    "plans_feasible": 182,
+    "parts_placed_and_checked": 1144,
+    "plans_with_faults": 0,
+    "wood_use_median_pct": 43,
+    "solve_ms_median": 0.12,
+    "solve_ms_max": 3.41,
+    "by_project": {
+        "dryer": {
+            "runs": 41,
+            "feasible": 33
+        },
+        "coop": {
+            "runs": 41,
+            "feasible": 1
+        },
+        "shelf": {
+            "runs": 41,
+            "feasible": 32
+        },
+        "crate": {
+            "runs": 41,
+            "feasible": 20
+        },
+        "Countertop Two-Tier Shelf": {
+            "runs": 41,
+            "feasible": 30
+        },
+        "Garden Planter Box": {
+            "runs": 41,
+            "feasible": 15
+        },
+        "Metal-Lined Potting Tray": {
+            "runs": 41,
+            "feasible": 31
+        },
+        "Workshop Stool": {
+            "runs": 41,
+            "feasible": 20
+        }
+    }
+}

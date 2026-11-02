@@ -15,6 +15,7 @@ deploy/
 docs/
 scripts/
 tests/
+benchmarks/
 *.md
 *.m4a
 *.wav

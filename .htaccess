@@ -9,7 +9,7 @@ DirectoryIndex index.php
     RewriteEngine On
 
     # The code, the tests, the docs and the secrets are never served.
-    RewriteRule ^(src|tests|docs|deploy|\.git)(/|$) - [R=404,L]
+    RewriteRule ^(src|tests|benchmarks|docs|deploy|scripts|\.git)(/|$) - [R=404,L]
     RewriteRule (^|/)\.(env|git|ht) - [R=404,L]
     RewriteRule \.(md|ini|log|example|json|srt)$ - [R=404,L]
 

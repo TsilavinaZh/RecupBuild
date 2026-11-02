@@ -36,6 +36,7 @@ and you leave with the cutting plan, the 3D render and the assembly steps.
 - [Pitch video (YouTube)](https://youtu.be/sO_UkvMmugU)
 - [What RecupBuild does](#what-recupbuild-does)
 - [Built with Meta](#built-with-meta)
+- [Benchmarks](#benchmarks)
 - [The pages](#the-pages)
 - [The free plan](#the-free-plan)
 - [Run it locally](#run-it-locally)
@@ -126,6 +127,24 @@ flowchart LR
     object[Photo of an object] --> reverse[Muse Spark<br>reverse build]
     reverse --> plan
 ```
+
+---
+
+## Benchmarks
+
+Measured on photos of known sizes, with the real models ([method, limits and raw results](benchmarks/README.md)):
+
+| 46 pieces, 6 scenes | Muse Spark alone | Muse Spark + SAM 3.1 |
+| --- | --- | --- |
+| Pieces found (F1) | 1.000 | 1.000 |
+| Length error (mean) | 41.5 mm | **1.8 mm** |
+| Width error (mean) | 15.2 mm | **2.5 mm** |
+| A4 scale error | 6.37 % | **0.86 %** |
+
+The cutting engine is checked independently, on every CI run: **1,144 parts on 182 plans, 0 overlap,
+0 part outside its piece**, each plan solved in about 0.1 ms.
+
+![The real photo: Muse Spark's corners in red, drifting off the pieces, and the edges SAM 3.1 traced in green](docs/images/sam-vs-spark.jpg)
 
 ---
 
@@ -257,6 +276,7 @@ src/
   Errors/            ScanError, VisionError, AuthError
   Views/             the layout and one view per page, their texts in lang/en.php and lang/fr.php
 tests/               php tests/run.php
+benchmarks/          scan accuracy on photos of known sizes, cutting engine checks, results
 deploy/              nginx and Apache examples
 
 ../recupbuild-storage/   the SQLite database and the photos, outside the project (STORAGE_PATH)
@@ -399,6 +419,8 @@ Then declare `https://recupbuild.example.com` under the JavaScript origins and
 php tests/run.php            # 138 checks: scan, cutting engine, invented projects, reverse build,
                              # Google sign-in, SQLite, history, credits, drawings, inventory, page texts
 php tests/live_plan.php      # real call to the model: cards, plan and steps
+php benchmarks/solver.php    # every plan of 41 inventories checked from scratch (also in CI)
+php benchmarks/scan.php      # real models on photos of known sizes
 ```
 
 ---
