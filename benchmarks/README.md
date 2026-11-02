@@ -60,3 +60,14 @@ single fault fails the run, and with it the CI.
 A project with no plan is a valid answer: on these inventories some projects simply do not fit, and
 the app then shows or invents others. The 43 % counts the whole of each piece used, so the offcuts
 that remain are often still usable.
+
+## Dataset
+
+```sh
+php benchmarks/export_dataset.php     # 50 scenes, 387 pieces, into ../recupbuild-scan-benchmark
+```
+
+Exports the scenes with their true sizes, in the format of the Hugging Face Hub (`train/`,
+`train/metadata.jsonl`), and a dataset card filled with the results above
+([`dataset-card.md`](dataset-card.md)). No model is called.
+

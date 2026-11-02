@@ -209,3 +209,18 @@ ini_set('log_errors', '0');
 $untouched = Segmentation::refine($spark, 'jpeg', 1000, 1000, new Config());
 ini_set('log_errors', '1');
 check('without SAM the scan keeps the corners of Muse Spark', same($spark['pieces'], $untouched['pieces']) && $untouched['refined'] === 0);
+
+
+echo "benchmark scenes
+";
+
+require_once dirname(__DIR__) . '/benchmarks/Scenes.php';
+
+$photo = dirname(__DIR__) . '/demo/pile.jpg';
+$scene = Scenes::make(101, $photo);
+check('a scene is rebuilt identically from its seed', $scene === Scenes::make(101, $photo));
+check('another seed makes another scene', $scene['pieces'] !== Scenes::make(102, $photo)['pieces']);
+check('a scene has its A4 sheet and its pieces', isset($scene['a4']['x'], $scene['a4']['y']) && count($scene['pieces']) >= 5);
+check('each piece has its long side first', array_filter($scene['pieces'], static fn (array $piece): bool => $piece['length_mm'] < $piece['width_mm']) === []);
+check('each angle is within a quarter turn of vertical', array_filter($scene['pieces'], static fn (array $piece): bool => $piece['rotation_deg'] <= -90 || $piece['rotation_deg'] > 90) === []);
+

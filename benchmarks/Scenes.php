@@ -50,7 +50,10 @@ final class Scenes
     /**
      * One scene and what is really in it.
      *
-     * @return array{jpeg: string, pieces: list<array{kind: string, length_mm: int, width_mm: int, x: float, y: float}>}
+     * x and y are the centre of an object in pixels. rotation_deg is the counter-clockwise
+     * angle of the long side of a piece from vertical, between -90 and 90.
+     *
+     * @return array{jpeg: string, a4: array{x: float, y: float}, pieces: list<array{kind: string, length_mm: int, width_mm: int, x: float, y: float, rotation_deg: int}>}
      */
     public static function make(int $seed, string $photoPath): array
     {
@@ -64,7 +67,7 @@ final class Scenes
         $sheetHeight = (int) round(297 * self::PIXELS_PER_MM);
         $sheet = imagecreatetruecolor($sheetWidth, $sheetHeight);
         imagefill($sheet, 0, 0, imagecolorallocate($sheet, 244, 244, 248));
-        self::place($canvas, $sheet, 0, $taken);
+        [$sheetX, $sheetY] = self::place($canvas, $sheet, 0, $taken);
 
         $pieces = [];
         $wanted = ['plywood', 'sheet_metal', 'batten', 'plank', 'plank', 'plank', 'pallet_board', 'pallet_board', 'batten'];
@@ -78,16 +81,20 @@ final class Scenes
             // Standing like the texture, then turned a few degrees, or lying flat.
             $piece = imagecreatetruecolor((int) round($width * self::PIXELS_PER_MM), (int) round($length * self::PIXELS_PER_MM));
             imagecopyresampled($piece, $source, 0, 0, $left, $top, imagesx($piece), imagesy($piece), $wide, $high);
-            $spot = self::place($canvas, $piece, (mt_rand(0, 1) * 90) + mt_rand(-12, 12), $taken);
+            $rotation = (mt_rand(0, 1) * 90) + mt_rand(-12, 12);
+            $spot = self::place($canvas, $piece, $rotation, $taken);
             if ($spot !== null) {
-                $pieces[] = ['kind' => $kind, 'length_mm' => max($length, $width), 'width_mm' => min($length, $width), 'x' => $spot[0], 'y' => $spot[1]];
+                // A piece wider than long starts with its long side lying down.
+                $turn = $rotation + ($width > $length ? 90 : 0);
+                $turn = $turn > 90 ? $turn - 180 : ($turn <= -90 ? $turn + 180 : $turn);
+                $pieces[] = ['kind' => $kind, 'length_mm' => max($length, $width), 'width_mm' => min($length, $width), 'x' => $spot[0], 'y' => $spot[1], 'rotation_deg' => $turn];
             }
         }
 
         ob_start();
         imagejpeg($canvas, null, 90);
 
-        return ['jpeg' => (string) ob_get_clean(), 'pieces' => $pieces];
+        return ['jpeg' => (string) ob_get_clean(), 'a4' => ['x' => $sheetX, 'y' => $sheetY], 'pieces' => $pieces];
     }
 
     /** Covers the canvas with concrete, mirrored at each tile so no seam shows. */
