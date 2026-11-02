@@ -10,10 +10,12 @@ An A4 sheet next to the pile gives the scale: the AI measures every plank,
 invents four projects sized to your wood, an engine places every cut,
 and you leave with the cutting plan, the 3D render and the assembly steps.
 
+*Built for the Meta Global AI Hackathon 2026 with Muse Spark on the Meta Model API.*
+
 ![PHP 8.3](https://img.shields.io/badge/PHP-8.3-2f6b4f?style=flat-square&logo=php&logoColor=white)
 ![MVC, no framework](https://img.shields.io/badge/MVC-no%20framework-c4622d?style=flat-square)
 ![SQLite](https://img.shields.io/badge/SQLite-3-1f2a24?style=flat-square&logo=sqlite&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-82%20checks-2f6b4f?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-105%20checks-2f6b4f?style=flat-square)
 ![Meta Hackathon](https://img.shields.io/badge/born%20at-Meta%20hackathon-0866ff?style=flat-square&logo=meta&logoColor=white)
 
 ### 🌐 Try it live: **[recupbuild.tendry.mg](https://recupbuild.tendry.mg)**
@@ -33,6 +35,7 @@ and you leave with the cutting plan, the 3D render and the assembly steps.
 - [Live app](https://recupbuild.tendry.mg)
 - [Pitch video (YouTube)](https://youtu.be/sO_UkvMmugU)
 - [What RecupBuild does](#what-recupbuild-does)
+- [Built with Meta](#built-with-meta)
 - [The pages](#the-pages)
 - [The free plan](#the-free-plan)
 - [Run it locally](#run-it-locally)
@@ -80,6 +83,35 @@ parts to cut, with which tools and in what order, and rebuilds it in 3D.
   <img src="docs/images/reverse-build.png" alt="Reverse build of a table: name, difficulty, time, estimated dimensions" width="49%">
   <img src="docs/images/result-3d.png" alt="The table rebuilt in 3D, part by part" width="49%">
 </p>
+
+---
+
+## Built with Meta
+
+Every AI step goes through the **[Meta Model API](https://dev.meta.ai/)** (`https://api.meta.ai/v1`,
+authenticated with your `MODEL_API_KEY`), from `src/Services/Vision.php`.
+
+| Step | Model | What it does |
+| --- | --- | --- |
+| Scan | **Muse Spark** (`muse-spark-1.3`), vision | finds the A4 sheet and every piece on the photo, estimates each thickness |
+| Projects | **Muse Spark**, reasoning | invents up to four parametric projects for this inventory |
+| Assembly | **Muse Spark**, reasoning | writes the steps of the chosen project, in the user's language |
+| Rebuild | **Muse Spark**, vision | reads a finished object: parts, tools, hardware, steps and a 3D layout |
+
+Each call asks for a **structured output** (`response_format` with a JSON schema), so the server
+receives data it can check, never free text. A deterministic engine then has the last word:
+
+```mermaid
+flowchart LR
+    photo[Photo + A4 sheet] --> spark[Muse Spark<br>finds and measures]
+    spark --> scale[A4 scale<br>pixels to mm]
+    scale --> inventory[Inventory<br>the user corrects it]
+    inventory --> ideas[Muse Spark<br>invents projects]
+    ideas --> solver[Cutting engine<br>checks every part]
+    solver --> plan[Plan: 3D, cuts, parts, steps]
+    object[Photo of an object] --> reverse[Muse Spark<br>reverse build]
+    reverse --> plan
+```
 
 ---
 
@@ -264,8 +296,8 @@ API errors look like `{ "detail": { "code": "a4_not_detected" } }` with the righ
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `MODEL_API_KEY` (or `MUSE_IMAGE_API_KEY`) | empty | Meta model key, required for the AI |
-| `META_API_BASE` | `https://api.meta.ai/v1` | model endpoint |
+| `MODEL_API_KEY` (or `MUSE_IMAGE_API_KEY`) | empty | Meta Model API key from [dev.meta.ai](https://dev.meta.ai/), required for the AI |
+| `META_API_BASE` | `https://api.meta.ai/v1` | Meta Model API endpoint |
 | `VISION_MODEL` | `muse-spark-1.3` | model used |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | empty | Google sign-in (Google Cloud Console → Clients, "Web application") |
 | `GOOGLE_REDIRECT_URI` | `http(s)://<host>/auth/google/callback` | declare it exactly under "Authorized redirect URIs" |
@@ -347,7 +379,7 @@ Then declare `https://recupbuild.example.com` under the JavaScript origins and
 ## Tests
 
 ```sh
-php tests/run.php            # 82 checks: scan, cutting engine, invented projects, reverse build,
+php tests/run.php            # 105 checks: scan, cutting engine, invented projects, reverse build,
                              # Google sign-in, SQLite, history, credits, drawings, inventory, page texts
 php tests/live_plan.php      # real call to the model: cards, plan and steps
 ```
