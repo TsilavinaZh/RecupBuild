@@ -24,11 +24,11 @@ final class Demo
     }
 
     /**
-     * The projects the model invented once for the sample heap (demo-projects.json):
-     * small offcuts fit none of the built-in projects. The engine still checks them
-     * at every visit; the demo itself calls no model.
+     * The projects the model invented once for the sample heap (demo-projects.json), with
+     * the sizes, steps and 3D layout it gave them: small offcuts fit none of the built-in
+     * projects. The engine still checks them at every visit; the demo calls no model.
      *
-     * @return list<array<string, mixed>> project definitions
+     * @return list<array{definition: array<string, mixed>, params: array<string, int>, steps: list<string>, assembly: list<array<string, mixed>>}>
      */
     public static function projects(string $locale): array
     {
