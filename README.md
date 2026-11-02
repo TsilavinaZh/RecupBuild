@@ -20,6 +20,24 @@ A sustainability tool with one job: keep usable material out of the skip.
 ![Tests](https://img.shields.io/badge/tests-203%20checks-2f6b4f?style=flat-square)
 ![Meta Hackathon](https://img.shields.io/badge/born%20at-Meta%20hackathon-0866ff?style=flat-square&logo=meta&logoColor=white)
 
+</div>
+
+## Hackathon submission overview
+
+- **Track**: Indie Developer (solo) · Build for Your World.
+- **Provenance**: built from scratch by one developer during the hackathon window (Oct 26 – Nov 4, 2026). First commit: Oct 27.
+- **Try it with no account**: **[one-click demo](https://recupbuild.tendry.mg/try)**. It replays a saved scan of a real heap, the cutting engine plans it live, and no model is called.
+- **Run it with no keys**: `php -S localhost:8080` from this folder, then open <http://localhost:8080/try>.
+- **Meta models at runtime** (Meta Model API):
+  - `muse-spark-1.3` reads the photo, names the pieces, estimates their thickness, invents the projects and writes the steps.
+  - `sam-3.1` traces the real edges of every piece: on our [benchmark](#benchmarks) of composed scenes, the mean length error falls from 41.5 mm to 1.8 mm.
+  - `muse-image-1.0` shows the finished object in the user's own wood.
+- **More than a prompt**: a deterministic engine places every cut, counting a 3 mm saw kerf, and an independent check found 0 faults on 182 plans.
+- **Bonus category targeted**: Best Creative Build.
+- **Open weights**: not claimed. An optional local Muse Glimmer 30B route exists in the code, but it is not used in production and was tested only against a stand-in server.
+
+<div align="center">
+
 ### 🌐 Try it live: **[recupbuild.tendry.mg](https://recupbuild.tendry.mg)**
 
 ### 📊 Open dataset: **[recupbuild-scan-benchmark on Hugging Face](https://huggingface.co/datasets/tsilavinaZh/recupbuild-scan-benchmark)**
