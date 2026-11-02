@@ -260,6 +260,7 @@ return [
     'error.unknown' => 'Choisissez d’abord une photo.',
     'error.file_too_large' => 'Cette photo dépasse 12 Mo : choisissez une image plus légère.',
     'error.unsupported_type' => 'Ce fichier n’est pas une image JPG, PNG ou WebP.',
+    'error.too_many_scans' => 'Vous avez lancé beaucoup d’analyses en peu de temps. Réessayez dans une heure.',
 
     // The steps of the app.
     'steps.label' => 'Étapes',

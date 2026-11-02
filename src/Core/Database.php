@@ -65,6 +65,13 @@ final class Database
         )',
         // 7: the realistic picture of a plan, stored like a photo (Services\Preview).
         'ALTER TABLE plans ADD COLUMN preview TEXT',
+        // 8: when each user called the model outside the credits, to cap it (Models\Usage).
+        'CREATE TABLE usage_events (
+            user_id INTEGER NOT NULL,
+            kind TEXT NOT NULL,
+            created_at INTEGER NOT NULL
+        );
+        CREATE INDEX usage_by_user ON usage_events (user_id, kind, created_at)',
     ];
 
     private static ?\PDO $shared = null;
