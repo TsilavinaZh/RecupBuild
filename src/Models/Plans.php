@@ -12,6 +12,9 @@ namespace RecupBuild\Models;
  */
 final class Plans
 {
+    /** How long a picture being made holds its reservation, in seconds. */
+    private const CLAIM_S = 300;
+
     /** How many plans the history lists at most, newest first. */
     public const LIMIT = 50;
 
@@ -127,6 +130,29 @@ final class Plans
             'outlines' => $row['outlines'] === null ? null : json_decode((string) $row['outlines'], true),
             'preview' => $row['preview'],
         ];
+    }
+
+    /**
+     * Reserves the picture of a plan, so two clicks never pay for two images. False when it
+     * exists or another request is making it; a reservation left by a dead request expires.
+     */
+    public static function claimPreview(\PDO $pdo, int $userId, int $id, ?int $now = null): bool
+    {
+        $now ??= time();
+        $statement = $pdo->prepare(
+            "UPDATE plans SET preview = :claim WHERE id = :id AND user_id = :user
+             AND (preview IS NULL OR (preview LIKE 'pending:%' AND CAST(substr(preview, 9) AS INTEGER) < :stale))"
+        );
+        $statement->execute(['claim' => 'pending:' . $now, 'stale' => $now - self::CLAIM_S, 'id' => $id, 'user' => $userId]);
+
+        return $statement->rowCount() > 0;
+    }
+
+    /** Gives the reservation back: the picture failed, the user may try again. */
+    public static function releasePreview(\PDO $pdo, int $userId, int $id): void
+    {
+        $statement = $pdo->prepare("UPDATE plans SET preview = NULL WHERE id = :id AND user_id = :user AND preview LIKE 'pending:%'");
+        $statement->execute(['id' => $id, 'user' => $userId]);
     }
 
     /** Keeps the realistic picture of one plan of this user (a name from Models\Photos). */

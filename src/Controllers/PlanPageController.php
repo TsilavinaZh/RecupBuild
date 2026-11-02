@@ -69,13 +69,14 @@ final class PlanPageController extends Controller
             View::render('notfound', 'notfound.title');
         }
 
-        // Each picture is paid for: one per plan, kept.
-        if ($plan['preview'] === null) {
+        // Each picture is paid for: one per plan, kept, even after two clicks at once.
+        if (Plans::claimPreview($pdo, $user['id'], $id)) {
             try {
                 $image = Preview::of((string) file_get_contents($photo), $plan, $this->config);
                 Plans::savePreview($pdo, $user['id'], $id, Photos::store($image));
             } catch (\Throwable $error) {
                 error_log('[recupbuild] preview failed: ' . $error->getMessage());
+                Plans::releasePreview($pdo, $user['id'], $id);
                 Session::flash('error.preview');
             }
         }
