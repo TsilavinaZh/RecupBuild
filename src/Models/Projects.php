@@ -413,7 +413,8 @@ final class Projects
         ][$locale] ?? null;
         $words ??= ['Tablette murale', 'Une petite tablette à fixer au mur, pour poser plantes, épices ou clés.', 'Longueur', 'Tablette', 'Support'];
 
-        // The ledge and its two brackets share the piece along its length.
+        // The ledge and its two brackets share the piece along its length. A bracket is never
+        // wider than long: the engine would turn it and it would no longer fit beside the ledge.
         // Too short a piece for brackets too: the ledge alone.
         $bracket = $longest['length'] < 300 ? 0 : (int) min(150, 10 * floor($longest['length'] / 50));
         $length = (int) (10 * floor(($longest['length'] - ($bracket > 0 ? 2 * ($bracket + Solver::KERF_MM) : 0)) / 10));
@@ -427,7 +428,7 @@ final class Projects
             'params' => ['length' => ['label' => $words[2], 'min' => min(50, $length), 'default' => min(800, $length), 'max' => min(800, $length)]],
             'parts' => [
                 ['name' => 'ledge', 'label' => $words[3], 'material' => 'wood', 'length' => ['param' => 'length', 'add' => 0], 'width' => ['param' => null, 'add' => $width], 'thickness' => $thickness, 'quantity' => 1],
-                ...($bracket > 0 ? [['name' => 'bracket', 'label' => $words[4], 'material' => 'wood', 'length' => ['param' => null, 'add' => $bracket], 'width' => ['param' => null, 'add' => $width], 'thickness' => $thickness, 'quantity' => 2]] : []),
+                ...($bracket > 0 ? [['name' => 'bracket', 'label' => $words[4], 'material' => 'wood', 'length' => ['param' => null, 'add' => $bracket], 'width' => ['param' => null, 'add' => min($width, $bracket)], 'thickness' => $thickness, 'quantity' => 2]] : []),
             ],
         ]);
     }

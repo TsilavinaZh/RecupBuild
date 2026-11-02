@@ -180,8 +180,8 @@ final class WorkspaceController extends Controller
         $params = $card['result']['plan']['params'];
 
         if ($workspace['demo']) {
-            // The demo plans with the engine alone: the steps come from the language files.
-            $result = Solver::solve($definition, $pieces, $params) + ['steps' => null];
+            // The demo plans with the engine alone: its steps and 3D view were saved with the project.
+            $result = Solver::solve($definition, $pieces, $params) + ['steps' => $card['result']['steps'] ?? null, 'assembly' => $card['result']['assembly'] ?? null];
         } else {
             if (Users::credits($pdo, $user['id'])['build'] <= 0) {
                 Session::flash('projects.noCredit');
@@ -232,8 +232,14 @@ final class WorkspaceController extends Controller
         }
         $locale = Request::locale();
         $cards = [];
-        foreach ($workspace['demo'] ? Demo::projects($locale) : Projects::IDS as $project) {
-            $cards[] = ['definition' => Projects::definition($project), 'result' => Solver::solve($project, $pieces)];
+        foreach ($workspace['demo'] ? [] : Projects::IDS as $id) {
+            $cards[] = ['definition' => Projects::definition($id), 'result' => Solver::solve($id, $pieces)];
+        }
+        foreach ($workspace['demo'] ? Demo::projects($locale) : [] as $saved) {
+            $result = Solver::solve($saved['definition'], $pieces, $saved['params']);
+            // The saved steps and 3D view hold for these sizes only: a changed inventory drops them.
+            $same = ($result['plan']['params'] ?? null) == $saved['params'];
+            $cards[] = ['definition' => $saved['definition'], 'result' => $result + ['steps' => $same ? $saved['steps'] : null, 'assembly' => $same ? $saved['assembly'] : null]];
         }
         if (array_filter($cards, static fn (array $card): bool => $card['result']['status'] === 'feasible') === []) {
             // Small offcuts fit none of the built-in projects: a simple one always does.

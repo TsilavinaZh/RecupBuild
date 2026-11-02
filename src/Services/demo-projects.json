@@ -1,554 +1,974 @@
 {
     "en": [
         {
-            "id": "ai-1",
-            "name": "Countertop Two-Tier Shelf",
-            "description": "A small two-tier shelf that sits on a desk or counter for books and jars.",
-            "params": {
-                "width": {
-                    "default": 510,
-                    "min": 300,
-                    "max": 510,
-                    "label": "Shelf width"
-                }
-            },
-            "parts": [
-                {
-                    "name": "shelfBoard",
-                    "label": "Shelf board",
-                    "material": "wood",
-                    "length": {
-                        "param": "width",
-                        "add": 0
-                    },
+            "definition": {
+                "id": "ai-1",
+                "name": "Countertop Two-Tier Shelf",
+                "description": "A small two-tier shelf that sits on a desk or counter for books and jars.",
+                "params": {
                     "width": {
-                        "param": null,
-                        "add": 90
+                        "default": 510,
+                        "min": 300,
+                        "max": 510,
+                        "label": "Shelf width"
+                    }
+                },
+                "parts": [
+                    {
+                        "name": "shelfBoard",
+                        "label": "Shelf board",
+                        "material": "wood",
+                        "length": {
+                            "param": "width",
+                            "add": 0
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 90
+                        },
+                        "thickness": {
+                            "min": 18,
+                            "max": 22
+                        },
+                        "quantity": 2
                     },
-                    "thickness": {
-                        "min": 18,
-                        "max": 22
-                    },
-                    "quantity": 2
+                    {
+                        "name": "sidePanel",
+                        "label": "Side panel",
+                        "material": "wood",
+                        "length": {
+                            "param": null,
+                            "add": 200
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 90
+                        },
+                        "thickness": {
+                            "min": 18,
+                            "max": 22
+                        },
+                        "quantity": 2
+                    }
+                ],
+                "steps": 4
+            },
+            "params": {
+                "width": 510
+            },
+            "steps": [
+                "Cut the shelf boards and side panels to size from the reclaimed wood stock.",
+                "Sand all cut pieces smooth and ease the sharp edges.",
+                "Pre-drill the screw holes and then assemble the shelves between the side panels.",
+                "Apply a protective finish to all surfaces and let it cure fully."
+            ],
+            "assembly": [
+                {
+                    "number": 1,
+                    "x": 20,
+                    "y": 0,
+                    "z": 0,
+                    "length_axis": "x",
+                    "width_axis": "z"
                 },
                 {
-                    "name": "sidePanel",
-                    "label": "Side panel",
-                    "material": "wood",
-                    "length": {
-                        "param": null,
-                        "add": 200
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 90
-                    },
-                    "thickness": {
-                        "min": 18,
-                        "max": 22
-                    },
-                    "quantity": 2
+                    "number": 2,
+                    "x": 20,
+                    "y": 180,
+                    "z": 0,
+                    "length_axis": "x",
+                    "width_axis": "z"
+                },
+                {
+                    "number": 3,
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "length_axis": "y",
+                    "width_axis": "z"
+                },
+                {
+                    "number": 4,
+                    "x": 530,
+                    "y": 0,
+                    "z": 0,
+                    "length_axis": "y",
+                    "width_axis": "z"
                 }
-            ],
-            "steps": 4
+            ]
         },
         {
-            "id": "ai-2",
-            "name": "Garden Planter Box",
-            "description": "An open wooden box for herbs, seedlings and garden harvest.",
-            "params": {
-                "length": {
-                    "default": 380,
-                    "min": 240,
-                    "max": 380,
-                    "label": "Box length"
+            "definition": {
+                "id": "ai-2",
+                "name": "Garden Planter Box",
+                "description": "An open wooden box for herbs, seedlings and garden harvest.",
+                "params": {
+                    "length": {
+                        "default": 380,
+                        "min": 240,
+                        "max": 380,
+                        "label": "Box length"
+                    },
+                    "depth": {
+                        "default": 260,
+                        "min": 200,
+                        "max": 260,
+                        "label": "Box depth"
+                    }
                 },
-                "depth": {
-                    "default": 260,
-                    "min": 200,
-                    "max": 260,
-                    "label": "Box depth"
-                }
+                "parts": [
+                    {
+                        "name": "longSide",
+                        "label": "Long side",
+                        "material": "wood",
+                        "length": {
+                            "param": "length",
+                            "add": 0
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 60
+                        },
+                        "thickness": {
+                            "min": 18,
+                            "max": 22
+                        },
+                        "quantity": 2
+                    },
+                    {
+                        "name": "shortSide",
+                        "label": "Short side",
+                        "material": "wood",
+                        "length": {
+                            "param": "depth",
+                            "add": -40
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 60
+                        },
+                        "thickness": {
+                            "min": 18,
+                            "max": 22
+                        },
+                        "quantity": 2
+                    },
+                    {
+                        "name": "bottomPanel",
+                        "label": "Bottom panel",
+                        "material": "wood",
+                        "length": {
+                            "param": "length",
+                            "add": -40
+                        },
+                        "width": {
+                            "param": "depth",
+                            "add": -40
+                        },
+                        "thickness": {
+                            "min": 10,
+                            "max": 14
+                        },
+                        "quantity": 1
+                    }
+                ],
+                "steps": 4
             },
-            "parts": [
-                {
-                    "name": "longSide",
-                    "label": "Long side",
-                    "material": "wood",
-                    "length": {
-                        "param": "length",
-                        "add": 0
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 60
-                    },
-                    "thickness": {
-                        "min": 18,
-                        "max": 22
-                    },
-                    "quantity": 2
-                },
-                {
-                    "name": "shortSide",
-                    "label": "Short side",
-                    "material": "wood",
-                    "length": {
-                        "param": "depth",
-                        "add": -40
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 60
-                    },
-                    "thickness": {
-                        "min": 18,
-                        "max": 22
-                    },
-                    "quantity": 2
-                },
-                {
-                    "name": "bottomPanel",
-                    "label": "Bottom panel",
-                    "material": "wood",
-                    "length": {
-                        "param": "length",
-                        "add": -40
-                    },
-                    "width": {
-                        "param": "depth",
-                        "add": -40
-                    },
-                    "thickness": {
-                        "min": 10,
-                        "max": 14
-                    },
-                    "quantity": 1
-                }
+            "params": {
+                "length": 380,
+                "depth": 260
+            },
+            "steps": [
+                "Select the reclaimed boards and cut all sides and the bottom panel to size.",
+                "Sand every piece smooth and remove all dust and splinters.",
+                "Pre-drill the screw holes and assemble the box with the bottom fitted inside the sides.",
+                "Apply a protective finish suitable for outdoor use and allow it to cure fully."
             ],
-            "steps": 4
+            "assembly": [
+                {
+                    "number": 1,
+                    "x": 0,
+                    "y": 0,
+                    "z": 20,
+                    "length_axis": "z",
+                    "width_axis": "y"
+                },
+                {
+                    "number": 2,
+                    "x": 1,
+                    "y": 0,
+                    "z": 0,
+                    "length_axis": "x",
+                    "width_axis": "y"
+                },
+                {
+                    "number": 3,
+                    "x": 1,
+                    "y": 0,
+                    "z": 240,
+                    "length_axis": "x",
+                    "width_axis": "y"
+                },
+                {
+                    "number": 4,
+                    "x": 22,
+                    "y": 0,
+                    "z": 20,
+                    "length_axis": "x",
+                    "width_axis": "z"
+                },
+                {
+                    "number": 5,
+                    "x": 362,
+                    "y": 0,
+                    "z": 20,
+                    "length_axis": "z",
+                    "width_axis": "y"
+                }
+            ]
         },
         {
-            "id": "ai-3",
-            "name": "Metal-Lined Potting Tray",
-            "description": "A shallow wooden tray with a metal base for potting and carrying tools.",
-            "params": {
-                "length": {
-                    "default": 410,
-                    "min": 300,
-                    "max": 410,
-                    "label": "Tray length"
+            "definition": {
+                "id": "ai-3",
+                "name": "Metal-Lined Potting Tray",
+                "description": "A shallow wooden tray with a metal base for potting and carrying tools.",
+                "params": {
+                    "length": {
+                        "default": 410,
+                        "min": 300,
+                        "max": 410,
+                        "label": "Tray length"
+                    },
+                    "width": {
+                        "default": 320,
+                        "min": 200,
+                        "max": 320,
+                        "label": "Tray width"
+                    }
                 },
-                "width": {
-                    "default": 320,
-                    "min": 200,
-                    "max": 320,
-                    "label": "Tray width"
-                }
+                "parts": [
+                    {
+                        "name": "trayLongSide",
+                        "label": "Long tray side",
+                        "material": "wood",
+                        "length": {
+                            "param": "length",
+                            "add": 0
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 60
+                        },
+                        "thickness": {
+                            "min": 18,
+                            "max": 22
+                        },
+                        "quantity": 2
+                    },
+                    {
+                        "name": "trayShortSide",
+                        "label": "Short tray side",
+                        "material": "wood",
+                        "length": {
+                            "param": "width",
+                            "add": -40
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 60
+                        },
+                        "thickness": {
+                            "min": 18,
+                            "max": 22
+                        },
+                        "quantity": 2
+                    },
+                    {
+                        "name": "trayBase",
+                        "label": "Metal tray base",
+                        "material": "metal",
+                        "length": {
+                            "param": "length",
+                            "add": -40
+                        },
+                        "width": {
+                            "param": "width",
+                            "add": -40
+                        },
+                        "thickness": {
+                            "min": 0.4,
+                            "max": 0.8
+                        },
+                        "quantity": 1
+                    }
+                ],
+                "steps": 4
             },
-            "parts": [
-                {
-                    "name": "trayLongSide",
-                    "label": "Long tray side",
-                    "material": "wood",
-                    "length": {
-                        "param": "length",
-                        "add": 0
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 60
-                    },
-                    "thickness": {
-                        "min": 18,
-                        "max": 22
-                    },
-                    "quantity": 2
-                },
-                {
-                    "name": "trayShortSide",
-                    "label": "Short tray side",
-                    "material": "wood",
-                    "length": {
-                        "param": "width",
-                        "add": -40
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 60
-                    },
-                    "thickness": {
-                        "min": 18,
-                        "max": 22
-                    },
-                    "quantity": 2
-                },
-                {
-                    "name": "trayBase",
-                    "label": "Metal tray base",
-                    "material": "metal",
-                    "length": {
-                        "param": "length",
-                        "add": -40
-                    },
-                    "width": {
-                        "param": "width",
-                        "add": -40
-                    },
-                    "thickness": {
-                        "min": 0.4,
-                        "max": 0.8
-                    },
-                    "quantity": 1
-                }
+            "params": {
+                "length": 410,
+                "width": 320
+            },
+            "steps": [
+                "Cut the wooden sides and the metal base from reclaimed stock and trim all edges clean.",
+                "Sand every wooden piece smooth and deburr the metal base edges.",
+                "Pre-drill pilot holes in the sides and screw the frame together around the metal base.",
+                "Seal the wood with protective finish and clean the metal surface for use."
             ],
-            "steps": 4
+            "assembly": [
+                {
+                    "number": 1,
+                    "x": 0,
+                    "y": 0.6,
+                    "z": 20,
+                    "length_axis": "z",
+                    "width_axis": "y"
+                },
+                {
+                    "number": 2,
+                    "x": 388,
+                    "y": 0.6,
+                    "z": 20,
+                    "length_axis": "z",
+                    "width_axis": "y"
+                },
+                {
+                    "number": 3,
+                    "x": 0,
+                    "y": 0.6,
+                    "z": 0,
+                    "length_axis": "x",
+                    "width_axis": "y"
+                },
+                {
+                    "number": 4,
+                    "x": 0,
+                    "y": 0.6,
+                    "z": 300,
+                    "length_axis": "x",
+                    "width_axis": "y"
+                },
+                {
+                    "number": 5,
+                    "x": 20,
+                    "y": 0,
+                    "z": 20,
+                    "length_axis": "x",
+                    "width_axis": "z"
+                }
+            ]
         },
         {
-            "id": "ai-4",
-            "name": "Workshop Stool",
-            "description": "A sturdy four-legged stool for the workshop, garden or kitchen.",
-            "params": {
-                "height": {
-                    "default": 450,
-                    "min": 300,
-                    "max": 450,
-                    "label": "Stool height"
-                }
+            "definition": {
+                "id": "ai-4",
+                "name": "Workshop Stool",
+                "description": "A sturdy four-legged stool for the workshop, garden or kitchen.",
+                "params": {
+                    "height": {
+                        "default": 450,
+                        "min": 300,
+                        "max": 450,
+                        "label": "Stool height"
+                    }
+                },
+                "parts": [
+                    {
+                        "name": "seatTop",
+                        "label": "Seat top",
+                        "material": "wood",
+                        "length": {
+                            "param": null,
+                            "add": 320
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 320
+                        },
+                        "thickness": {
+                            "min": 10,
+                            "max": 14
+                        },
+                        "quantity": 1
+                    },
+                    {
+                        "name": "leg",
+                        "label": "Stool leg",
+                        "material": "wood",
+                        "length": {
+                            "param": "height",
+                            "add": 0
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 35
+                        },
+                        "thickness": {
+                            "min": 18,
+                            "max": 30
+                        },
+                        "quantity": 4
+                    }
+                ],
+                "steps": 4
             },
-            "parts": [
+            "params": {
+                "height": 450
+            },
+            "steps": [
+                "Select the reclaimed timber and cut the seat panel and legs to shape.",
+                "Sand every face and edge smooth and wipe away all dust.",
+                "Pre-drill pilot holes and screw the legs firmly beneath the seat.",
+                "Apply a protective finish over all surfaces and leave it to cure."
+            ],
+            "assembly": [
                 {
-                    "name": "seatTop",
-                    "label": "Seat top",
-                    "material": "wood",
-                    "length": {
-                        "param": null,
-                        "add": 320
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 320
-                    },
-                    "thickness": {
-                        "min": 10,
-                        "max": 14
-                    },
-                    "quantity": 1
+                    "number": 1,
+                    "x": 15,
+                    "y": 0,
+                    "z": 15,
+                    "length_axis": "y",
+                    "width_axis": "x"
                 },
                 {
-                    "name": "leg",
-                    "label": "Stool leg",
-                    "material": "wood",
-                    "length": {
-                        "param": "height",
-                        "add": 0
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 35
-                    },
-                    "thickness": {
-                        "min": 18,
-                        "max": 30
-                    },
-                    "quantity": 4
+                    "number": 2,
+                    "x": 270,
+                    "y": 0,
+                    "z": 15,
+                    "length_axis": "y",
+                    "width_axis": "x"
+                },
+                {
+                    "number": 3,
+                    "x": 15,
+                    "y": 0,
+                    "z": 281,
+                    "length_axis": "y",
+                    "width_axis": "x"
+                },
+                {
+                    "number": 4,
+                    "x": 270,
+                    "y": 0,
+                    "z": 275,
+                    "length_axis": "y",
+                    "width_axis": "x"
+                },
+                {
+                    "number": 5,
+                    "x": 0,
+                    "y": 450,
+                    "z": 0,
+                    "length_axis": "x",
+                    "width_axis": "z"
                 }
-            ],
-            "steps": 4
+            ]
         }
     ],
     "fr": [
         {
-            "id": "ai-1",
-            "name": "Étagère murale rustique",
-            "description": "Petite étagère à deux niveaux pour ranger livres et bocaux à la maison ou à l’atelier.",
-            "params": {
-                "longueur": {
-                    "default": 510,
-                    "min": 300,
-                    "max": 510,
-                    "label": "Longueur"
-                }
+            "definition": {
+                "id": "ai-1",
+                "name": "Étagère murale rustique",
+                "description": "Petite étagère à deux niveaux pour ranger livres et bocaux à la maison ou à l’atelier.",
+                "params": {
+                    "longueur": {
+                        "default": 510,
+                        "min": 300,
+                        "max": 510,
+                        "label": "Longueur"
+                    }
+                },
+                "parts": [
+                    {
+                        "name": "tablette",
+                        "label": "Tablette",
+                        "material": "wood",
+                        "length": {
+                            "param": "longueur",
+                            "add": 0
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 90
+                        },
+                        "thickness": {
+                            "min": 18,
+                            "max": 24
+                        },
+                        "quantity": 2
+                    },
+                    {
+                        "name": "montantLateral",
+                        "label": "Montant latéral",
+                        "material": "wood",
+                        "length": {
+                            "param": null,
+                            "add": 250
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 90
+                        },
+                        "thickness": {
+                            "min": 18,
+                            "max": 24
+                        },
+                        "quantity": 2
+                    }
+                ],
+                "steps": 4
             },
-            "parts": [
+            "params": {
+                "longueur": 510
+            },
+            "steps": [
+                "Préparez le bois récupéré puis découpez les tablettes et les montants latéraux en suivant le plan prévu.",
+                "Poncez soigneusement toutes les pièces sur les faces et les arêtes jusqu’à obtenir un aspect lisse et rustique.",
+                "Prépercez les zones de fixation puis assemblez les tablettes entre les montants pour former la structure à niveaux.",
+                "Protégez l’ensemble avec une finition adaptée puis laissez sécher avant d’installer l’étagère au mur."
+            ],
+            "assembly": [
                 {
-                    "name": "tablette",
-                    "label": "Tablette",
-                    "material": "wood",
-                    "length": {
-                        "param": "longueur",
-                        "add": 0
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 90
-                    },
-                    "thickness": {
-                        "min": 18,
-                        "max": 24
-                    },
-                    "quantity": 2
+                    "number": 1,
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "length_axis": "y",
+                    "width_axis": "z"
                 },
                 {
-                    "name": "montantLateral",
-                    "label": "Montant latéral",
-                    "material": "wood",
-                    "length": {
-                        "param": null,
-                        "add": 250
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 90
-                    },
-                    "thickness": {
-                        "min": 18,
-                        "max": 24
-                    },
-                    "quantity": 2
+                    "number": 2,
+                    "x": 532,
+                    "y": 0,
+                    "z": 0,
+                    "length_axis": "y",
+                    "width_axis": "z"
+                },
+                {
+                    "number": 3,
+                    "x": 22,
+                    "y": 0,
+                    "z": 0,
+                    "length_axis": "x",
+                    "width_axis": "z"
+                },
+                {
+                    "number": 4,
+                    "x": 22,
+                    "y": 226,
+                    "z": 0,
+                    "length_axis": "x",
+                    "width_axis": "z"
                 }
-            ],
-            "steps": 4
+            ]
         },
         {
-            "id": "ai-2",
-            "name": "Jardinière rectangulaire",
-            "description": "Bac ouvert pour cultiver herbes aromatiques et fleurs sur le balcon ou au jardin.",
-            "params": {
-                "longueur": {
-                    "default": 340,
-                    "min": 200,
-                    "max": 340,
-                    "label": "Longueur"
+            "definition": {
+                "id": "ai-2",
+                "name": "Jardinière rectangulaire",
+                "description": "Bac ouvert pour cultiver herbes aromatiques et fleurs sur le balcon ou au jardin.",
+                "params": {
+                    "longueur": {
+                        "default": 340,
+                        "min": 200,
+                        "max": 340,
+                        "label": "Longueur"
+                    },
+                    "largeur": {
+                        "default": 250,
+                        "min": 150,
+                        "max": 250,
+                        "label": "Largeur"
+                    }
                 },
-                "largeur": {
-                    "default": 250,
-                    "min": 150,
-                    "max": 250,
-                    "label": "Largeur"
-                }
+                "parts": [
+                    {
+                        "name": "fond",
+                        "label": "Fond",
+                        "material": "wood",
+                        "length": {
+                            "param": "longueur",
+                            "add": 0
+                        },
+                        "width": {
+                            "param": "largeur",
+                            "add": 0
+                        },
+                        "thickness": {
+                            "min": 10,
+                            "max": 14
+                        },
+                        "quantity": 1
+                    },
+                    {
+                        "name": "coteLong",
+                        "label": "Côté long",
+                        "material": "wood",
+                        "length": {
+                            "param": "longueur",
+                            "add": 0
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 100
+                        },
+                        "thickness": {
+                            "min": 18,
+                            "max": 24
+                        },
+                        "quantity": 2
+                    },
+                    {
+                        "name": "coteCourt",
+                        "label": "Côté court",
+                        "material": "wood",
+                        "length": {
+                            "param": "largeur",
+                            "add": -40
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 100
+                        },
+                        "thickness": {
+                            "min": 18,
+                            "max": 24
+                        },
+                        "quantity": 2
+                    }
+                ],
+                "steps": 4
             },
-            "parts": [
-                {
-                    "name": "fond",
-                    "label": "Fond",
-                    "material": "wood",
-                    "length": {
-                        "param": "longueur",
-                        "add": 0
-                    },
-                    "width": {
-                        "param": "largeur",
-                        "add": 0
-                    },
-                    "thickness": {
-                        "min": 10,
-                        "max": 14
-                    },
-                    "quantity": 1
-                },
-                {
-                    "name": "coteLong",
-                    "label": "Côté long",
-                    "material": "wood",
-                    "length": {
-                        "param": "longueur",
-                        "add": 0
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 100
-                    },
-                    "thickness": {
-                        "min": 18,
-                        "max": 24
-                    },
-                    "quantity": 2
-                },
-                {
-                    "name": "coteCourt",
-                    "label": "Côté court",
-                    "material": "wood",
-                    "length": {
-                        "param": "largeur",
-                        "add": -40
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 100
-                    },
-                    "thickness": {
-                        "min": 18,
-                        "max": 24
-                    },
-                    "quantity": 2
-                }
+            "params": {
+                "longueur": 340,
+                "largeur": 250
+            },
+            "steps": [
+                "Préparez le bois de récupération puis découpez soigneusement tous les éléments du bac.",
+                "Poncez toutes les faces et les arêtes pour obtenir une surface lisse et sans échardes.",
+                "Prépercez les emplacements des vis puis assemblez le fond avec les côtés pour former le bac.",
+                "Appliquez une finition protectrice adaptée à l'extérieur sur l'ensemble du bac et laissez bien sécher."
             ],
-            "steps": 4
+            "assembly": [
+                {
+                    "number": 1,
+                    "x": 0,
+                    "y": 12,
+                    "z": 0,
+                    "length_axis": "x",
+                    "width_axis": "y"
+                },
+                {
+                    "number": 2,
+                    "x": 0,
+                    "y": 12,
+                    "z": 22,
+                    "length_axis": "z",
+                    "width_axis": "y"
+                },
+                {
+                    "number": 3,
+                    "x": 0,
+                    "y": 12,
+                    "z": 232,
+                    "length_axis": "x",
+                    "width_axis": "y"
+                },
+                {
+                    "number": 4,
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "length_axis": "x",
+                    "width_axis": "z"
+                },
+                {
+                    "number": 5,
+                    "x": 319,
+                    "y": 12,
+                    "z": 22,
+                    "length_axis": "z",
+                    "width_axis": "y"
+                }
+            ]
         },
         {
-            "id": "ai-3",
-            "name": "Nichoir à oiseaux",
-            "description": "Petite cabane fermée avec toit métallique pour accueillir les oiseaux au jardin.",
-            "params": {
-                "hauteur": {
-                    "default": 210,
-                    "min": 150,
-                    "max": 210,
-                    "label": "Hauteur"
-                }
+            "definition": {
+                "id": "ai-3",
+                "name": "Nichoir à oiseaux",
+                "description": "Petite cabane fermée avec toit métallique pour accueillir les oiseaux au jardin.",
+                "params": {
+                    "hauteur": {
+                        "default": 210,
+                        "min": 150,
+                        "max": 210,
+                        "label": "Hauteur"
+                    }
+                },
+                "parts": [
+                    {
+                        "name": "facade",
+                        "label": "Façade",
+                        "material": "wood",
+                        "length": {
+                            "param": "hauteur",
+                            "add": 0
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 100
+                        },
+                        "thickness": {
+                            "min": 18,
+                            "max": 24
+                        },
+                        "quantity": 2
+                    },
+                    {
+                        "name": "cote",
+                        "label": "Côté",
+                        "material": "wood",
+                        "length": {
+                            "param": "hauteur",
+                            "add": 0
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 60
+                        },
+                        "thickness": {
+                            "min": 18,
+                            "max": 24
+                        },
+                        "quantity": 2
+                    },
+                    {
+                        "name": "fond",
+                        "label": "Fond",
+                        "material": "wood",
+                        "length": {
+                            "param": null,
+                            "add": 100
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 100
+                        },
+                        "thickness": {
+                            "min": 10,
+                            "max": 14
+                        },
+                        "quantity": 1
+                    },
+                    {
+                        "name": "toit",
+                        "label": "Toit",
+                        "material": "metal",
+                        "length": {
+                            "param": null,
+                            "add": 150
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 150
+                        },
+                        "thickness": {
+                            "min": 0.5,
+                            "max": 0.7
+                        },
+                        "quantity": 1
+                    }
+                ],
+                "steps": 4
             },
-            "parts": [
-                {
-                    "name": "facade",
-                    "label": "Façade",
-                    "material": "wood",
-                    "length": {
-                        "param": "hauteur",
-                        "add": 0
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 100
-                    },
-                    "thickness": {
-                        "min": 18,
-                        "max": 24
-                    },
-                    "quantity": 2
-                },
-                {
-                    "name": "cote",
-                    "label": "Côté",
-                    "material": "wood",
-                    "length": {
-                        "param": "hauteur",
-                        "add": 0
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 60
-                    },
-                    "thickness": {
-                        "min": 18,
-                        "max": 24
-                    },
-                    "quantity": 2
-                },
-                {
-                    "name": "fond",
-                    "label": "Fond",
-                    "material": "wood",
-                    "length": {
-                        "param": null,
-                        "add": 100
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 100
-                    },
-                    "thickness": {
-                        "min": 10,
-                        "max": 14
-                    },
-                    "quantity": 1
-                },
-                {
-                    "name": "toit",
-                    "label": "Toit",
-                    "material": "metal",
-                    "length": {
-                        "param": null,
-                        "add": 150
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 150
-                    },
-                    "thickness": {
-                        "min": 0.5,
-                        "max": 0.7
-                    },
-                    "quantity": 1
-                }
+            "params": {
+                "hauteur": 210
+            },
+            "steps": [
+                "Découpez toutes les pièces en bois et la tôle pour le toit en suivant le plan de coupe.",
+                "Poncez soigneusement chaque pièce pour adoucir les bords et les surfaces.",
+                "Pré-percez les emplacements des vis puis vissez ensemble la façade, les côtés et le fond avant de fixer le toit.",
+                "Appliquez une finition protectrice adaptée à un usage extérieur sur l'ensemble du nichoir."
             ],
-            "steps": 4
+            "assembly": [
+                {
+                    "number": 1,
+                    "x": 25,
+                    "y": 12,
+                    "z": 44.5,
+                    "length_axis": "y",
+                    "width_axis": "z"
+                },
+                {
+                    "number": 2,
+                    "x": 25,
+                    "y": 0,
+                    "z": 25,
+                    "length_axis": "x",
+                    "width_axis": "z"
+                },
+                {
+                    "number": 3,
+                    "x": 0,
+                    "y": 222,
+                    "z": 0,
+                    "length_axis": "x",
+                    "width_axis": "z"
+                },
+                {
+                    "number": 4,
+                    "x": 25,
+                    "y": 12,
+                    "z": 24.5,
+                    "length_axis": "y",
+                    "width_axis": "x"
+                },
+                {
+                    "number": 5,
+                    "x": 25,
+                    "y": 12,
+                    "z": 104.5,
+                    "length_axis": "y",
+                    "width_axis": "x"
+                },
+                {
+                    "number": 6,
+                    "x": 101,
+                    "y": 12,
+                    "z": 44.5,
+                    "length_axis": "y",
+                    "width_axis": "z"
+                }
+            ]
         },
         {
-            "id": "ai-4",
-            "name": "Plateau de service",
-            "description": "Plateau à rebords avec fond métallique pour servir en cuisine ou trier la visserie à l’atelier.",
-            "params": {
-                "longueur": {
-                    "default": 370,
-                    "min": 200,
-                    "max": 370,
-                    "label": "Longueur"
+            "definition": {
+                "id": "ai-4",
+                "name": "Plateau de service",
+                "description": "Plateau à rebords avec fond métallique pour servir en cuisine ou trier la visserie à l’atelier.",
+                "params": {
+                    "longueur": {
+                        "default": 370,
+                        "min": 200,
+                        "max": 370,
+                        "label": "Longueur"
+                    },
+                    "largeur": {
+                        "default": 350,
+                        "min": 150,
+                        "max": 350,
+                        "label": "Largeur"
+                    }
                 },
-                "largeur": {
-                    "default": 350,
-                    "min": 150,
-                    "max": 350,
-                    "label": "Largeur"
-                }
+                "parts": [
+                    {
+                        "name": "fondMetal",
+                        "label": "Fond métallique",
+                        "material": "metal",
+                        "length": {
+                            "param": "longueur",
+                            "add": 0
+                        },
+                        "width": {
+                            "param": "largeur",
+                            "add": 0
+                        },
+                        "thickness": {
+                            "min": 0.5,
+                            "max": 0.7
+                        },
+                        "quantity": 1
+                    },
+                    {
+                        "name": "coteLong",
+                        "label": "Côté long",
+                        "material": "wood",
+                        "length": {
+                            "param": "longueur",
+                            "add": 0
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 60
+                        },
+                        "thickness": {
+                            "min": 18,
+                            "max": 24
+                        },
+                        "quantity": 2
+                    },
+                    {
+                        "name": "coteCourt",
+                        "label": "Côté court",
+                        "material": "wood",
+                        "length": {
+                            "param": "largeur",
+                            "add": -40
+                        },
+                        "width": {
+                            "param": null,
+                            "add": 60
+                        },
+                        "thickness": {
+                            "min": 18,
+                            "max": 24
+                        },
+                        "quantity": 2
+                    }
+                ],
+                "steps": 4
             },
-            "parts": [
-                {
-                    "name": "fondMetal",
-                    "label": "Fond métallique",
-                    "material": "metal",
-                    "length": {
-                        "param": "longueur",
-                        "add": 0
-                    },
-                    "width": {
-                        "param": "largeur",
-                        "add": 0
-                    },
-                    "thickness": {
-                        "min": 0.5,
-                        "max": 0.7
-                    },
-                    "quantity": 1
-                },
-                {
-                    "name": "coteLong",
-                    "label": "Côté long",
-                    "material": "wood",
-                    "length": {
-                        "param": "longueur",
-                        "add": 0
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 60
-                    },
-                    "thickness": {
-                        "min": 18,
-                        "max": 24
-                    },
-                    "quantity": 2
-                },
-                {
-                    "name": "coteCourt",
-                    "label": "Côté court",
-                    "material": "wood",
-                    "length": {
-                        "param": "largeur",
-                        "add": -40
-                    },
-                    "width": {
-                        "param": null,
-                        "add": 60
-                    },
-                    "thickness": {
-                        "min": 18,
-                        "max": 24
-                    },
-                    "quantity": 2
-                }
+            "params": {
+                "longueur": 370,
+                "largeur": 350
+            },
+            "steps": [
+                "Préparez les bois de récupération et découpez les côtés longs et courts ainsi que le fond métallique pour former le plateau.",
+                "Poncez soigneusement toutes les faces et les chants des pièces en bois pour obtenir des surfaces douces et saines.",
+                "Prépercez les emplacements des vis puis vissez les côtés entre eux et fixez le fond sous le cadre en bois.",
+                "Appliquez une finition protectrice adaptée sur le bois et nettoyez le métal pour protéger durablement le plateau."
             ],
-            "steps": 4
+            "assembly": [
+                {
+                    "number": 1,
+                    "x": 0,
+                    "y": 0.6,
+                    "z": 24,
+                    "length_axis": "z",
+                    "width_axis": "y"
+                },
+                {
+                    "number": 2,
+                    "x": 350,
+                    "y": 0.6,
+                    "z": 24,
+                    "length_axis": "z",
+                    "width_axis": "y"
+                },
+                {
+                    "number": 3,
+                    "x": 0,
+                    "y": 0.6,
+                    "z": 0,
+                    "length_axis": "x",
+                    "width_axis": "y"
+                },
+                {
+                    "number": 4,
+                    "x": 0,
+                    "y": 0.6,
+                    "z": 334,
+                    "length_axis": "x",
+                    "width_axis": "y"
+                },
+                {
+                    "number": 5,
+                    "x": 0,
+                    "y": 0,
+                    "z": 1,
+                    "length_axis": "x",
+                    "width_axis": "z"
+                }
+            ]
         }
     ]
 }

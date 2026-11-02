@@ -15,7 +15,7 @@ and you leave with the cutting plan, the 3D render and the assembly steps.
 ![PHP 8.3](https://img.shields.io/badge/PHP-8.3-2f6b4f?style=flat-square&logo=php&logoColor=white)
 ![MVC, no framework](https://img.shields.io/badge/MVC-no%20framework-c4622d?style=flat-square)
 ![SQLite](https://img.shields.io/badge/SQLite-3-1f2a24?style=flat-square&logo=sqlite&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-157%20checks-2f6b4f?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-161%20checks-2f6b4f?style=flat-square)
 ![Meta Hackathon](https://img.shields.io/badge/born%20at-Meta%20hackathon-0866ff?style=flat-square&logo=meta&logoColor=white)
 
 ### 🌐 Try it live: **[recupbuild.tendry.mg](https://recupbuild.tendry.mg)**
@@ -203,7 +203,7 @@ Deleting a plan and signing out go through a **confirmation dialog**
 </p>
 
 **Examples**: on `/scan`, both examples use a real photo of offcuts next to an A4 sheet.
-"Instant demo" shows the scan and the projects the models made for it once
+"Instant demo" shows the scan, the projects, the steps and the 3D layouts the models made for it once
 (`src/Services/demo-scan.json`, `demo-projects.json`), planned again by the engine at every visit,
 **with no AI call and no credit used**;
 the other example sends the same photo to the AI live. On `/rebuild`, the example is a real
@@ -440,7 +440,7 @@ Then declare `https://recupbuild.example.com` under the JavaScript origins and
 ## Tests
 
 ```sh
-php tests/run.php            # 157 checks: scan, cutting engine, invented projects, reverse build,
+php tests/run.php            # 161 checks: scan, cutting engine, invented projects, reverse build,
                              # Google sign-in, SQLite, history, credits, drawings, inventory, page texts
 php tests/live_plan.php      # real call to the model: cards, plan and steps
 php benchmarks/solver.php    # every plan of 41 inventories checked from scratch (also in CI)

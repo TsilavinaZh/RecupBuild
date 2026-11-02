@@ -125,7 +125,7 @@ foreach (range(1, RANDOM_INVENTORIES) as $number) {
     $inventories["random {$number}"] = randomInventory();
 }
 
-$projects = [...Projects::IDS, ...Demo::projects('en')];
+$projects = [...Projects::IDS, ...array_column(Demo::projects('en'), 'definition')];
 $runs = 0;
 $feasible = 0;
 $placed = 0;
