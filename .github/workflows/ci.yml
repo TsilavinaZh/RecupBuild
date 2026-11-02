@@ -27,6 +27,9 @@ jobs:
       - name: Run the test suite
         run: php tests/run.php
 
+      - name: Check every plan of the cutting engine benchmark
+        run: php benchmarks/solver.php
+
   docker:
     name: Docker image
     runs-on: ubuntu-latest

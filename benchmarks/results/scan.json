@@ -1,0 +1,26 @@
+{
+    "scenes": 6,
+    "scenes_failed": [],
+    "muse_spark_alone": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "length_mae_mm": 41.5,
+        "width_mae_mm": 15.2,
+        "size_mape_pct": 8,
+        "a4_scale_error_pct": 6.37,
+        "pieces_scored": 46
+    },
+    "muse_spark_with_sam": {
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "length_mae_mm": 1.8,
+        "width_mae_mm": 2.5,
+        "size_mape_pct": 2.1,
+        "a4_scale_error_pct": 0.86,
+        "pieces_scored": 46
+    },
+    "seconds_muse_spark_mean": 20.7,
+    "seconds_sam_mean": 13.5
+}
