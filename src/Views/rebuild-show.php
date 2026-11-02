@@ -59,7 +59,7 @@ foreach (['width' => 'width_mm', 'depth' => 'depth_mm', 'height' => 'height_mm']
       <div class="viewer" data-scene3d="<?= $e($scene) ?>" role="img" aria-label="<?= $t('plan.renderAlt') ?>">
         <?= Drawing::isometric($result['assembly'], $sizes) ?>
       </div>
-      <script type="module" src="/js/assembly3d.js"></script>
+      <script type="module" src="<?= $e(\RecupBuild\Core\View::asset('/js/assembly3d.js')) ?>"></script>
     </section>
   <?php endif ?>
 
