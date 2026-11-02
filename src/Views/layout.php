@@ -13,6 +13,7 @@ $active = static fn (string ...$prefixes): string => array_filter($prefixes, sta
 $steps = ['scan', 'inventory', 'projects', 'plan'];
 $stepIndex = $step === null ? -1 : (int) array_search($step, $steps, true);
 $isError = $flash !== null && str_starts_with($flash, 'error.');
+$origin = (($_SERVER['HTTPS'] ?? '') !== '' && ($_SERVER['HTTPS'] ?? '') !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
 ?>
 <!doctype html>
 <html lang="<?= $e($locale) ?>">
@@ -22,6 +23,12 @@ $isError = $flash !== null && str_starts_with($flash, 'error.');
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#F6F3EC">
   <meta name="description" content="<?= $t('footer.tagline') ?>">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="RecupBuild">
+  <meta property="og:title" content="<?= $title ?> · RecupBuild">
+  <meta property="og:description" content="<?= $t('footer.tagline') ?>">
+  <meta property="og:image" content="<?= $e($origin) ?>/images/preview-bench.jpg">
+  <meta name="twitter:card" content="summary_large_image">
   <title><?= $title ?> · RecupBuild</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="icon" type="image/png" href="/images/logo.png" sizes="128x128">

@@ -112,6 +112,9 @@ $headers = RecupBuild\Core\View::securityHeaders(false);
 check('every page limits what it shares and what it may use', in_array('Referrer-Policy: strict-origin-when-cross-origin', $headers, true) && in_array('Permissions-Policy: camera=(), microphone=(), geolocation=()', $headers, true));
 check('the content policy stays on every page', count(array_filter($headers, static fn (string $header): bool => str_starts_with($header, 'Content-Security-Policy:'))) === 1);
 check('HTTPS is pinned only over HTTPS', !in_array('Strict-Transport-Security: max-age=31536000', $headers, true) && in_array('Strict-Transport-Security: max-age=31536000', RecupBuild\Core\View::securityHeaders(true), true));
+$layout = (string) file_get_contents(dirname(__DIR__) . '/src/Views/layout.php');
+check('a shared link shows a title, a text and a picture', str_contains($layout, 'og:title') && str_contains($layout, 'og:description') && str_contains($layout, 'summary_large_image'));
+check('the picture of a shared link exists', str_contains($layout, '/images/preview-bench.jpg') && is_file(dirname(__DIR__) . '/images/preview-bench.jpg'));
 $views = ['layout', 'home', 'about', 'legal', 'cgu', 'privacy', 'notfound', 'pricing', 'profile', 'scan', 'inventory', 'projects', 'plan', 'plan-failed', 'history', 'rebuild', 'rebuild-show',
     'admin/_nav', 'admin/dashboard', 'admin/users', 'admin/pricing', 'admin/legal'];
 check('every page has its view', array_filter($views, static fn (string $view): bool => !is_file(dirname(__DIR__) . '/src/Views/' . $view . '.php')) === []);
