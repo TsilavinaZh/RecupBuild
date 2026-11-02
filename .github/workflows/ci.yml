@@ -26,3 +26,65 @@ jobs:
 
       - name: Run the test suite
         run: php tests/run.php
+
+  docker:
+    name: Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the image
+        run: docker build -t recupbuild .
+
+      - name: Start the container
+        run: docker run -d --name recupbuild -p 8080:80 recupbuild
+
+      - name: Wait for the site
+        run: |
+          for attempt in $(seq 1 30); do
+            curl -fs http://localhost:8080/api/health && exit 0
+            sleep 1
+          done
+          docker logs recupbuild
+          exit 1
+
+      - name: Check the extensions the app needs
+        run: |
+          docker exec recupbuild php -r '
+            foreach (["curl", "gd", "exif", "fileinfo", "pdo_sqlite", "mbstring"] as $extension) {
+                if (!extension_loaded($extension)) {
+                    echo "missing $extension\n";
+                    exit(1);
+                }
+            }
+            $gd = gd_info();
+            if (!$gd["JPEG Support"] || !$gd["PNG Support"] || !$gd["WebP Support"]) {
+                echo "gd is missing a format\n";
+                exit(1);
+            }
+          '
+
+      - name: Check the pages and the assets
+        run: |
+          curl -fs http://localhost:8080/ | grep -q RecupBuild
+          curl -fs -o /dev/null http://localhost:8080/about
+          curl -fs -o /dev/null http://localhost:8080/css/pages.css
+          curl -fs -o /dev/null http://localhost:8080/js/pages.js
+          curl -fs -o /dev/null http://localhost:8080/demo/pile.jpg
+          curl -fs -o /dev/null http://localhost:8080/pricing
+
+      - name: Check that the web user can create the database in the volume
+        run: |
+          docker exec -u www-data -w /var/www/html recupbuild php -r '
+            require "src/bootstrap.php";
+            RecupBuild\Core\Database::get(RecupBuild\Core\Config::load(".env.php"));
+          '
+          docker exec recupbuild test -f /data/recupbuild.sqlite
+
+      - name: Check that nothing private is served
+        run: |
+          for path in /.env.php /.env /src/routes.php /src/Views/home.php /tests/run.php /README.md /Dockerfile; do
+            status="$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:8080$path")"
+            echo "$path -> $status"
+            test "$status" = 404
+          done

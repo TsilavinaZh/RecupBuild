@@ -1,0 +1,22 @@
+# Secrets and local data never enter the image: settings come from the environment.
+.env
+.env.*
+smtp.txt
+storage/
+*.sqlite*
+
+# What the running site does not need.
+.git/
+.github/
+.dockerignore
+Dockerfile
+compose.yaml
+deploy/
+docs/
+scripts/
+tests/
+*.md
+*.m4a
+*.wav
+*.mp3
+*.log
