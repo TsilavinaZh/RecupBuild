@@ -43,6 +43,15 @@ final class Photos
         return is_file($path) ? $path : null;
     }
 
+    /** Deletes a stored file; a name this class did not give is left alone. */
+    public static function remove(?string $name): void
+    {
+        $path = self::path($name);
+        if ($path !== null) {
+            unlink($path);
+        }
+    }
+
     /** Sends a stored photo to the browser (the caller checked who may see it). */
     public static function send(?string $name): never
     {

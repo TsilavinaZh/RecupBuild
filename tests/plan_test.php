@@ -296,3 +296,25 @@ foreach (['en', 'fr'] as $locale) {
 }
 check('a language without its own projects falls back on French', RecupBuild\Services\Demo::projects('mg') === RecupBuild\Services\Demo::projects('fr'));
 
+// Files go to a folder of this test, never to the real photos.
+$storage = getenv('STORAGE_PATH');
+$folder = sys_get_temp_dir() . '/recupbuild-test-' . bin2hex(random_bytes(6));
+putenv('STORAGE_PATH=' . $folder);
+$picture = RecupBuild\Models\Photos::store('picture');
+$kept = RecupBuild\Models\Plans::save($pdo, $owner['id'], ['id' => 'bench', 'name' => 'Bench'], [], []);
+RecupBuild\Models\Plans::savePreview($pdo, $owner['id'], $kept, $picture);
+RecupBuild\Models\Plans::delete($pdo, $other['id'], $kept);
+check('nobody can delete the picture of a plan of someone else', RecupBuild\Models\Photos::path($picture) !== null);
+RecupBuild\Models\Plans::delete($pdo, $owner['id'], $kept);
+check('deleting a plan deletes its generated picture', RecupBuild\Models\Photos::path($picture) === null);
+file_put_contents($folder . '/private.txt', 'stays');
+RecupBuild\Models\Photos::remove('../private.txt');
+check('removing refuses a name it did not give', is_file($folder . '/private.txt'));
+unlink($folder . '/private.txt');
+$plain = RecupBuild\Models\Plans::save($pdo, $owner['id'], ['id' => 'bench', 'name' => 'Bench'], [], []);
+check('deleting a plan with no picture still works', RecupBuild\Models\Plans::delete($pdo, $owner['id'], $plain));
+check('deleting a plan that is gone says so', !RecupBuild\Models\Plans::delete($pdo, $owner['id'], $plain));
+@rmdir($folder . '/photos');
+@rmdir($folder);
+putenv($storage === false ? 'STORAGE_PATH' : 'STORAGE_PATH=' . $storage);
+
