@@ -1,5 +1,5 @@
 # RecupBuild: PHP 8.3 and Apache, no Composer dependency.
-FROM php:8.3-apache
+FROM php:8.5-apache
 
 # gd reads the photos (JPEG, PNG, WebP) and exif turns them the right way up;
 # the image already ships curl, fileinfo, mbstring and pdo_sqlite.
